@@ -1,0 +1,9 @@
+This is a simple/naive implementation of javascript in scala
+The reason for this project is to thoroughly learn javascript,
+and at the same time practice making interpreters using
+combinator parsing in scala.
+
+THis project may and may not implement the full ECMA 262 standard,
+and may or may not violate it in key areas...
+
+(oh, and may or may not be completed :)
