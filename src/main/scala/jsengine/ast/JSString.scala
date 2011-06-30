@@ -15,8 +15,12 @@ class JSString(prototype: PropertySet, properties: Map[JSString,JSObject], val v
   override def toString:String = {
     return "'"+value+"'"
   }
-  
+	
+	override def evaluate:JSObject = {
+		return this
+	}
 }
+
 object JSString {
   def apply(value: String):JSString = {
     return new JSString(BuiltinObjects._object, Map(), value)

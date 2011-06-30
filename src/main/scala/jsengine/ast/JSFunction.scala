@@ -11,6 +11,10 @@ class JSFunction(val functionName: Option[JSString], val arguments: List[JSStrin
 		  case Some(name) => return "JSFunction("+name+'('+arguments+") {"+expressions+"}";
 		}
 	}	
+	
+	override def evaluate:JSObject = {
+		return this
+	}
 }
 
 object JSFunction {

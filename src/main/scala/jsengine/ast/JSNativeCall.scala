@@ -1,6 +1,7 @@
 package jsengine.ast
 
 import jsengine.library.BuiltinObjects
+import jsengine.library.BuiltinNativeCalls
 
 class JSNativeCall(val identifier: JSString) extends JSExpression {
 	def execute:JSObject = {
@@ -9,6 +10,10 @@ class JSNativeCall(val identifier: JSString) extends JSExpression {
 	
 	override def toString():String = {
 			return "JSNativeCall("+identifier+")"
+	}
+	
+	override def evaluate():JSObject = {
+		return BuiltinNativeCalls.executeNativeCall(identifier.value)
 	}
   
 }

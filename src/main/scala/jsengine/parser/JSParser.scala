@@ -9,9 +9,16 @@ import jsengine.ast.JSNumber
 import jsengine.ast.JSNativeCall
 import jsengine.ast.JSExpression
 import jsengine.ast.JSSourceElement
+import jsengine.ast.Assignment
+import jsengine.ast.VariableAssignment
+import jsengine.ast.VariableDeclaration
+import jsengine.ast.VariableDeclarations
+import jsengine.ast.JSSource
+import jsengine.library.BuiltinObjects
 
 object JSParser extends RegexParsers {
-	def expression : Parser[JSExpression] = jsobject | stringLiteral | numericLiteral | nativeCall | functionExpression;
+	def program: Parser[JSSource] = repsep(sourceElement,";") <~ "\\z".r ^^ { case sourceElements  => new JSSource(sourceElements) }
+	def expression : Parser[JSExpression] = jsobject | stringLiteral | numericLiteral | nativeCall | functionExpression | variableAssignment; 
 	def jsobject : Parser[JSObject] = "{" ~> repsep(propertyNameAndValue,",") <~ "}" ^^ 
 		{ keysAndValues:List[(JSString,JSExpression)] => new JSObject(EmptyPropertySet,Map[JSString,JSExpression]() ++ keysAndValues) }
 	def propertyNameAndValue : Parser[(JSString, JSExpression)] = propertyName ~ ":" ~ propertyValue ^^
@@ -25,11 +32,20 @@ object JSParser extends RegexParsers {
 	
 	def propertyValue : Parser[JSExpression] = expression
 
-	def functionExpression : Parser[JSFunction]= "function" ~ opt(identifier) ~ "(" ~ repsep(identifier,",") ~ ")" ~ "{" ~ repsep(expression,";") ~ "}" ^^
+	def functionExpression : Parser[JSFunction]= "function" ~! opt(identifier) ~ "(" ~! repsep(identifier,",") ~ ")" ~ "{" ~! repsep(expression,";") ~ "}" ^^
 		{ case "function" ~ name ~ "(" ~ arguments  ~ ")" ~ "{" ~ expressions  ~ "}" => JSFunction(name, arguments, expressions) }
 	
-	def sourceElement: Parser[JSSourceElement] = expression ;
+	def sourceElement: Parser[JSSourceElement] = expression | variableDeclaration;
 	
-	def nativeCall:Parser[JSNativeCall] = "@NATIVECALL" ~ "(" ~ identifier ~ ")" ^^ { case "@NATIVECALL" ~ "(" ~ identifier ~ ")" => JSNativeCall(identifier) } 
-	
+	def nativeCall:Parser[JSNativeCall] = "@NATIVECALL" ~! "(" ~ identifier ~ ")" ^^ { case "@NATIVECALL" ~ "(" ~ identifier ~ ")" => JSNativeCall(identifier) }
+	def variableDeclaration : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable,",") ^^ {
+	  case declarations => VariableDeclarations(declarations)
+	}
+	def singleVariable: Parser[VariableDeclaration] = propertyName ~ opt("=" ~> expression) ^^ {
+	  case propertyName ~ None => VariableDeclaration(propertyName,BuiltinObjects._undefined)
+	  case propertyName ~ Some(initialValue) => VariableDeclaration(propertyName,initialValue)
+	}
+	def variableAssignment: Parser[VariableAssignment] = propertyName ~ "=" ~ expression ^^ {
+	  case propertyName ~ "=" ~ expression => VariableAssignment(propertyName,expression)
+	}
 }

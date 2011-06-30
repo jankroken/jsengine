@@ -30,6 +30,10 @@ class JSObject(val prototype : PropertySet,
 		return new JSObject(this,Map())
 	}
 	
+	override def evaluate:JSObject = {
+		return this
+	}
+	
 }
 object JSObject {
   def apply:JSObject = {

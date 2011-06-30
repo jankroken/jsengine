@@ -15,6 +15,10 @@ class JSBoolean(prototype: PropertySet, properties: Map[JSString,JSExpression], 
   override def toString:String = {
     return ""+value
   }
+  
+  override def evaluate:JSObject = {
+    return this;
+  }
 }
 object JSBoolean {
   def apply(value: Boolean):JSBoolean = {

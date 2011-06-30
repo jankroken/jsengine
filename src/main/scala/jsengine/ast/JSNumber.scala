@@ -15,6 +15,10 @@ class JSNumber(prototype: PropertySet, properties: Map[JSString,JSObject], val v
   override def toString:String = {
     return ""+value
   }
+	
+  override def evaluate:JSObject = {
+	return this
+  }
   
 }
 object JSNumber {

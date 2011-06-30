@@ -15,7 +15,10 @@ class JSUndefined(prototype: PropertySet, properties: Map[JSString,JSObject]) ex
   override def toString:String = {
     return "<undefined>"
   }
-  
+	
+  override def evaluate:JSObject = {
+	return this
+  }
 }
 object JSUndefined {
 	def apply():JSUndefined = {
