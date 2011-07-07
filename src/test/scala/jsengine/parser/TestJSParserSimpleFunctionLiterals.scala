@@ -1,53 +1,52 @@
 package jsengine.parser
 
 import org.junit.Test
+
 import org.junit.Assert.assertThat
 import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
+import ParserTestSupport.getASTOrFail
+import jsengine.ast.JSFunction
+import jsengine.ast.JSNativeCall
+import jsengine.ast.ASTNode
 
 import jsengine.ast.JSString
 
 class TestJSParserSimpleFunctionLiterals {
 
+	private def verifyFunction(source: String, expected: ASTNode) {
+		ParserTestSupport.verifyParsing[JSFunction](JSParser.functionExpression,source,expected)
+	}
+  
     @Test def testEmptyFunction {
-    	val result = JSParser.parse(JSParser.functionExpression,"function () {}")
-    	result match {
-    	  case JSParser.Success(jsfunction,_) => println("Success: "+jsfunction)
-    	  case JSParser.Failure(message,_) => fail("Parsing failed: "+message)
-    	}
+    	val source = "function () {}"
+    	val ast = JSFunction(None,List(),List())
+    	verifyFunction(source,ast)
     }
     
     @Test def testEmptyNamedFunction {
-    	val result = JSParser.parse(JSParser.functionExpression,"function hello () {}")
-    	result match {
-    	  case JSParser.Success(jsfunction,_) => println("Success: "+jsfunction)
-    	  case JSParser.Failure(message,_) => fail("Parsing failed: "+message)
-    	}
+    	val source = "function hello () {}"
+    	val ast = JSFunction(Some(JSString("hello")),List(),List())
+    	verifyFunction(source,ast)
     }
 
     @Test def testOneArgumentEmptyFunction {
-    	val result = JSParser.parse(JSParser.functionExpression,"function (x) {}")
-    	result match {
-    	  case JSParser.Success(jsfunction,_) => println("Success: "+jsfunction)
-    	  case JSParser.Failure(message,_) => fail("Parsing failed: "+message)
-    	}
+    	val source = "function (x) {}"
+    	val ast = JSFunction(None,List(JSString("x")),List())
+    	verifyFunction(source,ast)
     }
 
     @Test def testTwoArgumentsEmptyFunction {
-    	val result = JSParser.parse(JSParser.functionExpression,"function (x,y) {}")
-    	result match {
-    	  case JSParser.Success(jsfunction,_) => println("Success: "+jsfunction)
-    	  case JSParser.Failure(message,_) => fail("Parsing failed: "+message)
-    	}
+    	val source = "function (x,y) {}"
+    	val ast = JSFunction(None,List(JSString("x"),JSString("y")),List())
+    	verifyFunction(source,ast)
     }
     
     @Test def testNativeCall {
-    	val result = JSParser.parse(JSParser.nativeCall,"@NATIVECALL(helloworld)")
-    	result match {
-    	  case JSParser.Success(nativecall,_) => println("Success: "+nativecall)
-    	  case JSParser.Failure(message,_) => fail("Parsing failed: "+message)
-    	}
+    	val source = "@NATIVECALL(helloworld)"
+    	val ast = JSNativeCall(JSString("helloworld"))
+		ParserTestSupport.verifyParsing[JSNativeCall](JSParser.nativeCall,source,ast)
     }
 
     @Test def testFunctionNativeCalls {

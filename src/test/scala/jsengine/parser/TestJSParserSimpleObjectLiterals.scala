@@ -7,6 +7,7 @@ import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 
 import jsengine.ast.JSString
+import jsengine.ast.JSLiteralObject
 
 class TestJSParserSimpleObjectLiterals {
 
@@ -30,10 +31,13 @@ class TestJSParserSimpleObjectLiterals {
 
     	result match { 
     	  	case JSParser.Success(jsobject,_) => {
-    	  			println("SUCCESS jsobject="+jsobject)
-    	  			val value = jsobject.getProperty(JSString("key"))
-    	  			assertThat(value,is[Any](Some(JSString("value"))))
+    	  		jsobject match {
+    	  		  case JSLiteralObject(map) => {
+    	  			assertThat(map,is[Any](Map("key" -> "value")))
+    	  		  }
     	  		}
+    	  		println("SUCCESS jsobject="+jsobject)
+    	  	}
     	  	case JSParser.Failure(message,_) => fail("this is a valid object literal, and should not fail: "+message)
     	}
     	
@@ -44,10 +48,13 @@ class TestJSParserSimpleObjectLiterals {
 
     	result match { 
     	  	case JSParser.Success(jsobject,_) => {
-    	  			println("SUCCESS jsobject="+jsobject)
-    	  			val value = jsobject.getProperty(JSString("key"))
-    	  			assertThat(value,is[Any](Some(JSString("value"))))
+    	  		jsobject match {
+    	  		  case JSLiteralObject(map) => {
+    	  			assertThat(map,is[Any](Map("key" -> "value")))
+    	  		  }
     	  		}
+    	  		println("SUCCESS jsobject="+jsobject)
+    	  	}
     	  	case JSParser.Failure(message,_) => fail("this is a valid object literal, and should not fail: "+message)
     	}
     	

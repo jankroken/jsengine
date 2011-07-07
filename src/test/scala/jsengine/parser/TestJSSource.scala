@@ -7,7 +7,14 @@ import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 
 import jsengine.ast.JSString
+import jsengine.ast.JSNumber
 import jsengine.ast.JSSource
+import jsengine.ast.JSObject
+import jsengine.ast.JSFunction
+import jsengine.ast.JSLiteralObject
+import jsengine.ast.JSNativeCall
+import jsengine.ast.JSSourceElement
+
 
 class TestJSSource {
 
@@ -53,7 +60,6 @@ class TestJSSource {
     	  		case JSParser.Success(jssource,_) => jssource
     	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
     		}
-    	jssource.evaluate
     }
 
     @Test def testNestedObjectsAndFunctions {
@@ -75,16 +81,35 @@ class TestJSSource {
     		}
     	"""
     	val result = JSParser.parse(JSParser.program,source)
-
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
+    	val expected =
+    	  	JSSource(List(
+    	  			JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
+	    	  			JSLiteralObject(
+		    	  			Map(JSString("name") -> JSLiteralObject(Map(
+		    	  							JSString("first") -> JSString("Bruce"),
+		    	  							JSString("last") -> JSString("Springsteen")
+		    	  						  )),
+		    	  				JSString("album") -> JSFunction(None,List(),List(
+		    	  							JSLiteralObject(Map(
+		    	  								JSString("album1") -> JSString("The Darkness on the Edge of Town")
+		    	  							)),
+		    	  							JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+		    	  						 )),
+		    	  				JSString("year") -> JSNumber("1978"),
+		    	  				JSString("1337") -> JSString("true")
+		    	  			)
+		    	  		),
+		    	  		JSNativeCall(JSString("goodbyeworld"))
+		    	  	))
+	    	  	))
+	    	  	
+	    result match { 
+    	  	case JSParser.Success(jssource,_) => {
+    	  		println("3:SUCCESS jsobject="+jssource)
+    	  		assertThat(jssource,is[Any](expected))
+    	  	}
+    	  	case JSParser.Failure(message,_) => fail("FAILURE message="+message)
     	}
-    	val jsobject = result match {
-    	  		case JSParser.Success(jsobject,_) => jsobject
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
-    	jsobject.evaluate
     }
 
     
