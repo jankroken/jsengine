@@ -1,63 +1,47 @@
 package jsengine.parser
 
 import org.junit.Test
+
 import org.junit.Assert.assertThat
 import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 
+import ParserTestSupport.verifyLiteralObject
 import jsengine.ast.JSString
+import jsengine.ast.JSNumber
 import jsengine.ast.JSLiteralObject
 
 class TestJSParserSimpleObjectLiterals {
 
     @Test def testEmptyObjectNoWhitespace {
-    	val result = JSParser.parse(JSParser.jsobject,"{}")
-    	println("result="+result)
+    	val source = "{}"
+    	val ast = JSLiteralObject(Map())
+    	verifyLiteralObject(source,ast)
     }
     
     @Test def testEmptyObjectSpaces {
-    	val result = JSParser.parse(JSParser.jsobject,"{  }")
-    	println("result="+result)
+    	val source = "{ }"
+    	val ast = JSLiteralObject(Map())
+    	verifyLiteralObject(source,ast)
     }
 
     @Test def testEmptyObjectSpacesAndNewline {
-    	val result = JSParser.parse(JSParser.jsobject,"{ \n }")
-    	println("result="+result)
+    	val source = "{ \n }"
+    	val ast = JSLiteralObject(Map())
+    	verifyLiteralObject(source,ast)
     }
     
     @Test def testObjectWithStringValue {
-    	val result = JSParser.parse(JSParser.jsobject,"""{ "key" : "value" }""")
-
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => {
-    	  		jsobject match {
-    	  		  case JSLiteralObject(map) => {
-    	  			assertThat(map,is[Any](Map("key" -> "value")))
-    	  		  }
-    	  		}
-    	  		println("SUCCESS jsobject="+jsobject)
-    	  	}
-    	  	case JSParser.Failure(message,_) => fail("this is a valid object literal, and should not fail: "+message)
-    	}
-    	
+    	val source = """{ "key" : "value" }"""
+    	val ast = JSLiteralObject(Map(JSString("key") -> JSString("value")))
+    	verifyLiteralObject(source,ast)
     }
 
     @Test def testObjectWithIdentifierKey {
-    	val result = JSParser.parse(JSParser.jsobject,"""{ key : "value" }""")
-
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => {
-    	  		jsobject match {
-    	  		  case JSLiteralObject(map) => {
-    	  			assertThat(map,is[Any](Map("key" -> "value")))
-    	  		  }
-    	  		}
-    	  		println("SUCCESS jsobject="+jsobject)
-    	  	}
-    	  	case JSParser.Failure(message,_) => fail("this is a valid object literal, and should not fail: "+message)
-    	}
-    	
+    	val source = """{ key : "value" }"""
+    	val ast = JSLiteralObject(Map(JSString("key") -> JSString("value")))
+    	verifyLiteralObject(source,ast)
     }
 
     
@@ -65,13 +49,13 @@ class TestJSParserSimpleObjectLiterals {
     	val result = JSParser.parse(JSParser.jsobject,"""{ "key" }""")
 
     	result match { 
-    	  	case JSParser.Success(jsobject,_) => fail("THis is an invalid object literal, and should not be parsed")
+    	  	case JSParser.Success(jsobject,_) => fail("This is an invalid object literal, and should not be parsed")
     	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
     	}
     }
 
     @Test def testNestedObject {
-    	val objectLiteral = """
+    	val source = """
     		{
     			name : {
     				first : "Bruce",
@@ -82,18 +66,16 @@ class TestJSParserSimpleObjectLiterals {
     			1337 : "true"
     		 }
     	"""
-    	val result = JSParser.parse(JSParser.jsobject,objectLiteral)
-
-    	println()
-    	println("result="+result+",class="+result.getClass())
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jsobject = result match {
-    	  		case JSParser.Success(jsobject,_) => jsobject
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+    	val ast = JSLiteralObject(Map(
+    			JSString("name") -> JSLiteralObject(Map(
+    								   JSString("first") -> JSString("Bruce"),
+    								   JSString("last") -> JSString("Springsteen")
+    							   )),
+    			JSString("album") -> JSString("The Darkness on the Edge of Town"),
+    			JSString("year") -> JSNumber("1978"),
+    			JSString("1337") -> JSString("true")
+    		))
+    	verifyLiteralObject(source,ast)
     }
 
 }
