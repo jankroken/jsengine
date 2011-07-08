@@ -7,17 +7,17 @@ import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 import ParserTestSupport.getASTOrFail
+import ParserTestSupport.verifyFunction
+import ParserTestSupport.verifyLiteralObject
 import jsengine.ast.JSFunction
 import jsengine.ast.JSNativeCall
 import jsengine.ast.ASTNode
-
 import jsengine.ast.JSString
+import jsengine.ast.JSNumber
+import jsengine.ast.JSLiteralObject
 
 class TestJSParserSimpleFunctionLiterals {
 
-	private def verifyFunction(source: String, expected: ASTNode) {
-		ParserTestSupport.verifyParsing[JSFunction](JSParser.functionExpression,source,expected)
-	}
   
     @Test def testEmptyFunction {
     	val source = "function () {}"
@@ -50,11 +50,9 @@ class TestJSParserSimpleFunctionLiterals {
     }
 
     @Test def testFunctionNativeCalls {
-    	val result = JSParser.parse(JSParser.functionExpression,"function f (x) { @NATIVECALL(hello) ; @NATIVECALL(world) }")
-    	result match {
-    	  case JSParser.Success(jsfunction,_) => println("Success: "+jsfunction)
-    	  case JSParser.Failure(message,_) => fail("Parsing failed: "+message)
-    	}
+    	val source = "function f (x) { @NATIVECALL(hello) ; @NATIVECALL(world) }"
+    	val ast = JSFunction(Some(JSString("f")),List(JSString("x")),List(JSNativeCall(JSString("hello")),JSNativeCall(JSString("world"))))
+    	verifyFunction(source,ast)
     }
 
     @Test def testSimpleObjectWithFunction {
@@ -64,7 +62,7 @@ class TestJSParserSimpleFunctionLiterals {
     		}
     		"""
     	val result = JSParser.parse(JSParser.jsobject,objectLiteral)
-
+ 
     	result match { 
     	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
     	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
@@ -77,7 +75,7 @@ class TestJSParserSimpleFunctionLiterals {
 
 
     @Test def testNestedObject {
-    	val objectLiteral = """
+    	val source = """
     		{
     			name : {
     				first : "Bruce",
@@ -91,20 +89,24 @@ class TestJSParserSimpleFunctionLiterals {
     			1337 : "true"
     		 }
     	"""
-    	val result = JSParser.parse(JSParser.jsobject,objectLiteral)
+    	val ast = JSLiteralObject(Map(
+    				JSString("name") -> JSLiteralObject(Map(
+    				    JSString("first") -> JSString("Bruce"),
+    				    JSString("last") -> JSString("Springsteen")
+    				)),
+    				JSString("album") -> JSFunction(Some(JSString("myAlbum")),List(),List(
+    										 JSString("The Darkness on the Edge of Town"),
+    										 JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    									 )),
+    				JSString("year") -> JSNumber("1978"),
+    				JSString("1337") -> JSString("true")
+    			))
 
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jsobject = result match {
-    	  		case JSParser.Success(jsobject,_) => jsobject
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+    	verifyLiteralObject(source,ast)
     }
 
     @Test def testNestedObjectsAndFunctions {
-    	val objectLiteral = """
+    	val source = """
     		function outerObject (foo) {
     			{
     				name : {
@@ -121,16 +123,27 @@ class TestJSParserSimpleFunctionLiterals {
     			@NATIVECALL(goodbyeworld)
     		}
     	"""
-    	val result = JSParser.parse(JSParser.functionExpression,objectLiteral)
+    	  
+    	val ast =
+    	  JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
+    			  JSLiteralObject(Map(
+    				JSString("name") -> JSLiteralObject(Map(
+    				    JSString("first") -> JSString("Bruce"),
+    				    JSString("last") -> JSString("Springsteen")
+    				)),
+    				JSString("album") -> JSFunction(None,List(),List(
+    										 JSLiteralObject(Map(
+    												 JSString("album1") -> JSString("The Darkness on the Edge of Town")
+    										 )),
+    										 JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    									 )),
+    				JSString("year") -> JSNumber("1978"),
+    				JSString("1337") -> JSString("true")
+    			  )),
+    			  JSNativeCall(JSString("goodbyeworld"))
+    	  ))
 
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jsobject = result match {
-    	  		case JSParser.Success(jsobject,_) => jsobject
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+    	verifyFunction(source,ast)
     }
 
     

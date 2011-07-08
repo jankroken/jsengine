@@ -2,6 +2,8 @@ package jsengine.parser
 
 import org.junit.Assert.fail
 import jsengine.ast.ASTNode
+import jsengine.ast.JSFunction
+import jsengine.ast.JSLiteralObject
 import org.junit.Assert.assertThat;
 import org.hamcrest.CoreMatchers.is;
 
@@ -20,8 +22,27 @@ object ParserTestSupport {
     def verifyParsing[T <: ASTNode](parser: JSParser.Parser[T], input: String, expectedAST: ASTNode) {
     	val result = JSParser.parse(parser,input)
     	val ast = getASTOrFail(result)
-    	assertThat(ast,is[Any](expectedAST))
-    }
+
+    	try {
+    		assertThat(ast,is[Any](expectedAST))
+    	} catch {
+    	  case ae: AssertionError =>
+	    	println("Parsed AST did not match expected AST")
+	    	println("parsed AST   : "+ast)
+	    	println("expected AST : "+expectedAST)
+	    	throw ae
+    	  case other =>
+    		throw other
+    	}
+	}
+    
+	def verifyFunction(source: String, expected: ASTNode) {
+		ParserTestSupport.verifyParsing[JSFunction](JSParser.functionExpression,source,expected)
+	}
+
+	def verifyLiteralObject(source: String, expected: ASTNode) {
+		ParserTestSupport.verifyParsing[JSLiteralObject](JSParser.jsobject,source,expected)
+	}
 
 
 }
