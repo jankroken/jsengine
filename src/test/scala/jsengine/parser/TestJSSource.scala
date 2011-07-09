@@ -89,8 +89,7 @@ class TestJSSource {
     			@NATIVECALL(goodbyeworld)
     		}
     	"""
-    	val result = JSParser.parse(JSParser.source,source)
-    	val expected =
+    	val ast =
     	  	JSSource(List(
     	  			JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
 	    	  			JSLiteralObject(
@@ -111,14 +110,8 @@ class TestJSSource {
 		    	  		JSNativeCall(JSString("goodbyeworld"))
 		    	  	))
 	    	  	))
-	    	  	
-	    result match { 
-    	  	case JSParser.Success(jssource,_) => {
-    	  		println("3:SUCCESS jsobject="+jssource)
-    	  		assertThat(jssource,is[Any](expected))
-    	  	}
-    	  	case JSParser.Failure(message,_) => fail("FAILURE message="+message)
-    	}
+
+	    verifySource(source,ast)
     }
 
     

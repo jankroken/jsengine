@@ -8,18 +8,29 @@ import org.junit.Assert.fail
 
 import jsengine.ast.JSString
 import jsengine.ast.JSSource
+import jsengine.ast.JSFunction
+import jsengine.ast.JSNumber
+import jsengine.ast.JSNativeCall
+import jsengine.ast.JSUndefined
+import jsengine.ast.JSLiteralObject
+import jsengine.ast.VariableDeclarations
+import jsengine.ast.VariableDeclaration
+import jsengine.library.BuiltinObjects
+import ParserTestSupport.verifySource
 
 class TestVariableAssignment {
 
 	@Test def testFunction() {
-		val functions = """
+		val source = """
 			var a = function helloworld () { @NATIVECALL(helloworld) }
 		"""
-		val result = JSParser.parse(JSParser.source,functions)
-		result match {
-		  case JSParser.Success(source,_) => println("SUCCESS source="+source)
-		  case JSParser.Failure(message,_) => fail(message)
-		}
+		val ast = JSSource(List(
+				VariableDeclarations(List(
+						VariableDeclaration(JSString("a"),
+										   JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld")))))
+				))
+		    ))
+		verifySource(source,ast)
 	}
   
   
@@ -41,33 +52,46 @@ class TestVariableAssignment {
     		function byeworld(x) { @NATIVECALL(byeworld) } ;
     		@NATIVECALL(helloworld)
     	"""
-    	val result = JSParser.parse(JSParser.source,source)
-    	println(result)
-    	
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jssource:JSSource = result match {
-    	  		case JSParser.Success(jssource,_) => jssource
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+  
+    	  
+    	val ast = JSSource(List(
+    			VariableDeclarations(List(
+    			    VariableDeclaration(JSString("o"),
+    			    	JSLiteralObject(Map(
+    			    		JSString("name") -> JSLiteralObject(Map(
+    			    				JSString("first") -> JSString("Bruce"),
+    			    				JSString("last") -> JSString("Springsteen")
+    			    		)),
+    			    		JSString("album") -> JSFunction(Some(JSString("myAlbum")),List(),List(
+    			    				JSString("The Darkness on the Edge of Town"),
+    			    				JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    			    		)),
+    			    		JSString("year") -> JSNumber("1978"),
+    			    		JSString("1337") -> JSString("true")
+    			    	))
+    			    )
+    			)),
+    			JSFunction(Some(JSString("helloworld")),List(JSString("x")),List(JSNativeCall(JSString("helloworld")))),
+				JSFunction(Some(JSString("byeworld")),List(JSString("x")),List(JSNativeCall(JSString("byeworld")))),
+				JSNativeCall(JSString("helloworld"))
+		))
+
+    	verifySource(source,ast)
     }
 
     @Test def testSimpleAssignments {
     	val source = """
     			var x = 1, y, z = 2
     	"""
-    	val result = JSParser.parse(JSParser.source,source)
-
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jsobject = result match {
-    	  		case JSParser.Success(jsobject,_) => jsobject
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+    	val ast = JSSource(List(
+    			VariableDeclarations(List(
+    					VariableDeclaration(JSString("x"),JSNumber("1")),
+    					VariableDeclaration(JSString("y"),JSUndefined()),
+    					VariableDeclaration(JSString("z"),JSNumber("2"))
+    			))
+    	))
+    	  
+    	verifySource(source,ast)
     }
 
     
