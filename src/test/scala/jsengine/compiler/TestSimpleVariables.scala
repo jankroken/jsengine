@@ -22,7 +22,7 @@ class TestSimpleVariables {
 				}
 			}
 		"""
-		val result = JSParser.parse(JSParser.program,function)
+		val result = JSParser.parse(JSParser.source,function)
 		println("result="+result)
 		result match {
 		  case JSParser.Success(source,_) => println("SUCCESS source="+source)

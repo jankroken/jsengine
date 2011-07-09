@@ -15,7 +15,7 @@ class TestVariableAssignment {
 		val functions = """
 			var a = function helloworld () { @NATIVECALL(helloworld) }
 		"""
-		val result = JSParser.parse(JSParser.program,functions)
+		val result = JSParser.parse(JSParser.source,functions)
 		result match {
 		  case JSParser.Success(source,_) => println("SUCCESS source="+source)
 		  case JSParser.Failure(message,_) => fail(message)
@@ -41,7 +41,7 @@ class TestVariableAssignment {
     		function byeworld(x) { @NATIVECALL(byeworld) } ;
     		@NATIVECALL(helloworld)
     	"""
-    	val result = JSParser.parse(JSParser.program,source)
+    	val result = JSParser.parse(JSParser.source,source)
     	println(result)
     	
     	result match { 
@@ -58,7 +58,7 @@ class TestVariableAssignment {
     	val source = """
     			var x = 1, y, z = 2
     	"""
-    	val result = JSParser.parse(JSParser.program,source)
+    	val result = JSParser.parse(JSParser.source,source)
 
     	result match { 
     	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)

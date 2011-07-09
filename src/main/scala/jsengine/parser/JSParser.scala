@@ -18,7 +18,7 @@ import jsengine.ast.JSSource
 import jsengine.library.BuiltinObjects
 
 object JSParser extends RegexParsers {
-	def program: Parser[JSSource] = repsep(sourceElement,";") <~ "\\z".r ^^ { case sourceElements  => new JSSource(sourceElements) }
+	def source: Parser[JSSource] = repsep(sourceElement,";") <~ "\\z".r ^^ { case sourceElements  => new JSSource(sourceElements) }
 	def expression : Parser[JSExpression] = jsobject | stringLiteral | numericLiteral | nativeCall | functionExpression | variableAssignment; 
 	def jsobject : Parser[JSLiteralObject] = "{" ~> repsep(propertyNameAndValue,",") <~ "}" ^^ 
 		{ keysAndValues:List[(JSString,JSExpression)] => JSLiteralObject(Map[JSString,JSExpression]() ++ keysAndValues) }

@@ -4,6 +4,7 @@ import org.junit.Assert.fail
 import jsengine.ast.ASTNode
 import jsengine.ast.JSFunction
 import jsengine.ast.JSLiteralObject
+import jsengine.ast.JSSource
 import org.junit.Assert.assertThat;
 import org.hamcrest.CoreMatchers.is;
 
@@ -44,5 +45,8 @@ object ParserTestSupport {
 		ParserTestSupport.verifyParsing[JSLiteralObject](JSParser.jsobject,source,expected)
 	}
 
+	def verifySource(source: String, expected: ASTNode) {
+		ParserTestSupport.verifyParsing[JSSource](JSParser.source,source,expected)
+	}
 
 }

@@ -5,6 +5,8 @@ import org.junit.Assert.assertThat
 import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
+import ParserTestSupport.verifyFunction
+import ParserTestSupport.verifyLiteralObject
 
 import jsengine.ast.JSString
 import jsengine.ast.JSNumber
@@ -14,20 +16,18 @@ import jsengine.ast.JSFunction
 import jsengine.ast.JSLiteralObject
 import jsengine.ast.JSNativeCall
 import jsengine.ast.JSSourceElement
-
+import ParserTestSupport.verifySource
 
 class TestJSSource {
 
 	@Test def testTwoFunctions() {
-		val functions = """
+		val source = """
 			function helloworld () { @NATIVECALL(helloworld) } ;
 			function byeworld () { @NATIVECALL(byeworld) }
 		"""
-		val result = JSParser.parse(JSParser.program,functions)
-		result match {
-		  case JSParser.Success(source,_) => println("SUCCESS source="+source)
-		  case JSParser.Failure(message,_) => fail(message)
-		}
+		val ast = JSSource(List(JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld")))),
+				       			JSFunction(Some(JSString("byeworld")),List(),List(JSNativeCall(JSString("byeworld"))))))	
+		verifySource(source,ast)
 	}
   
   
@@ -49,17 +49,26 @@ class TestJSSource {
     		function byeworld(x) { @NATIVECALL(byeworld) } ;
     		@NATIVECALL(helloworld)
     	"""
-    	val result = JSParser.parse(JSParser.program,source)
-    	println(result)
-    	
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jssource:JSSource = result match {
-    	  		case JSParser.Success(jssource,_) => jssource
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+    	  
+    	val ast = JSSource(List(
+    			JSLiteralObject(Map(
+    			    JSString("name") -> JSLiteralObject(Map(
+    			    		JSString("first") -> JSString("Bruce"),
+    			    		JSString("last") -> JSString("Springsteen")
+    			    )),
+    			    JSString("album") -> JSFunction(Some(JSString("myAlbum")),List(),List(
+    			    		JSString("The Darkness on the Edge of Town"),
+    			    		JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    			    )),
+    			    JSString("year") -> JSNumber("1978"),
+    			    JSString("1337") -> JSString("true")
+    			)),
+    			JSFunction(Some(JSString("helloworld")),List(JSString("x")),List(JSNativeCall(JSString("helloworld")))),
+				JSFunction(Some(JSString("byeworld")),List(JSString("x")),List(JSNativeCall(JSString("byeworld")))),
+				JSNativeCall(JSString("helloworld"))
+		))
+    	  
+		verifySource(source,ast)
     }
 
     @Test def testNestedObjectsAndFunctions {
@@ -80,7 +89,7 @@ class TestJSSource {
     			@NATIVECALL(goodbyeworld)
     		}
     	"""
-    	val result = JSParser.parse(JSParser.program,source)
+    	val result = JSParser.parse(JSParser.source,source)
     	val expected =
     	  	JSSource(List(
     	  			JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
