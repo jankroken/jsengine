@@ -27,6 +27,8 @@ class TestSimpleVariables {
 		result match {
 		  case JSParser.Success(source,_) => println("SUCCESS source="+source)
 		  case JSParser.Failure(message,_) => fail(message)
+		  case x => fail("wtf? x="+x)
+	
 		}
 	}
  }

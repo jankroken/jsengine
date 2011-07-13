@@ -16,31 +16,31 @@ class TestJSParserSimpleObjectLiterals {
 
     @Test def testEmptyObjectNoWhitespace {
     	val source = "{}"
-    	val ast = JSLiteralObject(Map())
+    	val ast = JSLiteralObject(List())
     	verifyLiteralObject(source,ast)
     }
     
     @Test def testEmptyObjectSpaces {
     	val source = "{ }"
-    	val ast = JSLiteralObject(Map())
+    	val ast = JSLiteralObject(List())
     	verifyLiteralObject(source,ast)
     }
 
     @Test def testEmptyObjectSpacesAndNewline {
     	val source = "{ \n }"
-    	val ast = JSLiteralObject(Map())
+    	val ast = JSLiteralObject(List())
     	verifyLiteralObject(source,ast)
     }
     
     @Test def testObjectWithStringValue {
     	val source = """{ "key" : "value" }"""
-    	val ast = JSLiteralObject(Map(JSString("key") -> JSString("value")))
+    	val ast = JSLiteralObject(List((JSString("key"),JSString("value"))))
     	verifyLiteralObject(source,ast)
     }
 
     @Test def testObjectWithIdentifierKey {
     	val source = """{ key : "value" }"""
-    	val ast = JSLiteralObject(Map(JSString("key") -> JSString("value")))
+    	val ast = JSLiteralObject(List((JSString("key"),JSString("value"))))
     	verifyLiteralObject(source,ast)
     }
 
@@ -50,7 +50,7 @@ class TestJSParserSimpleObjectLiterals {
 
     	result match { 
     	  	case JSParser.Success(jsobject,_) => fail("This is an invalid object literal, and should not be parsed")
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
+    	  	case JSParser.NoSuccess(message,_) => println("FAILURE message="+message)
     	}
     }
 
@@ -66,14 +66,14 @@ class TestJSParserSimpleObjectLiterals {
     			1337 : "true"
     		 }
     	"""
-    	val ast = JSLiteralObject(Map(
-    			JSString("name") -> JSLiteralObject(Map(
-    								   JSString("first") -> JSString("Bruce"),
-    								   JSString("last") -> JSString("Springsteen")
-    							   )),
-    			JSString("album") -> JSString("The Darkness on the Edge of Town"),
-    			JSString("year") -> JSNumber("1978"),
-    			JSString("1337") -> JSString("true")
+    	val ast = JSLiteralObject(List(
+    			(JSString("name"),JSLiteralObject(List(
+    								   (JSString("first"),JSString("Bruce")),
+    								   (JSString("last"),JSString("Springsteen"))
+    							   ))),
+    			(JSString("album"),JSString("The Darkness on the Edge of Town")),
+    			(JSString("year"),JSNumber("1978")),
+    			(JSNumber("1337"),JSString("true"))
     		))
     	verifyLiteralObject(source,ast)
     }

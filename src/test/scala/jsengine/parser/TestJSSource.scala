@@ -51,17 +51,17 @@ class TestJSSource {
     	"""
     	  
     	val ast = JSSource(List(
-    			JSLiteralObject(Map(
-    			    JSString("name") -> JSLiteralObject(Map(
-    			    		JSString("first") -> JSString("Bruce"),
-    			    		JSString("last") -> JSString("Springsteen")
-    			    )),
-    			    JSString("album") -> JSFunction(Some(JSString("myAlbum")),List(),List(
+    			JSLiteralObject(List(
+    			    (JSString("name"),JSLiteralObject(List(
+    			    		(JSString("first"),JSString("Bruce")),
+    			    		(JSString("last"),JSString("Springsteen"))
+    			    ))),
+    			    (JSString("album"),JSFunction(Some(JSString("myAlbum")),List(),List(
     			    		JSString("The Darkness on the Edge of Town"),
     			    		JSNativeCall(JSString("favouritebrucespringsteenalbum"))
-    			    )),
-    			    JSString("year") -> JSNumber("1978"),
-    			    JSString("1337") -> JSString("true")
+    			    ))),
+    			    (JSString("year"),JSNumber("1978")),
+    			    (JSNumber("1337"),JSString("true"))
     			)),
     			JSFunction(Some(JSString("helloworld")),List(JSString("x")),List(JSNativeCall(JSString("helloworld")))),
 				JSFunction(Some(JSString("byeworld")),List(JSString("x")),List(JSNativeCall(JSString("byeworld")))),
@@ -93,18 +93,18 @@ class TestJSSource {
     	  	JSSource(List(
     	  			JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
 	    	  			JSLiteralObject(
-		    	  			Map(JSString("name") -> JSLiteralObject(Map(
-		    	  							JSString("first") -> JSString("Bruce"),
-		    	  							JSString("last") -> JSString("Springsteen")
-		    	  						  )),
-		    	  				JSString("album") -> JSFunction(None,List(),List(
-		    	  							JSLiteralObject(Map(
-		    	  								JSString("album1") -> JSString("The Darkness on the Edge of Town")
+		    	  			List((JSString("name"),JSLiteralObject(List(
+		    	  							(JSString("first"),JSString("Bruce")),
+		    	  							(JSString("last"),JSString("Springsteen"))
+		    	  						  ))),
+		    	  				(JSString("album"),JSFunction(None,List(),List(
+		    	  							JSLiteralObject(List(
+		    	  								(JSString("album1"),JSString("The Darkness on the Edge of Town"))
 		    	  							)),
 		    	  							JSNativeCall(JSString("favouritebrucespringsteenalbum"))
-		    	  						 )),
-		    	  				JSString("year") -> JSNumber("1978"),
-		    	  				JSString("1337") -> JSString("true")
+		    	  						 ))),
+		    	  				(JSString("year"),JSNumber("1978")),
+		    	  				(JSNumber("1337"),JSString("true"))
 		    	  			)
 		    	  		),
 		    	  		JSNativeCall(JSString("goodbyeworld"))
@@ -114,5 +114,12 @@ class TestJSSource {
 	    verifySource(source,ast)
     }
 
+    // temporary test, to be removed
+    @Test
+    def testNot() {
+      val source = "if()"
+      val x = JSParser.parse(JSParser.testNot,source)
+      println(x)
+    }
     
 }

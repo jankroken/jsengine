@@ -56,21 +56,16 @@ class TestJSParserSimpleFunctionLiterals {
     }
 
     @Test def testSimpleObjectWithFunction {
-    	val objectLiteral = """
+    	val source = """
     		{
     			name : function myName() { @NATIVECALL(hello) }
     		}
     		"""
-    	val result = JSParser.parse(JSParser.jsobject,objectLiteral)
- 
-    	result match { 
-    	  	case JSParser.Success(jsobject,_) => println("SUCCESS jsobject="+jsobject)
-    	  	case JSParser.Failure(message,_) => println("FAILURE message="+message)
-    	}
-    	val jsobject = result match {
-    	  		case JSParser.Success(jsobject,_) => jsobject
-    	  		case JSParser.Failure(message,_) => throw new RuntimeException(message)
-    		}
+    	val ast = JSLiteralObject(List(
+    			(JSString("name"),JSFunction(Some(JSString("myName")),List(),List(JSNativeCall(JSString("hello")))))
+    	))  
+    	
+    	verifyLiteralObject(source,ast)
     }
 
 
@@ -89,17 +84,17 @@ class TestJSParserSimpleFunctionLiterals {
     			1337 : "true"
     		 }
     	"""
-    	val ast = JSLiteralObject(Map(
-    				JSString("name") -> JSLiteralObject(Map(
-    				    JSString("first") -> JSString("Bruce"),
-    				    JSString("last") -> JSString("Springsteen")
-    				)),
-    				JSString("album") -> JSFunction(Some(JSString("myAlbum")),List(),List(
+    	val ast = JSLiteralObject(List(
+    				(JSString("name"),JSLiteralObject(List(
+    				    (JSString("first"),JSString("Bruce")),
+    				    (JSString("last"),JSString("Springsteen"))
+    				))),
+    				(JSString("album"),JSFunction(Some(JSString("myAlbum")),List(),List(
     										 JSString("The Darkness on the Edge of Town"),
     										 JSNativeCall(JSString("favouritebrucespringsteenalbum"))
-    									 )),
-    				JSString("year") -> JSNumber("1978"),
-    				JSString("1337") -> JSString("true")
+    									 ))),
+    				(JSString("year"),JSNumber("1978")),
+    				(JSNumber("1337"),JSString("true"))
     			))
 
     	verifyLiteralObject(source,ast)
@@ -126,19 +121,19 @@ class TestJSParserSimpleFunctionLiterals {
     	  
     	val ast =
     	  JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
-    			  JSLiteralObject(Map(
-    				JSString("name") -> JSLiteralObject(Map(
-    				    JSString("first") -> JSString("Bruce"),
-    				    JSString("last") -> JSString("Springsteen")
-    				)),
-    				JSString("album") -> JSFunction(None,List(),List(
-    										 JSLiteralObject(Map(
-    												 JSString("album1") -> JSString("The Darkness on the Edge of Town")
+    			  JSLiteralObject(List(
+    				(JSString("name"),JSLiteralObject(List(
+    				    (JSString("first"),JSString("Bruce")),
+    				    (JSString("last"),JSString("Springsteen"))
+    				))),
+    				(JSString("album"),JSFunction(None,List(),List(
+    										 JSLiteralObject(List(
+    												 (JSString("album1"),JSString("The Darkness on the Edge of Town"))
     										 )),
     										 JSNativeCall(JSString("favouritebrucespringsteenalbum"))
-    									 )),
-    				JSString("year") -> JSNumber("1978"),
-    				JSString("1337") -> JSString("true")
+    									 ))),
+    				(JSString("year"),JSNumber("1978")),
+    				(JSNumber("1337"),JSString("true"))
     			  )),
     			  JSNativeCall(JSString("goodbyeworld"))
     	  ))

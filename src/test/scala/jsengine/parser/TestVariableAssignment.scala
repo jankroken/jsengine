@@ -27,7 +27,7 @@ class TestVariableAssignment {
 		val ast = JSSource(List(
 				VariableDeclarations(List(
 						VariableDeclaration(JSString("a"),
-										   JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld")))))
+										   Some(JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld"))))))
 				))
 		    ))
 		verifySource(source,ast)
@@ -57,19 +57,19 @@ class TestVariableAssignment {
     	val ast = JSSource(List(
     			VariableDeclarations(List(
     			    VariableDeclaration(JSString("o"),
-    			    	JSLiteralObject(Map(
-    			    		JSString("name") -> JSLiteralObject(Map(
-    			    				JSString("first") -> JSString("Bruce"),
-    			    				JSString("last") -> JSString("Springsteen")
-    			    		)),
-    			    		JSString("album") -> JSFunction(Some(JSString("myAlbum")),List(),List(
+    			    	Some(JSLiteralObject(List(
+    			    		(JSString("name"),JSLiteralObject(List(
+    			    				(JSString("first"),JSString("Bruce")),
+    			    				(JSString("last"),JSString("Springsteen"))
+    			    		))),
+    			    		(JSString("album"),JSFunction(Some(JSString("myAlbum")),List(),List(
     			    				JSString("The Darkness on the Edge of Town"),
     			    				JSNativeCall(JSString("favouritebrucespringsteenalbum"))
-    			    		)),
-    			    		JSString("year") -> JSNumber("1978"),
-    			    		JSString("1337") -> JSString("true")
+    			    		))),
+    			    		(JSString("year"),JSNumber("1978")),
+    			    		(JSNumber("1337") -> JSString("true"))
     			    	))
-    			    )
+    			    ))
     			)),
     			JSFunction(Some(JSString("helloworld")),List(JSString("x")),List(JSNativeCall(JSString("helloworld")))),
 				JSFunction(Some(JSString("byeworld")),List(JSString("x")),List(JSNativeCall(JSString("byeworld")))),
@@ -85,9 +85,9 @@ class TestVariableAssignment {
     	"""
     	val ast = JSSource(List(
     			VariableDeclarations(List(
-    					VariableDeclaration(JSString("x"),JSNumber("1")),
-    					VariableDeclaration(JSString("y"),JSUndefined()),
-    					VariableDeclaration(JSString("z"),JSNumber("2"))
+    					VariableDeclaration(JSString("x"),Some(JSNumber("1"))),
+    					VariableDeclaration(JSString("y"),None),
+    					VariableDeclaration(JSString("z"),None)
     			))
     	))
     	  

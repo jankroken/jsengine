@@ -2,4 +2,4 @@ package jsengine.ast
 
 import jsengine.library.BuiltinObjects
 
-case class JSLiteralObject(var properties : Map[JSString,JSExpression]) extends JSObject
+case class JSLiteralObject(var properties : List[(PropertyName,JSExpression)]) extends JSObject

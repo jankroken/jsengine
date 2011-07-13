@@ -3,7 +3,6 @@ package jsengine.library
 import jsengine.ast.JSObject
 import jsengine.ast.JSBoolean
 import jsengine.ast.JSUndefined
-import jsengine.ast.EmptyPropertySet
 
 object BuiltinNativeCalls {
 	
@@ -16,7 +15,7 @@ object BuiltinNativeCalls {
   
 	def helloworld():JSObject = {
 	  println("hello world");
-	  return BuiltinObjects._undefined
+	  return JSUndefined()
 	}
   
 }

@@ -32,6 +32,5 @@ class TestStringLiteral {
     	println("result="+result)
     }
 
-
     
 }
