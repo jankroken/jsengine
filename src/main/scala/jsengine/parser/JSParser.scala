@@ -30,7 +30,10 @@ object JSParser extends RegexParsers {
 	
 	def identifier : Parser[JSString] = """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
 	def stringLiteral : Parser[JSString] = """"[^"]*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString)}
-	def numericLiteral : Parser[JSNumber] = "[0-9][0-9]*".r ^^ { x:String => JSNumber(x) }
+	def numericLiteral : Parser[JSNumber] = smallDecimalNumber | largeDecimalNumber | hexadecimalNumber
+	def largeDecimalNumber : Parser[JSNumber] = """[1-9][0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?""".r  ^^ { x => JSNumber(x) }
+	def smallDecimalNumber : Parser[JSNumber] = """\.[0-9]*([eE][+-][0-9]*)?""".r  ^^ { x => JSNumber(x) }
+	def hexadecimalNumber : Parser[JSNumber] = """0[Xx][0-9a-fA-F]+""".r  ^^ { x => JSNumber(x) }
 	
 	def propertyValue : Parser[JSExpression] = expression
 
