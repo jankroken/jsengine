@@ -39,8 +39,8 @@ class TestJSParserNumbericLiterals {
     }
 
     @Test def testZeroDotDecimal {
-    	val source = ".56"
-    	val ast = JSNumber(".56")
+    	val source = "0.56"
+    	val ast = JSNumber("0.56")
     	verifyNumericLiteral(source,ast)
     }
 

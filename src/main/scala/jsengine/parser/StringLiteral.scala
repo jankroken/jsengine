@@ -4,11 +4,11 @@ import jsengine.library.BuiltinObjects
 
 class StringLiteral(val rawQuotedString: String) {
 	
-	def getUnqotedString(): String = {
+	def getUnqotedString(quotechar: Char): String = {
 		val rawSeq: Seq[Char] = rawQuotedString
 		def unquoteAndRemoveTrailingQuote(s: Seq[Char]):String = {
 			s match {
-			  case Seq('"') => return ""
+			  case Seq(quotechar) => return ""
 			  case Seq('\\','u',d1,d2,d3,d4,rest @ _*) => return "[UNICODE]"+unquoteAndRemoveTrailingQuote(rest)
 			  case Seq('\\','n',rest @ _*) => return "\n"+unquoteAndRemoveTrailingQuote(rest)
 			  case Seq('\\','"',rest @ _*) => return "\""+unquoteAndRemoveTrailingQuote(rest)
@@ -19,7 +19,7 @@ class StringLiteral(val rawQuotedString: String) {
 		}
 	  
 		rawSeq match {
-		  	case Seq('"', rest @ _*) => unquoteAndRemoveTrailingQuote(rest)
+		  	case Seq(quotechar, rest @ _*) => unquoteAndRemoveTrailingQuote(rest)
 		  	case _ => throw new RuntimeException("String is not qouted: "+rawQuotedString)
 		}
 		

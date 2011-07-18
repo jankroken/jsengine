@@ -6,6 +6,7 @@ import jsengine.ast.JSFunction
 import jsengine.ast.JSLiteralObject
 import jsengine.ast.JSSource
 import jsengine.ast.JSNumber
+import jsengine.ast.JSArrayLiteral
 import org.junit.Assert.assertThat;
 import org.hamcrest.CoreMatchers.is;
 
@@ -52,5 +53,9 @@ object ParserTestSupport {
 
 	def verifyNumericLiteral(source: String, expected: ASTNode) {
 		ParserTestSupport.verifyParsing[JSNumber](JSParser.numericLiteral,source,expected)
+	}
+
+	def verifyArrayLiteral(source: String, expected: ASTNode) {
+		ParserTestSupport.verifyParsing[JSArrayLiteral](JSParser.arrayLiteral,source,expected)
 	}
 }

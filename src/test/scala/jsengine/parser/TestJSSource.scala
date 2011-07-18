@@ -25,6 +25,11 @@ class TestJSSource {
 			function helloworld () { @NATIVECALL(helloworld) } ;
 			function byeworld () { @NATIVECALL(byeworld) }
 		"""
+
+//		val source = """
+//			function helloworld () { 1 } ;
+//			function byeworld () { 1 }
+//		"""
 		val ast = JSSource(List(JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld")))),
 				       			JSFunction(Some(JSString("byeworld")),List(),List(JSNativeCall(JSString("byeworld"))))))	
 		verifySource(source,ast)
