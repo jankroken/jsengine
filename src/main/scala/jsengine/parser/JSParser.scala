@@ -12,8 +12,10 @@ import jsengine.ast.JSUndefined
 import jsengine.ast.JSNativeCall
 import jsengine.ast.JSBaseExpression
 import jsengine.ast.JSExpression
+import jsengine.ast.NewExpression
 import jsengine.ast.JSSourceElement
 import jsengine.ast.JSArrayLiteral
+import jsengine.ast.LookupExpression
 import jsengine.ast.Operator
 import jsengine.ast.Assignment
 import jsengine.ast.VariableAssignment
@@ -25,20 +27,35 @@ import jsengine.library.BuiltinObjects
 object JSParser extends RegexParsers {
   
 	def source: Parser[JSSource] = repsep(sourceElement,";") <~ "\\z".r ^^ { case sourceElements  => new JSSource(sourceElements) }
-//	def expression : Parser[JSExpression] = jsobject | stringLiteral | regexLiteral | numericLiteral | nativeCall | functionExpression | variableAssignment; 
-//	def expression : Parser[JSExpression] = repsep(assignmentExpression,",") ^^ { case x => new JSExpression(x) }
 	def expression : Parser[JSBaseExpression] = assignmentExpression ~ opt("," ~ expression) ^^ 
 	    { case ex ~ None => ex
 	      case ex ~ Some(x ~ JSExpression(exlist)) =>  JSExpression(ex :: exlist)
 	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
 	    } 
-//	  repsep(assignmentExpression,",") ^^ { case x => new JSExpression(x) }
-//	def expression : Parser[JSBaseExpression] = assignmentExpression
 	def assignmentOperator : Parser[Operator] = ( "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|=" ) ^^ { Operator(_) }
-	def assignmentExpression = primaryExpression
+	def assignmentExpression = newExpression
 	
-	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | functionExpression | variableAssignment  
-										  
+	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | variableAssignment | "(" ~> expression <~ ")"
+
+	def memberExpression : Parser[JSBaseExpression] = primaryExpression | functionExpression // | lookupExpression 
+	
+	private def lookupExpression: Parser[JSBaseExpression] = memberExpression ~ rep(lookupExtension) ^^ {
+	    case expr ~ List() => expr
+	    case expr ~ ( index :: tail ) => LookupExpression(expr, index :: tail)
+	}
+	private def lookupExtension : Parser[JSBaseExpression] = arrayLookupExtension | propertyLookupExtension	  
+    private def arrayLookupExtension : Parser[JSBaseExpression] =  "[" ~> expression <~ "]"
+	private def propertyLookupExtension: Parser[JSBaseExpression] =  "." ~> identifier
+	
+	def arguments : Parser[List[JSBaseExpression]] = "(" ~> repsep(assignmentExpression,",") <~ ")"
+	def newExpression : Parser[JSBaseExpression] = realNewExpression | lookupExpression 
+	private def realNewExpression : Parser[NewExpression] = news ~ memberExpression ~ argumentLists ^^ { 
+	    case news1 ~ expr ~ args => NewExpression(news1.size,expr,args)
+	}
+
+	def news = "new" ~ rep("new") ^^ { case new1 ~ newlist => new1 :: newlist }
+	def argumentLists = arguments ~ rep(arguments) ^^ { case args ~ argsList => args :: argsList }
+	
 	def jsobject : Parser[JSLiteralObject] = "{" ~> repsep(propertyNameAndValue,",") <~ "}" ^^ 
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }
 	def propertyNameAndValue : Parser[(PropertyName, JSBaseExpression)] = propertyName ~ ":" ~ propertyValue ^^
@@ -46,7 +63,7 @@ object JSParser extends RegexParsers {
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression
 	
-	def identifier : Parser[JSString] = not("function") ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
+	def identifier : Parser[JSString] = not("""(function|new)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
 	def singleQuotedStringLiteral = """'([^'\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*'""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\''))} 
