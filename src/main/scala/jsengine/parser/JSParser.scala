@@ -27,17 +27,17 @@ object JSParser extends RegexParsers {
 	def source: Parser[JSSource] = repsep(sourceElement,";") <~ "\\z".r ^^ { case sourceElements  => new JSSource(sourceElements) }
 //	def expression : Parser[JSExpression] = jsobject | stringLiteral | regexLiteral | numericLiteral | nativeCall | functionExpression | variableAssignment; 
 //	def expression : Parser[JSExpression] = repsep(assignmentExpression,",") ^^ { case x => new JSExpression(x) }
-//	def expression : Parser[JSBaseExpression] = assignmentExpression ~ opt("," ~ expression) ^^ 
-//	    { case ex ~ None => ex
-//	      case ex ~ Some(x ~ JSExpression(exlist)) =>  JSExpression(ex :: exlist)
-//	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
-//	    } 
+	def expression : Parser[JSBaseExpression] = assignmentExpression ~ opt("," ~ expression) ^^ 
+	    { case ex ~ None => ex
+	      case ex ~ Some(x ~ JSExpression(exlist)) =>  JSExpression(ex :: exlist)
+	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
+	    } 
 //	  repsep(assignmentExpression,",") ^^ { case x => new JSExpression(x) }
-	def expression : Parser[JSBaseExpression] = assignmentExpression
-	def assignmentOperator : Parser[Operator] = ( "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|=" ) ^^ { case x => Operator(x) }
+//	def expression : Parser[JSBaseExpression] = assignmentExpression
+	def assignmentOperator : Parser[Operator] = ( "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|=" ) ^^ { Operator(_) }
 	def assignmentExpression = primaryExpression
 	
-	def primaryExpression: Parser[JSBaseExpression] = stringLiteral | regexLiteral | numericLiteral | identifier | jsobject | nativeCall | functionExpression | variableAssignment  
+	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | functionExpression | variableAssignment  
 										  
 	def jsobject : Parser[JSLiteralObject] = "{" ~> repsep(propertyNameAndValue,",") <~ "}" ^^ 
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }
@@ -46,18 +46,22 @@ object JSParser extends RegexParsers {
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression
 	
-	def identifier : Parser[JSString] = not("function") ~ """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { case _ ~ id => JSString(id)}
+	def identifier : Parser[JSString] = not("function") ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
 	def singleQuotedStringLiteral = """'([^'\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*'""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\''))} 
 	def regexLiteral : Parser[JSRegexLiteral] = """/([^/\\\n]|\\[\\\n'"/bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/""".r ^^ { x => JSRegexLiteral(StringLiteral(x).getUnqotedString('/'))} 
 	
-	def arrayLiteral : Parser[JSArrayLiteral] = "[" ~> repsep(opt(expression),",") <~ "]" ^^ { case x => JSArrayLiteral(x) }
+	def arrayLiteral : Parser[JSArrayLiteral] = "[" ~> rep(opt(assignmentExpression) <~ ",") ~ opt(assignmentExpression) <~ "]" ^^ { 
+	  	case exprlist ~ None  => JSArrayLiteral(exprlist)
+	  	case exprlist ~ Some(expr) => JSArrayLiteral(exprlist ::: Some(expr) :: List())
+	}
+	def simpleLiteral : Parser[JSBaseExpression] = numericLiteral | stringLiteral | arrayLiteral | regexLiteral
 	
 	def numericLiteral : Parser[JSNumber] = smallDecimalNumber | largeDecimalNumber | hexadecimalNumber
-	def largeDecimalNumber : Parser[JSNumber] = """[1-9][0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?""".r  ^^ { x => JSNumber(x) }
-	def smallDecimalNumber : Parser[JSNumber] = """0?\.[0-9]*([eE][+-][0-9]*)?""".r  ^^ { x => JSNumber(x) }
-	def hexadecimalNumber : Parser[JSNumber] = """0[Xx][0-9a-fA-F]+""".r  ^^ { x => JSNumber(x) }
+	def largeDecimalNumber : Parser[JSNumber] = """[1-9][0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?""".r  ^^ { JSNumber(_) }
+	def smallDecimalNumber : Parser[JSNumber] = """0?\.[0-9]*([eE][+-][0-9]*)?""".r  ^^ { JSNumber(_) }
+	def hexadecimalNumber : Parser[JSNumber] = """0[Xx][0-9a-fA-F]+""".r  ^^ { JSNumber(_) }
 	
 
 	def functionExpression : Parser[JSFunction]= "function" ~ opt(identifier) ~ "(" ~ repsep(identifier,",") ~ ")" ~ "{" ~ repsep(sourceElement,";") ~ "}" ^^
@@ -77,5 +81,5 @@ object JSParser extends RegexParsers {
 	  case identifier ~ "=" ~ expression => VariableAssignment(identifier,expression)
 	}
 	
-	def testNot: Parser[JSString] = not("""if\b""".r) ~ identifier ^^ { case _ ~ x => x }
+	def testNot: Parser[JSString] = not("""if\b""".r) ~> identifier
 }
