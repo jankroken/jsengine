@@ -18,40 +18,26 @@ import jsengine.ast.ASTNode
 import jsengine.ast.JSString
 import jsengine.ast.JSNumber
 import jsengine.ast.JSArrayLiteral
-import jsengine.ast.NewExpression
+import jsengine.ast.ApplyArguments
+import jsengine.ast.ApplicationExtension
+import jsengine.ast.ApplyLookup
+import jsengine.ast.CallExpression
 import jsengine.ast.JSLiteralObject
 
 class TestNew {
 
     @Test def testSimpleNew {
     	val source = "new Foo()"
-    	val ast = NewExpression(1,JSString("Foo"),List(List()))
-    	verifyParsing(JSParser.newExpression, source,ast)
+    	val ast = CallExpression(1,JSString("Foo"),List(ApplyArguments(List())))
+    	verifyExpression(source,ast)
     	
     }
 
-    @Test def testOneElementArray {
-    	val source = "[1]"
-    	val ast = JSArrayLiteral(List(Some(JSNumber("1"))))
-    	verifyArrayLiteral(source,ast)
+    @Test def testMultipleNew {
+    	val source = "new new new Foo()(1)"
+    	val ast = CallExpression(3,JSString("Foo"),List(ApplyArguments(List()),ApplyArguments(List(JSNumber("1")))))
+    	verifyExpression(source,ast)
     }
 
-    @Test def testTwoElementArray {
-    	val source = "[1,2]"
-    	val ast = JSArrayLiteral(List(Some(JSNumber("1")),Some(JSNumber("2"))))
-    	verifyArrayLiteral(source,ast)
-    }
-
-    @Test def testOneEmptyAndTwoElementArray {
-    	val source = "[,1,2]"
-    	val ast = JSArrayLiteral(List(None,Some(JSNumber("1")),Some(JSNumber("2"))))
-    	verifyArrayLiteral(source,ast)
-    }
-
-    @Test def testEmptyTwoEmpty {
-    	val source = "[,1,2,,]"
-    	val ast = JSArrayLiteral(List(None,Some(JSNumber("1")),Some(JSNumber("2")),None))
-    	verifyArrayLiteral(source,ast)
-    }
 
 }

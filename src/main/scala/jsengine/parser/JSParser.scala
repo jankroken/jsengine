@@ -12,10 +12,12 @@ import jsengine.ast.JSUndefined
 import jsengine.ast.JSNativeCall
 import jsengine.ast.JSBaseExpression
 import jsengine.ast.JSExpression
-import jsengine.ast.NewExpression
+import jsengine.ast.CallExpression
+import jsengine.ast.ApplicationExtension
+import jsengine.ast.ApplyLookup
+import jsengine.ast.ApplyArguments
 import jsengine.ast.JSSourceElement
 import jsengine.ast.JSArrayLiteral
-import jsengine.ast.LookupExpression
 import jsengine.ast.Operator
 import jsengine.ast.Assignment
 import jsengine.ast.VariableAssignment
@@ -33,28 +35,23 @@ object JSParser extends RegexParsers {
 	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
 	    } 
 	def assignmentOperator : Parser[Operator] = ( "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|=" ) ^^ { Operator(_) }
-	def assignmentExpression = newExpression
+	def assignmentExpression : Parser[JSBaseExpression] = callExpression
 	
 	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | variableAssignment | "(" ~> expression <~ ")"
 
-	def memberExpression : Parser[JSBaseExpression] = primaryExpression | functionExpression // | lookupExpression 
+	def memberExpression : Parser[JSBaseExpression] = primaryExpression | functionExpression 
 	
-	private def lookupExpression: Parser[JSBaseExpression] = memberExpression ~ rep(lookupExtension) ^^ {
-	    case expr ~ List() => expr
-	    case expr ~ ( index :: tail ) => LookupExpression(expr, index :: tail)
-	}
-	private def lookupExtension : Parser[JSBaseExpression] = arrayLookupExtension | propertyLookupExtension	  
-    private def arrayLookupExtension : Parser[JSBaseExpression] =  "[" ~> expression <~ "]"
-	private def propertyLookupExtension: Parser[JSBaseExpression] =  "." ~> identifier
+	def applyExtension : Parser[ApplicationExtension] = arrayLookupExtension | propertyLookupExtension | applyArguments
 	
-	def arguments : Parser[List[JSBaseExpression]] = "(" ~> repsep(assignmentExpression,",") <~ ")"
-	def newExpression : Parser[JSBaseExpression] = realNewExpression | lookupExpression 
-	private def realNewExpression : Parser[NewExpression] = news ~ memberExpression ~ argumentLists ^^ { 
-	    case news1 ~ expr ~ args => NewExpression(news1.size,expr,args)
-	}
+    def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression <~ "]" ^^ { case expr => ApplyLookup(expr) }
+	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { case expr => ApplyLookup(expr) }
 
-	def news = "new" ~ rep("new") ^^ { case new1 ~ newlist => new1 :: newlist }
-	def argumentLists = arguments ~ rep(arguments) ^^ { case args ~ argsList => args :: argsList }
+	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(assignmentExpression,",") <~ ")" ^^ { case exprList => ApplyArguments(exprList) }
+	
+	def callExpression : Parser[JSBaseExpression] = rep("new") ~ memberExpression ~ rep(applyExtension) ^^ {
+	    case List() ~ expr ~ List() => expr
+	    case news ~ expr ~ args => CallExpression(news.size,expr,args)
+	}
 	
 	def jsobject : Parser[JSLiteralObject] = "{" ~> repsep(propertyNameAndValue,",") <~ "}" ^^ 
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }

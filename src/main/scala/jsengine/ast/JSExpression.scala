@@ -15,7 +15,7 @@ case class AdditiveExpression(operator: Operator, left: JSBaseExpression, right:
 case class MultiplicativeExpression(operator: Operator, left: JSBaseExpression, right: JSBaseExpression) extends JSBaseExpression
 case class UnaryExpression(operator: Operator, expression: JSBaseExpression) extends JSBaseExpression
 case class PostfixExpression(operator: Operator, expression: JSBaseExpression) extends JSBaseExpression
-case class NewExpression(news: Int, function: JSBaseExpression, argumentLists: List[List[JSBaseExpression]]) extends JSBaseExpression
-case class LookupExpression(jsobject: JSBaseExpression, indices: List[JSBaseExpression]) extends JSBaseExpression
-case class FunctionApplicationExpression(function: JSBaseExpression, arguments: List[JSBaseExpression]) extends JSBaseExpression
-case class CallExpression 
+case class CallExpression(news: Int, function: JSBaseExpression, applicationExtendsions: List[ApplicationExtension]) extends JSBaseExpression
+ trait ApplicationExtension
+case class ApplyArguments(arglist: List[JSBaseExpression]) extends ApplicationExtension
+case class ApplyLookup(expr: JSBaseExpression) extends ApplicationExtension
