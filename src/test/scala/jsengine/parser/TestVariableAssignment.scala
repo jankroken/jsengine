@@ -20,7 +20,32 @@ import ParserTestSupport.verifySource
 
 class TestVariableAssignment {
 
-	@Test def testFunction() {
+ @Test def testSimpleVariable() {
+		val source = """
+			var a
+		"""
+		val ast = JSSource(List(
+				VariableDeclarations(List(
+						VariableDeclaration(JSString("a"), None)
+				))
+		    ))
+		verifySource(source,ast)
+	}
+
+  
+  @Test def testSimpleVariableInitialization() {
+		val source = """
+			var a = 1
+		"""
+		val ast = JSSource(List(
+				VariableDeclarations(List(
+						VariableDeclaration(JSString("a"), Some(JSNumber("1")))
+				))
+		    ))
+		verifySource(source,ast)
+	}
+  
+  @Test def testFunction() {
 		val source = """
 			var a = function helloworld () { @NATIVECALL(helloworld) }
 		"""
@@ -87,7 +112,7 @@ class TestVariableAssignment {
     			VariableDeclarations(List(
     					VariableDeclaration(JSString("x"),Some(JSNumber("1"))),
     					VariableDeclaration(JSString("y"),None),
-    					VariableDeclaration(JSString("z"),None)
+    					VariableDeclaration(JSString("z"),Some(JSNumber("2")))
     			))
     	))
     	  

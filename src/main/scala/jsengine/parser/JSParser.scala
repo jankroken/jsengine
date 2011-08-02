@@ -7,22 +7,28 @@ import jsengine.library.BuiltinObjects
 object JSParser extends RegexParsers {
   
 	def source: Parser[JSSource] = repsep(sourceElement,";") <~ "\\z".r ^^ { case sourceElements  => new JSSource(sourceElements) }
+	
+	
+	/**
+	 *  Expressions
+	 */
+	
 	def expression : Parser[JSBaseExpression] = conditionalExpression ~ opt("," ~ expression) ^^ 
 	    { case ex ~ None => ex
 	      case ex ~ Some(x ~ JSExpression(exlist)) =>  JSExpression(ex :: exlist)
 	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
 	    } 
 
-	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | variableAssignment | "(" ~> expression <~ ")"
+	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | "(" ~> expression <~ ")"
 
 	def memberExpression : Parser[JSBaseExpression] = primaryExpression | functionExpression 
 	
 	def applyExtension : Parser[ApplicationExtension] = arrayLookupExtension | propertyLookupExtension | applyArguments
 	
-    def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression <~ "]" ^^ { case expr => ApplyLookup(expr) }
-	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { case expr => ApplyLookup(expr) }
+    def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression <~ "]" ^^ { ApplyLookup(_) }
+	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { ApplyLookup(_) }
 
-	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(assignmentExpression,",") <~ ")" ^^ { case exprList => ApplyArguments(exprList) }
+	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(assignmentExpression,",") <~ ")" ^^ { ApplyArguments(_) }
 	
 	def callExpression : Parser[JSBaseExpression] = rep("new") ~ memberExpression ~ rep(applyExtension) ^^ {
 	    case List() ~ expr ~ List() => expr
@@ -126,8 +132,6 @@ object JSParser extends RegexParsers {
 	  case expr ~ None => expr
 	  case expr ~ Some(trueExpr ~ falseExpr) => ConditionalExpression(expr,trueExpr,falseExpr)
 	}
-
-
 	
 	def jsobject : Parser[JSLiteralObject] = "{" ~> repsep(propertyNameAndValue,",") <~ "}" ^^	 
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }
@@ -136,7 +140,8 @@ object JSParser extends RegexParsers {
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression
 	
-	def identifier : Parser[JSString] = not("""(function|new)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
+	def identifier : Parser[JSString] = not("""(function|new|var)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
+
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
 	def singleQuotedStringLiteral = """'([^'\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*'""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\''))} 
@@ -154,21 +159,27 @@ object JSParser extends RegexParsers {
 	def hexadecimalNumber : Parser[JSNumber] = """0[Xx][0-9a-fA-F]+""".r  ^^ { JSNumber(_) }
 	
 
-	def functionExpression : Parser[JSFunction]= "function" ~ opt(identifier) ~ "(" ~ repsep(identifier,",") ~ ")" ~ "{" ~ repsep(sourceElement,";") ~ "}" ^^
-		{ case "function" ~ name ~ "(" ~ arguments  ~ ")" ~ "{" ~ sourceElements  ~ "}" => JSFunction(name, arguments, sourceElements) }
-	
-	def sourceElement: Parser[JSSourceElement] = expression | variableDeclaration;
-	
+	def functionExpression : Parser[JSFunction]= "function" ~> opt(identifier) ~ ( "(" ~> repsep(identifier,",") <~ ")" ) ~ ( "{" ~> repsep(sourceElement,";") <~ "}" ) ^^
+		{ case name ~ arguments  ~ sourceElements  => JSFunction(name, arguments, sourceElements) }
+
 	def nativeCall:Parser[JSNativeCall] = "@NATIVECALL" ~ "(" ~ identifier ~ ")" ^^ { case "@NATIVECALL" ~ "(" ~ identifier ~ ")" => JSNativeCall(identifier) }
-	def variableDeclaration : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable,",") ^^ {
-	  case declarations => VariableDeclarations(declarations)
-	}
-	def singleVariable: Parser[VariableDeclaration] = identifier ~ opt("=" ~> expression) ^^ {
+	
+	/**
+	 * Statements
+	 */
+
+	def statement: Parser[JSStatement] = block | variableDeclaration | expressionStatement
+	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
+	
+	def expressionStatement = not("""(function|,)\b""".r) ~> expression
+	
+	def sourceElement: Parser[JSSourceElement] = expression | statement;
+
+	def variableDeclaration : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable,",") ^^ { VariableDeclarations(_) }
+	
+	def singleVariable: Parser[VariableDeclaration] = identifier ~! opt("=" ~> assignmentExpression) ^^ {
 	  case identifier ~ None => VariableDeclaration(identifier,None)
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
-	}
-	def variableAssignment: Parser[VariableAssignment] = identifier ~ "=" ~ expression ^^ {
-	  case identifier ~ "=" ~ expression => VariableAssignment(identifier,expression)
 	}
 	
 	def testNot: Parser[JSString] = not("""if\b""".r) ~> identifier

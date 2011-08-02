@@ -1,6 +1,6 @@
 package jsengine.ast
 
-case class JSExpression(assignments : List[JSBaseExpression]) extends JSBaseExpression
+case class JSExpression(assignments : List[JSBaseExpression]) extends JSBaseExpression with JSStatement
 trait LefthandExpression // undefined
 case class AssignmentExpression(operator: Operator, leftHand: JSBaseExpression, righthand: JSBaseExpression) extends JSBaseExpression
 case class ConditionalExpression(condition: JSBaseExpression, trueExpression: JSBaseExpression, falseExpression: JSBaseExpression) extends JSBaseExpression
