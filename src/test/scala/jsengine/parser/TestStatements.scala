@@ -71,5 +71,16 @@ class TestStatements {
     	verifyStatement(source,ast)
     }
 
+    @Test def testTry {
+    	val source = """
+    		try { print("hello") } catch(e) { print(e) } finally { print("bye") }
+    	"""
+    	val ast = TryStatement(JSBlock(List(CallExpression(0,JSIdentifier("print"),List(ApplyArguments(List(JSString("hello"))))))),
+    			  TryTail(Some(JSIdentifier("e")),
+    					  Some(JSBlock(List(CallExpression(0,JSIdentifier("print"),List(ApplyArguments(List(JSIdentifier("e")))))))),
+    					  Some(JSBlock(List(CallExpression(0,JSIdentifier("print"),List(ApplyArguments(List(JSString("bye"))))))))))
+    					  
+    	verifyStatement(source,ast)
+    }
 
 }

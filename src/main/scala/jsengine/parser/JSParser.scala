@@ -143,10 +143,13 @@ object JSParser extends RegexParsers {
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }
 	def propertyNameAndValue : Parser[(PropertyName, JSBaseExpression)] = propertyName ~ ":" ~ propertyValue ^^
 		{ case propertyName ~ ":" ~ propertyValue => (propertyName, propertyValue) }
-	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
+	def propertyName : Parser[PropertyName] = label | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
-	def identifier : Parser[JSIdentifier] = not("""(function|new|var|while|for|do|break|continue|with|switch|break|default)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSIdentifier(_)}
+	
+	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally)\b""".r
+	def identifier : Parser[JSIdentifier] = not(keywords) ~> """[a-zA-Z][a-zA-Z0-9]*""".r <~ not(":") ^^ { JSIdentifier(_)}
+	def label : Parser[JSIdentifier] = not(keywords) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSIdentifier(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
@@ -174,7 +177,9 @@ object JSParser extends RegexParsers {
 	 * Statements
 	 */
 
-	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement | switchStatement
+	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement | 
+										 switchStatement  | break | continue | withStatement | tryStatement
+										 
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
 	def expressionStatement = not("""(function|,)\b""".r) ~> expression(true)
@@ -188,7 +193,7 @@ object JSParser extends RegexParsers {
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
 	}
 	
-	def iterationStatement = whileStatement | doWhileStatement | forStatement | break | continue | withStatement 
+	def iterationStatement = whileStatement | doWhileStatement | forStatement
 	
 	def whileStatement = "while" ~> ( "(" ~> expression(true) <~ ")" ) ~ whileBody ^^ { case cond ~ body => While(cond,body) }
 	def doWhileStatement = "do" ~> whileBody ~ ( "while" ~ "(" ~> expression(true) <~ ")" ) ^^  { case body ~ cond => DoWhile(body,cond) }
@@ -224,6 +229,18 @@ object JSParser extends RegexParsers {
 	
 	def caseClause = "case" ~> expression(true) ~ ":" ~ repsep(statement,";") ^^ { case expr ~ ":" ~ statements => LabeledCaseClause(expr,statements) } 
 	def defaultClause = "default" ~ ":" ~> repsep(statement,";") ^^ { case statements => DefaultClause(statements) } 
+	
+	def labeledStatement = label ~ ":" ~ statement ^^ { case label ~ ":" ~ statement => LabeledStatement(label,statement) }
+	
+	def throwStatement = "throw" ~> expression(true) ^^ { ThrowStatement(_) }
+	
+	def tryStatement = "try" ~> block ~ tryTail ^^ { case block ~ tail => TryStatement(block,tail) } 
+	def tryTail = catchTail | finallyTail
+	def catchTail = "catch" ~ "(" ~> identifier ~ ")" ~ block ~ opt(finallyBlock) ^^ {
+	  case identifier ~ ")" ~ block ~ finallyBlock => TryTail(Some(identifier),Some(block),finallyBlock)
+	}
+	def finallyTail = finallyBlock ^^ { case f => TryTail(None,None,Some(f)) }
+	def finallyBlock = "finally" ~> block
 	
 	
 	// Tests

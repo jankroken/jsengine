@@ -24,8 +24,10 @@ case class SwitchStatement(expr: JSBaseExpression, cases: List[CaseClause]) exte
 sealed trait CaseClause
 case class LabeledCaseClause(label: JSBaseExpression, statements: List[JSStatement]) extends CaseClause
 case class DefaultClause(statements: List[JSStatement]) extends CaseClause
+case class LabeledStatement(label: JSIdentifier, statement: JSStatement) extends JSStatement
 
-case class ThrowStatement()
-case class TryStatement()
+case class ThrowStatement(expr: JSBaseExpression) extends JSStatement
+case class TryStatement(block: JSBlock, tryTail: TryTail) extends JSStatement
+case class TryTail(id: Option[JSIdentifier], catchBlock: Option[JSBlock], finallyBlock: Option[JSBlock])
 case class DebuggerStatement()
 
