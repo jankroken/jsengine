@@ -146,7 +146,7 @@ object JSParser extends RegexParsers {
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
-	def identifier : Parser[JSString] = not("""(function|new|var)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
+	def identifier : Parser[JSString] = not("""(function|new|var|while|for|do)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
@@ -160,9 +160,9 @@ object JSParser extends RegexParsers {
 	def simpleLiteral : Parser[JSBaseExpression] = numericLiteral | stringLiteral | arrayLiteral | regexLiteral
 	
 	def numericLiteral : Parser[JSNumber] = smallDecimalNumber | largeDecimalNumber | hexadecimalNumber
-	def largeDecimalNumber : Parser[JSNumber] = """[1-9][0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?""".r  ^^ { JSNumber(_) }
-	def smallDecimalNumber : Parser[JSNumber] = """0?\.[0-9]*([eE][+-][0-9]*)?""".r  ^^ { JSNumber(_) }
-	def hexadecimalNumber : Parser[JSNumber] = """0[Xx][0-9a-fA-F]+""".r  ^^ { JSNumber(_) }
+	def largeDecimalNumber = """[1-9][0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?""".r  ^^ { JSNumber(_) }
+	def smallDecimalNumber = """0?\.[0-9]*([eE][+-][0-9]*)?""".r  ^^ { JSNumber(_) }
+	def hexadecimalNumber  = """0[Xx][0-9a-fA-F]+""".r  ^^ { JSNumber(_) }
 	
 
 	def functionExpression : Parser[JSFunction]= "function" ~> opt(identifier) ~ ( "(" ~> repsep(identifier,",") <~ ")" ) ~ ( "{" ~> repsep(sourceElement,";") <~ "}" ) ^^
@@ -174,7 +174,7 @@ object JSParser extends RegexParsers {
 	 * Statements
 	 */
 
-	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement
+	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
 	def expressionStatement = not("""(function|,)\b""".r) ~> expression(true)
@@ -187,6 +187,30 @@ object JSParser extends RegexParsers {
 	  case identifier ~ None => VariableDeclaration(identifier,None)
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
 	}
+	
+	def iterationStatement = whileStatement | doWhileStatement | forStatement
+	
+	def whileStatement = "while" ~> ( "(" ~> expression(true) <~ ")" ) ~ whileBody ^^ { case cond ~ body => While(cond,body) }
+	def doWhileStatement = "do" ~> whileBody ~ ( "while" ~ "(" ~> expression(true) <~ ")" ) ^^  { case body ~ cond => DoWhile(body,cond) }
+	
+	def whileBody = blockStatement | whileSingleStatement
+	def whileSingleStatement : Parser[JSStatement] = not("{") ~> statement
+	def blockStatement = "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
+	
+	def forStatement: Parser[For] = "for" ~ "(" ~> forInit ~ forUpdate ~ ")"  ~ statement ^^ {
+	  case init ~ update ~ ")" ~ statement => For(init,update,statement)
+	}
+	
+	def forUpdate = forInUpdate | forSemicolonUpdate
+	
+	def forSemicolonUpdate = ";" ~> opt(expression(true)) ~ ";" ~ opt(statement) ^^ { case test ~ ";" ~ update => ForSemicolonUpdate(test,update) }
+	
+	def forInUpdate = "in" ~> expression(true) ^^ { ForInUpdate(_) }
+	  
+	def forInit = ( variableDeclaration(false) | forInitExpression ) ^^ { ForInit(_) }
+	  
+	def forInitExpression : Parser[JSStatement] = not("""var\z""".r) ~> expression(false)
+	
 	
 	// Tests
 	def testNot: Parser[JSString] = not("""if\b""".r) ~> identifier

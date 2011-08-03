@@ -1,13 +1,7 @@
 package jsengine.parser
 
 import org.junit.Assert.fail
-import jsengine.ast.ASTNode
-import jsengine.ast.JSFunction
-import jsengine.ast.JSLiteralObject
-import jsengine.ast.JSSource
-import jsengine.ast.JSNumber
-import jsengine.ast.JSBaseExpression
-import jsengine.ast.JSArrayLiteral
+import jsengine.ast._
 import org.junit.Assert.assertThat;
 import org.hamcrest.CoreMatchers.is;
 
@@ -61,6 +55,10 @@ object ParserTestSupport {
 	}
 
 	def verifyExpression(source: String, expected: ASTNode) {
-		ParserTestSupport.verifyParsing[JSBaseExpression](JSParser.expression,source,expected)
+		ParserTestSupport.verifyParsing[JSBaseExpression](JSParser.expression(true),source,expected)
+	}
+
+	def verifyStatement(source: String, expected: ASTNode) {
+		ParserTestSupport.verifyParsing[JSStatement](JSParser.statement,source,expected)
 	}
 }
