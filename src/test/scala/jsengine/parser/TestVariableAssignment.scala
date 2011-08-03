@@ -6,16 +6,7 @@ import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 
-import jsengine.ast.JSString
-import jsengine.ast.JSSource
-import jsengine.ast.JSFunction
-import jsengine.ast.JSNumber
-import jsengine.ast.JSNativeCall
-import jsengine.ast.JSUndefined
-import jsengine.ast.JSLiteralObject
-import jsengine.ast.VariableDeclarations
-import jsengine.ast.VariableDeclaration
-import jsengine.library.BuiltinObjects
+import jsengine.ast._
 import ParserTestSupport.verifySource
 
 class TestVariableAssignment {
@@ -26,7 +17,7 @@ class TestVariableAssignment {
 		"""
 		val ast = JSSource(List(
 				VariableDeclarations(List(
-						VariableDeclaration(JSString("a"), None)
+						VariableDeclaration(JSIdentifier("a"), None)
 				))
 		    ))
 		verifySource(source,ast)
@@ -39,7 +30,7 @@ class TestVariableAssignment {
 		"""
 		val ast = JSSource(List(
 				VariableDeclarations(List(
-						VariableDeclaration(JSString("a"), Some(JSNumber("1")))
+						VariableDeclaration(JSIdentifier("a"), Some(JSNumber("1")))
 				))
 		    ))
 		verifySource(source,ast)
@@ -51,8 +42,8 @@ class TestVariableAssignment {
 		"""
 		val ast = JSSource(List(
 				VariableDeclarations(List(
-						VariableDeclaration(JSString("a"),
-										   Some(JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld"))))))
+						VariableDeclaration(JSIdentifier("a"),
+										   Some(JSFunction(Some(JSIdentifier("helloworld")),List(),List(JSNativeCall(JSIdentifier("helloworld"))))))
 				))
 		    ))
 		verifySource(source,ast)
@@ -81,24 +72,24 @@ class TestVariableAssignment {
     	  
     	val ast = JSSource(List(
     			VariableDeclarations(List(
-    			    VariableDeclaration(JSString("o"),
+    			    VariableDeclaration(JSIdentifier("o"),
     			    	Some(JSLiteralObject(List(
-    			    		(JSString("name"),JSLiteralObject(List(
-    			    				(JSString("first"),JSString("Bruce")),
-    			    				(JSString("last"),JSString("Springsteen"))
+    			    		(JSIdentifier("name"),JSLiteralObject(List(
+    			    				(JSIdentifier("first"),JSString("Bruce")),
+    			    				(JSIdentifier("last"),JSString("Springsteen"))
     			    		))),
-    			    		(JSString("album"),JSFunction(Some(JSString("myAlbum")),List(),List(
+    			    		(JSIdentifier("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
     			    				JSString("The Darkness on the Edge of Town"),
-    			    				JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    			    				JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     			    		))),
-    			    		(JSString("year"),JSNumber("1978")),
+    			    		(JSIdentifier("year"),JSNumber("1978")),
     			    		(JSNumber("1337") -> JSString("true"))
     			    	))
     			    ))
     			)),
-    			JSFunction(Some(JSString("helloworld")),List(JSString("x")),List(JSNativeCall(JSString("helloworld")))),
-				JSFunction(Some(JSString("byeworld")),List(JSString("x")),List(JSNativeCall(JSString("byeworld")))),
-				JSNativeCall(JSString("helloworld"))
+    			JSFunction(Some(JSIdentifier("helloworld")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("helloworld")))),
+				JSFunction(Some(JSIdentifier("byeworld")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("byeworld")))),
+				JSNativeCall(JSIdentifier("helloworld"))
 		))
 
     	verifySource(source,ast)
@@ -110,9 +101,9 @@ class TestVariableAssignment {
     	"""
     	val ast = JSSource(List(
     			VariableDeclarations(List(
-    					VariableDeclaration(JSString("x"),Some(JSNumber("1"))),
-    					VariableDeclaration(JSString("y"),None),
-    					VariableDeclaration(JSString("z"),Some(JSNumber("2")))
+    					VariableDeclaration(JSIdentifier("x"),Some(JSNumber("1"))),
+    					VariableDeclaration(JSIdentifier("y"),None),
+    					VariableDeclaration(JSIdentifier("z"),Some(JSNumber("2")))
     			))
     	))
     	  

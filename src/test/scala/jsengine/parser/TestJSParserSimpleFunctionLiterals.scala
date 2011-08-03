@@ -9,12 +9,7 @@ import org.junit.Assert.fail
 import ParserTestSupport.getASTOrFail
 import ParserTestSupport.verifyFunction
 import ParserTestSupport.verifyLiteralObject
-import jsengine.ast.JSFunction
-import jsengine.ast.JSNativeCall
-import jsengine.ast.ASTNode
-import jsengine.ast.JSString
-import jsengine.ast.JSNumber
-import jsengine.ast.JSLiteralObject
+import jsengine.ast._
 
 class TestJSParserSimpleFunctionLiterals {
 
@@ -24,34 +19,33 @@ class TestJSParserSimpleFunctionLiterals {
     	val ast = JSFunction(None,List(),List())
     	verifyFunction(source,ast)
     }
-    
     @Test def testEmptyNamedFunction {
     	val source = "function hello () {}"
-    	val ast = JSFunction(Some(JSString("hello")),List(),List())
+    	val ast = JSFunction(Some(JSIdentifier("hello")),List(),List())
     	verifyFunction(source,ast)
     }
 
     @Test def testOneArgumentEmptyFunction {
     	val source = "function (x) {}"
-    	val ast = JSFunction(None,List(JSString("x")),List())
+    	val ast = JSFunction(None,List(JSIdentifier("x")),List())
     	verifyFunction(source,ast)
     }
 
     @Test def testTwoArgumentsEmptyFunction {
     	val source = "function (x,y) {}"
-    	val ast = JSFunction(None,List(JSString("x"),JSString("y")),List())
+    	val ast = JSFunction(None,List(JSIdentifier("x"),JSIdentifier("y")),List())
     	verifyFunction(source,ast)
     }
     
     @Test def testNativeCall {
     	val source = "@NATIVECALL(helloworld)"
-    	val ast = JSNativeCall(JSString("helloworld"))
+    	val ast = JSNativeCall(JSIdentifier("helloworld"))
 		ParserTestSupport.verifyParsing[JSNativeCall](JSParser.nativeCall,source,ast)
     }
 
     @Test def testFunctionNativeCalls {
     	val source = "function f (x) { @NATIVECALL(hello) ; @NATIVECALL(world) }"
-    	val ast = JSFunction(Some(JSString("f")),List(JSString("x")),List(JSNativeCall(JSString("hello")),JSNativeCall(JSString("world"))))
+    	val ast = JSFunction(Some(JSIdentifier("f")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("hello")),JSNativeCall(JSIdentifier("world"))))
     	verifyFunction(source,ast)
     }
 
@@ -62,7 +56,7 @@ class TestJSParserSimpleFunctionLiterals {
     		}
     		"""
     	val ast = JSLiteralObject(List(
-    			(JSString("name"),JSFunction(Some(JSString("myName")),List(),List(JSNativeCall(JSString("hello")))))
+    			(JSIdentifier("name"),JSFunction(Some(JSIdentifier("myName")),List(),List(JSNativeCall(JSIdentifier("hello")))))
     	))  
     	
     	verifyLiteralObject(source,ast)
@@ -85,15 +79,15 @@ class TestJSParserSimpleFunctionLiterals {
     		 }
     	"""
     	val ast = JSLiteralObject(List(
-    				(JSString("name"),JSLiteralObject(List(
-    				    (JSString("first"),JSString("Bruce")),
-    				    (JSString("last"),JSString("Springsteen"))
+    				(JSIdentifier("name"),JSLiteralObject(List(
+    				    (JSIdentifier("first"),JSString("Bruce")),
+    				    (JSIdentifier("last"),JSString("Springsteen"))
     				))),
-    				(JSString("album"),JSFunction(Some(JSString("myAlbum")),List(),List(
+    				(JSIdentifier("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
     										 JSString("The Darkness on the Edge of Town"),
-    										 JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    										 JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     									 ))),
-    				(JSString("year"),JSNumber("1978")),
+    				(JSIdentifier("year"),JSNumber("1978")),
     				(JSNumber("1337"),JSString("true"))
     			))
 
@@ -120,22 +114,22 @@ class TestJSParserSimpleFunctionLiterals {
     	"""
     	  
     	val ast =
-    	  JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
+    	  JSFunction(Some(JSIdentifier("outerObject")),List(JSIdentifier("foo")),List(
     			  JSLiteralObject(List(
-    				(JSString("name"),JSLiteralObject(List(
-    				    (JSString("first"),JSString("Bruce")),
-    				    (JSString("last"),JSString("Springsteen"))
+    				(JSIdentifier("name"),JSLiteralObject(List(
+    				    (JSIdentifier("first"),JSString("Bruce")),
+    				    (JSIdentifier("last"),JSString("Springsteen"))
     				))),
-    				(JSString("album"),JSFunction(None,List(),List(
+    				(JSIdentifier("album"),JSFunction(None,List(),List(
     										 JSLiteralObject(List(
-    												 (JSString("album1"),JSString("The Darkness on the Edge of Town"))
+    												 (JSIdentifier("album1"),JSString("The Darkness on the Edge of Town"))
     										 )),
-    										 JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    										 JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     									 ))),
-    				(JSString("year"),JSNumber("1978")),
+    				(JSIdentifier("year"),JSNumber("1978")),
     				(JSNumber("1337"),JSString("true"))
     			  )),
-    			  JSNativeCall(JSString("goodbyeworld"))
+    			  JSNativeCall(JSIdentifier("goodbyeworld"))
     	  ))
 
     	verifyFunction(source,ast)

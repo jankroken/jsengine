@@ -8,14 +8,7 @@ import org.junit.Assert.fail
 import ParserTestSupport.verifyFunction
 import ParserTestSupport.verifyLiteralObject
 
-import jsengine.ast.JSString
-import jsengine.ast.JSNumber
-import jsengine.ast.JSSource
-import jsengine.ast.JSObject
-import jsengine.ast.JSFunction
-import jsengine.ast.JSLiteralObject
-import jsengine.ast.JSNativeCall
-import jsengine.ast.JSSourceElement
+import jsengine.ast._
 import ParserTestSupport.verifySource
 
 class TestJSSource {
@@ -26,12 +19,8 @@ class TestJSSource {
 			function byeworld () { @NATIVECALL(byeworld) }
 		"""
 
-//		val source = """
-//			function helloworld () { 1 } ;
-//			function byeworld () { 1 }
-//		"""
-		val ast = JSSource(List(JSFunction(Some(JSString("helloworld")),List(),List(JSNativeCall(JSString("helloworld")))),
-				       			JSFunction(Some(JSString("byeworld")),List(),List(JSNativeCall(JSString("byeworld"))))))	
+		val ast = JSSource(List(JSFunction(Some(JSIdentifier("helloworld")),List(),List(JSNativeCall(JSIdentifier("helloworld")))),
+				       			JSFunction(Some(JSIdentifier("byeworld")),List(),List(JSNativeCall(JSIdentifier("byeworld"))))))	
 		verifySource(source,ast)
 	}
   
@@ -57,20 +46,20 @@ class TestJSSource {
     	  
     	val ast = JSSource(List(
     			JSLiteralObject(List(
-    			    (JSString("name"),JSLiteralObject(List(
-    			    		(JSString("first"),JSString("Bruce")),
-    			    		(JSString("last"),JSString("Springsteen"))
+    			    (JSIdentifier("name"),JSLiteralObject(List(
+    			    		(JSIdentifier("first"),JSString("Bruce")),
+    			    		(JSIdentifier("last"),JSString("Springsteen"))
     			    ))),
-    			    (JSString("album"),JSFunction(Some(JSString("myAlbum")),List(),List(
+    			    (JSIdentifier("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
     			    		JSString("The Darkness on the Edge of Town"),
-    			    		JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+    			    		JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     			    ))),
-    			    (JSString("year"),JSNumber("1978")),
+    			    (JSIdentifier("year"),JSNumber("1978")),
     			    (JSNumber("1337"),JSString("true"))
     			)),
-    			JSFunction(Some(JSString("helloworld")),List(JSString("x")),List(JSNativeCall(JSString("helloworld")))),
-				JSFunction(Some(JSString("byeworld")),List(JSString("x")),List(JSNativeCall(JSString("byeworld")))),
-				JSNativeCall(JSString("helloworld"))
+    			JSFunction(Some(JSIdentifier("helloworld")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("helloworld")))),
+				JSFunction(Some(JSIdentifier("byeworld")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("byeworld")))),
+				JSNativeCall(JSIdentifier("helloworld"))
 		))
     	  
 		verifySource(source,ast)
@@ -96,34 +85,27 @@ class TestJSSource {
     	"""
     	val ast =
     	  	JSSource(List(
-    	  			JSFunction(Some(JSString("outerObject")),List(JSString("foo")),List(
+    	  			JSFunction(Some(JSIdentifier("outerObject")),List(JSIdentifier("foo")),List(
 	    	  			JSLiteralObject(
-		    	  			List((JSString("name"),JSLiteralObject(List(
-		    	  							(JSString("first"),JSString("Bruce")),
-		    	  							(JSString("last"),JSString("Springsteen"))
+		    	  			List((JSIdentifier("name"),JSLiteralObject(List(
+		    	  							(JSIdentifier("first"),JSString("Bruce")),
+		    	  							(JSIdentifier("last"),JSString("Springsteen"))
 		    	  						  ))),
-		    	  				(JSString("album"),JSFunction(None,List(),List(
+		    	  				(JSIdentifier("album"),JSFunction(None,List(),List(
 		    	  							JSLiteralObject(List(
-		    	  								(JSString("album1"),JSString("The Darkness on the Edge of Town"))
+		    	  								(JSIdentifier("album1"),JSString("The Darkness on the Edge of Town"))
 		    	  							)),
-		    	  							JSNativeCall(JSString("favouritebrucespringsteenalbum"))
+		    	  							JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
 		    	  						 ))),
-		    	  				(JSString("year"),JSNumber("1978")),
+		    	  				(JSIdentifier("year"),JSNumber("1978")),
 		    	  				(JSNumber("1337"),JSString("true"))
 		    	  			)
 		    	  		),
-		    	  		JSNativeCall(JSString("goodbyeworld"))
+		    	  		JSNativeCall(JSIdentifier("goodbyeworld"))
 		    	  	))
 	    	  	))
 
 	    verifySource(source,ast)
     }
 
-    
-    @Test def testCond() {
-    	val source = "hello world"
-    	val x = JSParser.parse(JSParser.testX(false),source)
-    	println(x)
-    }
-    
 }

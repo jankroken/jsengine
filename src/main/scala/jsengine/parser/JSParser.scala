@@ -146,7 +146,7 @@ object JSParser extends RegexParsers {
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
-	def identifier : Parser[JSString] = not("""(function|new|var|while|for|do|break|continue|with|switch|break|default)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
+	def identifier : Parser[JSIdentifier] = not("""(function|new|var|while|for|do|break|continue|with|switch|break|default)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSIdentifier(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
@@ -227,6 +227,6 @@ object JSParser extends RegexParsers {
 	
 	
 	// Tests
-	def testNot: Parser[JSString] = not("""if\b""".r) ~> identifier
+	def testNot: Parser[JSIdentifier] = not("""if\b""".r) ~> identifier
 	def testX(x: Boolean) = { if(x) ("hello" ~ "world" ^^ { case h ~ w => List("Hello","World") } ) else ("hello" ~ "and" ~ "bye" ~ "world" ^^ { case h ~ a ~ b ~ w => List("bye","world") }) } 
 }

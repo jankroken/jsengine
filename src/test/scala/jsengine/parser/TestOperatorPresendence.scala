@@ -115,19 +115,19 @@ class testOperatorPresendence {
 
     @Test def testDoubleConditional {
     	val source = "a ? b ? c : d : e "
-    	val ast = ConditionalExpression(JSString("a"),ConditionalExpression(JSString("b"),JSString("c"),JSString("d")),JSString("e"))
+    	val ast = ConditionalExpression(JSIdentifier("a"),ConditionalExpression(JSIdentifier("b"),JSIdentifier("c"),JSIdentifier("d")),JSIdentifier("e"))
     	verifyExpression(source,ast)
     }
 
     @Test def testAssignWithConditional {
     	val source = "a = b ? c : d "
-    	val ast = AssignmentExpression(Operator("="),JSString("a"),ConditionalExpression(JSString("b"),JSString("c"),JSString("d")))
+    	val ast = AssignmentExpression(Operator("="),JSIdentifier("a"),ConditionalExpression(JSIdentifier("b"),JSIdentifier("c"),JSIdentifier("d")))
     	verifyExpression(source,ast)
     }
 
     @Test def testConditionalWithAssignment {
     	val source = "a ? b = c ? d : e : f"
-    	val ast = ConditionalExpression(JSString("a"),AssignmentExpression(Operator("="),JSString("b"),ConditionalExpression(JSString("c"),JSString("d"),JSString("e"))),JSString("f"))
+    	val ast = ConditionalExpression(JSIdentifier("a"),AssignmentExpression(Operator("="),JSIdentifier("b"),ConditionalExpression(JSIdentifier("c"),JSIdentifier("d"),JSIdentifier("e"))),JSIdentifier("f"))
     	verifyExpression(source,ast)
     }
 }

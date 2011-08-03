@@ -8,9 +8,7 @@ import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 
 import ParserTestSupport.verifyLiteralObject
-import jsengine.ast.JSString
-import jsengine.ast.JSNumber
-import jsengine.ast.JSLiteralObject
+import jsengine.ast._
 
 class TestJSParserSimpleObjectLiterals {
 
@@ -40,7 +38,7 @@ class TestJSParserSimpleObjectLiterals {
 
     @Test def testObjectWithIdentifierKey {
     	val source = """{ key : "value" }"""
-    	val ast = JSLiteralObject(List((JSString("key"),JSString("value"))))
+    	val ast = JSLiteralObject(List((JSIdentifier("key"),JSString("value"))))
     	verifyLiteralObject(source,ast)
     }
 
@@ -67,12 +65,12 @@ class TestJSParserSimpleObjectLiterals {
     		 }
     	"""
     	val ast = JSLiteralObject(List(
-    			(JSString("name"),JSLiteralObject(List(
-    								   (JSString("first"),JSString("Bruce")),
-    								   (JSString("last"),JSString("Springsteen"))
+    			(JSIdentifier("name"),JSLiteralObject(List(
+    								   (JSIdentifier("first"),JSString("Bruce")),
+    								   (JSIdentifier("last"),JSString("Springsteen"))
     							   ))),
-    			(JSString("album"),JSString("The Darkness on the Edge of Town")),
-    			(JSString("year"),JSNumber("1978")),
+    			(JSIdentifier("album"),JSString("The Darkness on the Edge of Town")),
+    			(JSIdentifier("year"),JSNumber("1978")),
     			(JSNumber("1337"),JSString("true"))
     		))
     	verifyLiteralObject(source,ast)

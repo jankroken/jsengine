@@ -16,34 +16,34 @@ class TestStatements {
 
     @Test def testWhile {
     	val source = "while(true) { }"
-    	val ast = While(JSString("true"),JSBlock(List()))
+    	val ast = While(JSIdentifier("true"),JSBlock(List()))
     	verifyStatement(source,ast)
     }
 
     @Test def testDoWhile {
     	val source = "do { a++ } while(true)"
-    	val ast = DoWhile(JSBlock(List(PostfixExpression(JSString("a"),Operator("++")))),JSString("true"))
+    	val ast = DoWhile(JSBlock(List(PostfixExpression(JSIdentifier("a"),Operator("++")))),JSIdentifier("true"))
     	verifyStatement(source,ast)
     }
     
     @Test def testForIn {
     	val source = "for (n in { a: 1}) x++"
-    	val ast = For(ForInit(JSString("n")),ForInUpdate(JSLiteralObject(List((JSString("a"),JSNumber("1"))))),PostfixExpression(JSString("x"),Operator("++")))
+    	val ast = For(ForInit(JSIdentifier("n")),ForInUpdate(JSLiteralObject(List((JSIdentifier("a"),JSNumber("1"))))),PostfixExpression(JSIdentifier("x"),Operator("++")))
     	verifyStatement(source,ast)
     }
 
     @Test def testForSemicolon {
     	val source = "for (n + { a: 2}; n < z++ ; n++) x--"
-    	val ast = For(ForInit(BinaryExpression(JSString("n"),List(BinaryExtension(Operator("+"),JSLiteralObject(List((JSString("a"),JSNumber("2")))))))),
-    				  ForSemicolonUpdate(Some(BinaryExpression(JSString("n"),List(BinaryExtension(Operator("<"),PostfixExpression(JSString("z"),Operator("++")))))),
-    						  			 Some(PostfixExpression(JSString("n"),Operator("++")))),
-    				  PostfixExpression(JSString("x"),Operator("--")))
+    	val ast = For(ForInit(BinaryExpression(JSIdentifier("n"),List(BinaryExtension(Operator("+"),JSLiteralObject(List((JSIdentifier("a"),JSNumber("2")))))))),
+    				  ForSemicolonUpdate(Some(BinaryExpression(JSIdentifier("n"),List(BinaryExtension(Operator("<"),PostfixExpression(JSIdentifier("z"),Operator("++")))))),
+    						  			 Some(PostfixExpression(JSIdentifier("n"),Operator("++")))),
+    				  PostfixExpression(JSIdentifier("x"),Operator("--")))
     	verifyStatement(source,ast)
     }
     
     @Test def testWith {
     	val source = "with (n < 2) x++"
-    	val ast = WithStatement(BinaryExpression(JSString("n"),List(BinaryExtension(Operator("<"),JSNumber("2")))),PostfixExpression(JSString("x"),Operator("++")))
+    	val ast = WithStatement(BinaryExpression(JSIdentifier("n"),List(BinaryExtension(Operator("<"),JSNumber("2")))),PostfixExpression(JSIdentifier("x"),Operator("++")))
     	verifyStatement(source,ast)
     }
 
@@ -62,10 +62,10 @@ class TestStatements {
     	"""
     	val ast = SwitchStatement(JSNumber("1"),
     							 List(LabeledCaseClause(BinaryExpression(JSNumber("4"),List(BinaryExtension(Operator("+"),JSNumber("1")))),
-    									 				List(CallExpression(0,JSString("print"),List(ApplyArguments(List(JSString("hello"))))), 
+    									 				List(CallExpression(0,JSIdentifier("print"),List(ApplyArguments(List(JSString("hello"))))), 
     									 					 BreakStatement(None))), 
     								  LabeledCaseClause(JSNumber("5"),
-    										  			List(CallExpression(0,JSString("print"),List(ApplyArguments(List(JSString("world"))))), 
+    										  			List(CallExpression(0,JSIdentifier("print"),List(ApplyArguments(List(JSString("world"))))), 
     										  			     BreakStatement(None))), 
     								  DefaultClause(List())))
     	verifyStatement(source,ast)
