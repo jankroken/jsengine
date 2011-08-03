@@ -147,7 +147,7 @@ object JSParser extends RegexParsers {
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
 	
-	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally)\b""".r
+	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally|debugger)\b""".r
 	def identifier : Parser[JSIdentifier] = not(keywords) ~> """[a-zA-Z][a-zA-Z0-9]*""".r <~ not(":") ^^ { JSIdentifier(_)}
 	def label : Parser[JSIdentifier] = not(keywords) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSIdentifier(_)}
 
@@ -178,7 +178,7 @@ object JSParser extends RegexParsers {
 	 */
 
 	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement | 
-										 switchStatement  | break | continue | withStatement | tryStatement
+										 switchStatement  | break | continue | withStatement | tryStatement | debugger
 										 
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
@@ -242,6 +242,7 @@ object JSParser extends RegexParsers {
 	def finallyTail = finallyBlock ^^ { case f => TryTail(None,None,Some(f)) }
 	def finallyBlock = "finally" ~> block
 	
+	def debugger = "debugger" ^^ { case _ => DebuggerStatement() }
 	
 	// Tests
 	def testNot: Parser[JSIdentifier] = not("""if\b""".r) ~> identifier
