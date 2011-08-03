@@ -10,8 +10,9 @@ object ParserTestSupport {
 	def getASTOrFail(parseResult:JSParser.ParseResult[ASTNode]):ASTNode = {
 		parseResult match {
 		  case JSParser.Success(ast,_) => return ast
-		  case JSParser.NoSuccess(message,_) => {
-			  fail(message)
+		  case JSParser.NoSuccess(message,tree) => {
+			  println(parseResult)
+		      fail(message)
 			  return null // only to trick compiler
 		  }
 		}

@@ -29,5 +29,5 @@ case class LabeledStatement(label: JSIdentifier, statement: JSStatement) extends
 case class ThrowStatement(expr: JSBaseExpression) extends JSStatement
 case class TryStatement(block: JSBlock, tryTail: TryTail) extends JSStatement
 case class TryTail(id: Option[JSIdentifier], catchBlock: Option[JSBlock], finallyBlock: Option[JSBlock])
-case class DebuggerStatement()
+case class DebuggerStatement() extends JSStatement
 

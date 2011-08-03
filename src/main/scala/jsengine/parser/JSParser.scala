@@ -148,8 +148,9 @@ object JSParser extends RegexParsers {
 	
 	
 	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally|debugger)\b""".r
-	def identifier : Parser[JSIdentifier] = not(keywords) ~> """[a-zA-Z][a-zA-Z0-9]*""".r <~ not(":") ^^ { JSIdentifier(_)}
-	def label : Parser[JSIdentifier] = not(keywords) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSIdentifier(_)}
+	def identifierString = """[a-zA-Z][a-zA-Z0-9]*""".r
+	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString <~ not(":") ^^ { JSIdentifier(_)}
+	def label : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
@@ -168,7 +169,7 @@ object JSParser extends RegexParsers {
 	def hexadecimalNumber  = """0[Xx][0-9a-fA-F]+""".r  ^^ { JSNumber(_) }
 	
 
-	def functionExpression : Parser[JSFunction]= "function" ~> opt(identifier) ~ ( "(" ~> repsep(identifier,",") <~ ")" ) ~ ( "{" ~> repsep(sourceElement,";") <~ "}" ) ^^
+	def functionExpression : Parser[JSFunction]= "function" ~> opt(identifier) ~! ( "(" ~> repsep(identifier,",") <~ ")" ) ~ ( "{" ~> repsep(sourceElement,";") <~ "}" ) ^^
 		{ case name ~ arguments  ~ sourceElements  => JSFunction(name, arguments, sourceElements) }
 
 	def nativeCall:Parser[JSNativeCall] = "@NATIVECALL" ~ "(" ~ identifier ~ ")" ^^ { case "@NATIVECALL" ~ "(" ~ identifier ~ ")" => JSNativeCall(identifier) }
