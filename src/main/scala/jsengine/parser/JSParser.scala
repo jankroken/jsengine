@@ -13,22 +13,22 @@ object JSParser extends RegexParsers {
 	 *  Expressions
 	 */
 	
-	def expression : Parser[JSBaseExpression] = conditionalExpression ~ opt("," ~ expression) ^^ 
+	def expression(withIn: Boolean) : Parser[JSBaseExpression] = conditionalExpression(withIn) ~ opt("," ~ expression(withIn)) ^^ 
 	    { case ex ~ None => ex
 	      case ex ~ Some(x ~ JSExpression(exlist)) =>  JSExpression(ex :: exlist)
 	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
 	    } 
 
-	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | "(" ~> expression <~ ")"
+	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | "(" ~> expression(true) <~ ")"
 
 	def memberExpression : Parser[JSBaseExpression] = primaryExpression | functionExpression 
 	
 	def applyExtension : Parser[ApplicationExtension] = arrayLookupExtension | propertyLookupExtension | applyArguments
 	
-    def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression <~ "]" ^^ { ApplyLookup(_) }
+    def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression(true) <~ "]" ^^ { ApplyLookup(_) }
 	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { ApplyLookup(_) }
 
-	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(assignmentExpression,",") <~ ")" ^^ { ApplyArguments(_) }
+	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(assignmentExpression(true),",") <~ ")" ^^ { ApplyArguments(_) }
 	
 	def callExpression : Parser[JSBaseExpression] = rep("new") ~ memberExpression ~ rep(applyExtension) ^^ {
 	    case List() ~ expr ~ List() => expr
@@ -36,12 +36,12 @@ object JSParser extends RegexParsers {
 	}
 	
 	def assignmentOperator : Parser[Operator] = ( "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|=" ) ^^ { Operator(_) }
-	def assignmentExpression : Parser[JSBaseExpression] = callExpression ~ opt (assignmentOperator ~ conditionalExpression) ^^ {
+	def assignmentExpression(withIn: Boolean) : Parser[JSBaseExpression] = callExpression ~ opt (assignmentOperator ~ conditionalExpression(withIn)) ^^ {
 	  case expr ~ None => expr
 	  case left ~ Some(operator ~ right) => AssignmentExpression(operator,left,right)
 	}
 
-	def leftHandSideExpression = assignmentExpression
+	def leftHandSideExpression = assignmentExpression(true)
 	
 	def postfixOperator:Parser[Operator] = ( "++" | "--" ) ^^ { Operator(_) }
 
@@ -79,56 +79,62 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 
-	def relationalOperator = ("<" | ">" | "<=" | ">=" | "instanceof" | "in")  ^^ { Operator(_) }
-	def relationalExtension = relationalOperator ~ shiftExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def relationalExpression = shiftExpression ~ rep(relationalExtension) ^^ {
+	def relationalOperator(withIn: Boolean) = {
+			if (withIn) { 
+			  ("<" | ">" | "<=" | ">=" | "instanceof" | "in")  ^^ { Operator(_) } 
+			} else {
+			  ("<" | ">" | "<=" | ">=" | "instanceof")  ^^ { Operator(_) }
+			}
+	}
+	def relationalExtension(withIn: Boolean) = relationalOperator(withIn) ~ shiftExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def relationalExpression(withIn: Boolean) = shiftExpression ~ rep(relationalExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
 	def equalityOperator = ("==" | "!=" | "===" | "!==")  ^^ { Operator(_) }
-	def equalityExtension = equalityOperator ~ relationalExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def equalityExpression = relationalExpression ~ rep(equalityExtension) ^^ {
+	def equalityExtension(withIn: Boolean) = equalityOperator ~ relationalExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def equalityExpression(withIn: Boolean) = relationalExpression(withIn) ~ rep(equalityExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 
 	def bitwiseAndOperator = "&" ^^ { Operator(_) }
-	def bitwiseAndExtension = bitwiseAndOperator ~ equalityExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def bitwiseAndExpression = equalityExpression ~ rep(bitwiseAndExtension) ^^ {
+	def bitwiseAndExtension(withIn: Boolean) = bitwiseAndOperator ~ equalityExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def bitwiseAndExpression(withIn: Boolean) = equalityExpression(withIn) ~ rep(bitwiseAndExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
 	def bitwiseXorOperator = "^" ^^ { Operator(_) }
-	def bitwiseXorExtension = bitwiseXorOperator ~ bitwiseAndExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def bitwiseXorExpression = bitwiseAndExpression ~ rep(bitwiseXorExtension) ^^ {
+	def bitwiseXorExtension(withIn: Boolean) = bitwiseXorOperator ~ bitwiseAndExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def bitwiseXorExpression(withIn: Boolean) = bitwiseAndExpression(withIn) ~ rep(bitwiseXorExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
 	def bitwiseOrOperator = "|" ^^ { Operator(_) }
-	def bitwiseOrExtension = bitwiseOrOperator ~ bitwiseXorExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def bitwiseOrExpression = bitwiseXorExpression ~ rep(bitwiseOrExtension) ^^ {
+	def bitwiseOrExtension(withIn: Boolean) = bitwiseOrOperator ~ bitwiseXorExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def bitwiseOrExpression(withIn: Boolean) = bitwiseXorExpression(withIn) ~ rep(bitwiseOrExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
 	def logicalAndOperator = "&&" ^^ { Operator(_) }
-	def logicalAndExtension = logicalAndOperator ~ bitwiseOrExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def logicalAndExpression = bitwiseOrExpression ~ rep(logicalAndExtension) ^^ {
+	def logicalAndExtension(withIn: Boolean) = logicalAndOperator ~ bitwiseOrExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def logicalAndExpression(withIn: Boolean) = bitwiseOrExpression(withIn) ~ rep(logicalAndExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
 	def logicalOrOperator = "||" ^^ { Operator(_) }
-	def logicalOrExtension = logicalOrOperator ~ logicalAndExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
-	def logicalOrExpression = logicalAndExpression ~ rep(logicalOrExtension) ^^ {
+	def logicalOrExtension(withIn: Boolean) = logicalOrOperator ~ logicalAndExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
+	def logicalOrExpression(withIn: Boolean) = logicalAndExpression(withIn) ~ rep(logicalOrExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
-	def conditionalExpression : Parser[JSBaseExpression]= logicalOrExpression ~ opt("?" ~> conditionalExpression ~ (":" ~> conditionalExpression)) ^^ {
+	def conditionalExpression(withIn: Boolean) : Parser[JSBaseExpression]= logicalOrExpression(withIn) ~ opt("?" ~> conditionalExpression(withIn) ~ (":" ~> conditionalExpression(withIn))) ^^ {
 	  case expr ~ None => expr
 	  case expr ~ Some(trueExpr ~ falseExpr) => ConditionalExpression(expr,trueExpr,falseExpr)
 	}
@@ -138,7 +144,7 @@ object JSParser extends RegexParsers {
 	def propertyNameAndValue : Parser[(PropertyName, JSBaseExpression)] = propertyName ~ ":" ~ propertyValue ^^
 		{ case propertyName ~ ":" ~ propertyValue => (propertyName, propertyValue) }
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
-	def propertyValue : Parser[JSBaseExpression] = assignmentExpression
+	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
 	def identifier : Parser[JSString] = not("""(function|new|var)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
 
@@ -147,7 +153,7 @@ object JSParser extends RegexParsers {
 	def singleQuotedStringLiteral = """'([^'\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*'""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\''))} 
 	def regexLiteral : Parser[JSRegexLiteral] = """/([^/\\\n]|\\[\\\n'"/bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/""".r ^^ { x => JSRegexLiteral(StringLiteral(x).getUnqotedString('/'))} 
 	
-	def arrayLiteral : Parser[JSArrayLiteral] = "[" ~> rep(opt(assignmentExpression) <~ ",") ~ opt(assignmentExpression) <~ "]" ^^ { 
+	def arrayLiteral : Parser[JSArrayLiteral] = "[" ~> rep(opt(assignmentExpression(true)) <~ ",") ~ opt(assignmentExpression(true)) <~ "]" ^^ { 
 	  	case exprlist ~ None  => JSArrayLiteral(exprlist)
 	  	case exprlist ~ Some(expr) => JSArrayLiteral(exprlist ::: Some(expr) :: List())
 	}
@@ -168,19 +174,21 @@ object JSParser extends RegexParsers {
 	 * Statements
 	 */
 
-	def statement: Parser[JSStatement] = block | variableDeclaration | expressionStatement
+	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
-	def expressionStatement = not("""(function|,)\b""".r) ~> expression
+	def expressionStatement = not("""(function|,)\b""".r) ~> expression(true)
 	
-	def sourceElement: Parser[JSSourceElement] = expression | statement;
+	def sourceElement: Parser[JSSourceElement] = functionExpression | statement;
 
-	def variableDeclaration : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable,",") ^^ { VariableDeclarations(_) }
+	def variableDeclaration(withIn: Boolean) : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable(withIn),",") ^^ { VariableDeclarations(_) }
 	
-	def singleVariable: Parser[VariableDeclaration] = identifier ~! opt("=" ~> assignmentExpression) ^^ {
+	def singleVariable(withIn: Boolean): Parser[VariableDeclaration] = identifier ~! opt("=" ~> assignmentExpression(withIn)) ^^ {
 	  case identifier ~ None => VariableDeclaration(identifier,None)
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
 	}
 	
+	// Tests
 	def testNot: Parser[JSString] = not("""if\b""".r) ~> identifier
+	def testX(x: Boolean) = { if(x) ("hello" ~ "world" ^^ { case h ~ w => List("Hello","World") } ) else ("hello" ~ "and" ~ "bye" ~ "world" ^^ { case h ~ a ~ b ~ w => List("bye","world") }) } 
 }

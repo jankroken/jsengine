@@ -119,12 +119,11 @@ class TestJSSource {
 	    verifySource(source,ast)
     }
 
-    // temporary test, to be removed
-    @Test
-    def testNot() {
-      val source = "if()"
-      val x = JSParser.parse(JSParser.testNot,source)
-      println(x)
+    
+    @Test def testCond() {
+    	val source = "hello world"
+    	val x = JSParser.parse(JSParser.testX(false),source)
+    	println(x)
     }
     
 }
