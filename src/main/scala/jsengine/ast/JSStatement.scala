@@ -15,12 +15,16 @@ case class ForInit(init: JSStatement)
 sealed trait ForUpdate
 case class ForInUpdate(statement: JSBaseExpression) extends ForUpdate
 case class ForSemicolonUpdate(test: Option[JSBaseExpression], update: Option[JSStatement]) extends ForUpdate
-case class ContinueStatement()
-case class BreakStatement()
-case class ReturnStatement()
-case class WithStatement()
-case class LabeledStatement()
-case class SwitchStatement()
+case class ContinueStatement(label: Option[JSString]) extends JSStatement
+case class BreakStatement(label: Option[JSString]) extends JSStatement
+case class ReturnStatement(value: Option[JSBaseExpression]) extends JSStatement
+case class WithStatement(expr: JSBaseExpression, statement: JSStatement) extends JSStatement
+// case class LabeledStatement()
+case class SwitchStatement(expr: JSBaseExpression, cases: List[CaseClause]) extends JSStatement
+sealed trait CaseClause
+case class LabeledCaseClause(label: JSBaseExpression, statements: List[JSStatement]) extends CaseClause
+case class DefaultClause(statements: List[JSStatement]) extends CaseClause
+
 case class ThrowStatement()
 case class TryStatement()
 case class DebuggerStatement()

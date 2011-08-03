@@ -146,7 +146,7 @@ object JSParser extends RegexParsers {
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
-	def identifier : Parser[JSString] = not("""(function|new|var|while|for|do)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
+	def identifier : Parser[JSString] = not("""(function|new|var|while|for|do|break|continue|with|switch|break|default)\b""".r) ~> """[a-zA-Z][a-zA-Z0-9]*""".r ^^ { JSString(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
@@ -174,7 +174,7 @@ object JSParser extends RegexParsers {
 	 * Statements
 	 */
 
-	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement
+	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement | switchStatement
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
 	def expressionStatement = not("""(function|,)\b""".r) ~> expression(true)
@@ -188,7 +188,7 @@ object JSParser extends RegexParsers {
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
 	}
 	
-	def iterationStatement = whileStatement | doWhileStatement | forStatement
+	def iterationStatement = whileStatement | doWhileStatement | forStatement | break | continue | withStatement 
 	
 	def whileStatement = "while" ~> ( "(" ~> expression(true) <~ ")" ) ~ whileBody ^^ { case cond ~ body => While(cond,body) }
 	def doWhileStatement = "do" ~> whileBody ~ ( "while" ~ "(" ~> expression(true) <~ ")" ) ^^  { case body ~ cond => DoWhile(body,cond) }
@@ -210,6 +210,20 @@ object JSParser extends RegexParsers {
 	def forInit = ( variableDeclaration(false) | forInitExpression ) ^^ { ForInit(_) }
 	  
 	def forInitExpression : Parser[JSStatement] = not("""var\z""".r) ~> expression(false)
+	
+	def continue = "continue" ~> opt(identifier) <~ ";" ^^ { ContinueStatement(_) }
+	def break = "break" ~> opt(identifier) <~ ";" ^^ { BreakStatement(_) }
+	def returnStatement = "return" ~> opt(expression(true)) ^^ { ReturnStatement(_) }
+	
+	def withStatement = "with" ~ "(" ~> expression(true) ~ ")" ~ statement ^^ { case expr ~ ")" ~ statement => WithStatement(expr,statement) }
+	
+	def switchStatement = "switch" ~> ( "(" ~> expression(true) <~ ")" ~ "{" ) ~ rep(caseClause) ~ opt(defaultClause) <~ "}" ^^ {
+	  case expr ~ cases ~ None => SwitchStatement(expr,cases)
+	  case expr ~ cases ~ Some(statement) => SwitchStatement(expr,cases :+ statement) 
+	}
+	
+	def caseClause = "case" ~> expression(true) ~ ":" ~ repsep(statement,";") ^^ { case expr ~ ":" ~ statements => LabeledCaseClause(expr,statements) } 
+	def defaultClause = "default" ~ ":" ~> repsep(statement,";") ^^ { case statements => DefaultClause(statements) } 
 	
 	
 	// Tests
