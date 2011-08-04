@@ -147,7 +147,7 @@ object JSParser extends RegexParsers {
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
 	
-	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally|debugger|if|else|throw)\b""".r
+	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|case|break|default|try|catch|finally|debugger|if|else|throw)\b""".r
 	def identifierString = """[a-zA-Z][a-zA-Z0-9]*""".r
 	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
 

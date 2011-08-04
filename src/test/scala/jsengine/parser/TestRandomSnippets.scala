@@ -301,5 +301,57 @@ class TestRandomSnippets {
                             ApplyArguments(List(JSString("<br />"))))))))))
         verifySource(source,ast)
     }
+
+    @Test def testW3SchoolsSwitch {
+        val source = """
+        	var d=new Date();
+        	var theDay=d.getDay();
+
+        	switch (theDay) {
+        		case 5: 
+        			document.write("Finally Friday");
+        			break
+        		case 6:
+        			document.write("Super Saturday");
+        			break
+        		case 0:
+        			document.write("Sleepy Sunday");
+        			break
+        		default:
+        			document.write("I'm looking forward to this weekend!")
+        	}
+        """
+        val ast = JSSource(List(
+        				VariableDeclarations(List(
+        				    VariableDeclaration(
+        				        JSIdentifier("d"),
+        				        Some(CallExpression(1,JSIdentifier("Date"),List(ApplyArguments(List()))))))), 
+        				VariableDeclarations(List(
+        				    VariableDeclaration(
+        				        JSIdentifier("theDay"),
+        				        Some(CallExpression(0,JSIdentifier("d"),List(ApplyLookup(JSIdentifier("getDay")), ApplyArguments(List()))))))), 
+        				SwitchStatement(JSIdentifier("theDay"),List(
+        				    LabeledCaseClause(JSNumber("5"),List(
+        				        CallExpression(0,JSIdentifier("document"),List(
+        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyArguments(List(JSString("Finally Friday"))))), 
+        				        BreakStatement(None))), 
+        				    LabeledCaseClause(JSNumber("6"),List(
+        				        CallExpression(0,JSIdentifier("document"),List(
+        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyArguments(List(JSString("Super Saturday"))))), 
+        				        BreakStatement(None))), 
+        				    LabeledCaseClause(JSNumber("0"),List(
+        				        CallExpression(0,JSIdentifier("document"),List(
+        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyArguments(List(JSString("Sleepy Sunday"))))), 
+        				        BreakStatement(None))), 
+        				    DefaultClause(List(
+        				        CallExpression(0,JSIdentifier("document"),List(
+        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyArguments(List(JSString("I'm looking forward to this weekend!")))))))))))
+        				            
+        verifySource(source,ast)
+    }
     
 }
