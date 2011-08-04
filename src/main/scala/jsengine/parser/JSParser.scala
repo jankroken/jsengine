@@ -81,9 +81,9 @@ object JSParser extends RegexParsers {
 
 	def relationalOperator(withIn: Boolean) = {
 			if (withIn) { 
-			  ("<" | ">" | "<=" | ">=" | "instanceof" | "in")  ^^ { Operator(_) } 
+			  ( "<=" | ">=" | "instanceof" | "in" | "<" | ">" )  ^^ { Operator(_) } 
 			} else {
-			  ("<" | ">" | "<=" | ">=" | "instanceof")  ^^ { Operator(_) }
+			  ( "<=" | ">=" | "<" | ">" | "instanceof")  ^^ { Operator(_) }
 			}
 	}
 	def relationalExtension(withIn: Boolean) = relationalOperator(withIn) ~ shiftExpression ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
@@ -92,7 +92,7 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
-	def equalityOperator = ("==" | "!=" | "===" | "!==")  ^^ { Operator(_) }
+	def equalityOperator = ("===" | "==" | "!==" |"!=")  ^^ { Operator(_) }
 	def equalityExtension(withIn: Boolean) = equalityOperator ~ relationalExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
 	def equalityExpression(withIn: Boolean) = relationalExpression(withIn) ~ rep(equalityExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
@@ -222,7 +222,7 @@ object JSParser extends RegexParsers {
 	def forInitExpression : Parser[JSStatement] = not("""var\z""".r) ~> expression(false)
 	
 	def continue = "continue" ~> opt(identifier) <~ ";" ^^ { ContinueStatement(_) }
-	def break = "break" ~> opt(identifier) <~ ";" ^^ { BreakStatement(_) }
+	def break = "break" ~> opt(identifier)  ^^ { BreakStatement(_) }
 	def returnStatement = "return" ~> opt(expression(true)) ^^ { ReturnStatement(_) }
 	
 	def withStatement = "with" ~ "(" ~> expression(true) ~ ")" ~ statement ^^ { case expr ~ ")" ~ statement => WithStatement(expr,statement) }

@@ -262,5 +262,44 @@ class TestRandomSnippets {
         				                    	BinaryExtension(Operator("+"),JSString(" ")))))))))))))
         verifySource(source,ast)
     }
+
+    @Test def testW3SchoolsBreakLoops {
+        val source = """
+        	var i=0;
+        	for (i=0;i<=10;i++) {
+        		if (i==3) {
+        			break
+        		};
+        		document.write("The number is " + i);
+        		document.write("<br />")
+        	}
+        """
+        val ast = JSSource(List(
+            VariableDeclarations(List(
+                VariableDeclaration(JSIdentifier("i"),
+                	Some(JSNumber("0"))))), 
+                For(
+                    ForInit(
+                        AssignmentExpression(Operator("="),JSIdentifier("i"),JSNumber("0"))),
+                    ForSemicolonUpdate(
+                       Some(BinaryExpression(JSIdentifier("i"),List(
+                            BinaryExtension(Operator("<="),JSNumber("10"))))),
+                       Some(PostfixExpression(JSIdentifier("i"),Operator("++")))),
+                    JSBlock(List(
+                        IfStatement(
+                            BinaryExpression(JSIdentifier("i"),List(BinaryExtension(Operator("=="),JSNumber("3")))),
+                            JSBlock(List(
+                                BreakStatement(None))),
+                            None), 
+                        CallExpression(0,JSIdentifier("document"),List(
+                            ApplyLookup(JSIdentifier("write")), 
+                            ApplyArguments(List(
+                                BinaryExpression(JSString("The number is "),List(
+                                    BinaryExtension(Operator("+"),JSIdentifier("i")))))))), 
+                        CallExpression(0,JSIdentifier("document"),List(
+                            ApplyLookup(JSIdentifier("write")), 
+                            ApplyArguments(List(JSString("<br />"))))))))))
+        verifySource(source,ast)
+    }
     
 }
