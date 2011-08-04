@@ -234,5 +234,33 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
     
+    @Test def testW3SchoolsForIn {
+        val source = """
+        	var person={fname:"John",lname:"Doe",age:25}; 
+
+        	for (x in person) {
+        		document.write(person[x] + " ")
+        	}
+        """
+        val ast = JSSource(List(
+        				VariableDeclarations(List(
+        				    VariableDeclaration(JSIdentifier("person"),Some(
+        				        JSLiteralObject(List(
+        				            (JSIdentifier("fname"),JSString("John")), 
+        				            (JSIdentifier("lname"),JSString("Doe")), 
+        				            (JSIdentifier("age"),JSNumber("25")))))))), 
+        				For(
+        				    ForInit(JSIdentifier("x")),ForInUpdate(JSIdentifier("person")),
+        				    JSBlock(List(
+        				        CallExpression(0,JSIdentifier("document"),List(
+        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyArguments(List(
+        				                BinaryExpression(
+        				                    CallExpression(0,JSIdentifier("person"),List(
+        				                        ApplyLookup(JSIdentifier("x")))),
+        				                    List(
+        				                    	BinaryExtension(Operator("+"),JSString(" ")))))))))))))
+        verifySource(source,ast)
+    }
     
 }
