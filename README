@@ -7,3 +7,10 @@ THis project may and may not implement the full ECMA 262 standard,
 and may or may not violate it in key areas...
 
 (oh, and may or may not be completed :)
+
+Current incompatibilities:
+   no automatic semicolon insertion
+   semicolons are used as separators between statements, and not terminators
+   a \n ++ b will be interpreted as (a++)\n b, instead of a \n (++b)
+   labeles needs to be preceeded by @label
+   
