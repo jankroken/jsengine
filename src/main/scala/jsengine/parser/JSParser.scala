@@ -99,7 +99,7 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 
-	def bitwiseAndOperator = "&" <~ not("&") ^^ { Operator(_) }
+	def bitwiseAndOperator = "&\\z".r <~ not("&") ^^ { Operator(_) }
 	def bitwiseAndExtension(withIn: Boolean) = bitwiseAndOperator ~ equalityExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
 	def bitwiseAndExpression(withIn: Boolean) = equalityExpression(withIn) ~ rep(bitwiseAndExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
@@ -113,7 +113,7 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
-	def bitwiseOrOperator = "|" ^^ { Operator(_) }
+	def bitwiseOrOperator = "\\|\\z".r <~ not("|") ^^ { Operator(_) }
 	def bitwiseOrExtension(withIn: Boolean) = bitwiseOrOperator ~ bitwiseXorExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
 	def bitwiseOrExpression(withIn: Boolean) = bitwiseXorExpression(withIn) ~ rep(bitwiseOrExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
