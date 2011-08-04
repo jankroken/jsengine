@@ -28,7 +28,7 @@ object JSParser extends RegexParsers {
     def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression(true) <~ "]" ^^ { ApplyLookup(_) }
 	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { ApplyLookup(_) }
 
-	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(assignmentExpression(true),",") <~ ")" ^^ { ApplyArguments(_) }
+	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(conditionalExpression(true),",") <~ ")" ^^ { ApplyArguments(_) }
 	
 	def callExpression : Parser[JSBaseExpression] = rep("new") ~ memberExpression ~ rep(applyExtension) ^^ {
 	    case List() ~ expr ~ List() => expr
@@ -143,19 +143,18 @@ object JSParser extends RegexParsers {
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }
 	def propertyNameAndValue : Parser[(PropertyName, JSBaseExpression)] = propertyName ~ ":" ~ propertyValue ^^
 		{ case propertyName ~ ":" ~ propertyValue => (propertyName, propertyValue) }
-	def propertyName : Parser[PropertyName] = label | stringLiteral | numericLiteral
+	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
 	
 	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally|debugger)\b""".r
 	def identifierString = """[a-zA-Z][a-zA-Z0-9]*""".r
-	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString <~ not(":") ^^ { JSIdentifier(_)}
-	def label : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
+	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
 	def singleQuotedStringLiteral = """'([^'\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*'""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\''))} 
-	def regexLiteral : Parser[JSRegexLiteral] = """/([^/\\\n]|\\[\\\n'"/bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/""".r ^^ { x => JSRegexLiteral(StringLiteral(x).getUnqotedString('/'))} 
+	def regexLiteral : Parser[JSRegexLiteral] = """/([^/\\\n]|\\[\\\n'"/bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/""".r ^^ { JSRegexLiteral(_)} 
 	
 	def arrayLiteral : Parser[JSArrayLiteral] = "[" ~> rep(opt(assignmentExpression(true)) <~ ",") ~ opt(assignmentExpression(true)) <~ "]" ^^ { 
 	  	case exprlist ~ None  => JSArrayLiteral(exprlist)
@@ -163,7 +162,8 @@ object JSParser extends RegexParsers {
 	}
 	def simpleLiteral : Parser[JSBaseExpression] = numericLiteral | stringLiteral | arrayLiteral | regexLiteral
 	
-	def numericLiteral : Parser[JSNumber] = smallDecimalNumber | largeDecimalNumber | hexadecimalNumber
+	def numericLiteral : Parser[JSNumber] = smallDecimalNumber | largeDecimalNumber | hexadecimalNumber | zero
+	def zero = "0" ^^ { JSNumber(_) }
 	def largeDecimalNumber = """[1-9][0-9]*(\.[0-9]*)?([eE][+-]?[0-9]*)?""".r  ^^ { JSNumber(_) }
 	def smallDecimalNumber = """0?\.[0-9]*([eE][+-][0-9]*)?""".r  ^^ { JSNumber(_) }
 	def hexadecimalNumber  = """0[Xx][0-9a-fA-F]+""".r  ^^ { JSNumber(_) }
@@ -189,7 +189,7 @@ object JSParser extends RegexParsers {
 
 	def variableDeclaration(withIn: Boolean) : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable(withIn),",") ^^ { VariableDeclarations(_) }
 	
-	def singleVariable(withIn: Boolean): Parser[VariableDeclaration] = identifier ~! opt("=" ~> assignmentExpression(withIn)) ^^ {
+	def singleVariable(withIn: Boolean): Parser[VariableDeclaration] = identifier ~ opt("=" ~> assignmentExpression(withIn)) ^^ {
 	  case identifier ~ None => VariableDeclaration(identifier,None)
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
 	}
@@ -231,7 +231,7 @@ object JSParser extends RegexParsers {
 	def caseClause = "case" ~> expression(true) ~ ":" ~ repsep(statement,";") ^^ { case expr ~ ":" ~ statements => LabeledCaseClause(expr,statements) } 
 	def defaultClause = "default" ~ ":" ~> repsep(statement,";") ^^ { case statements => DefaultClause(statements) } 
 	
-	def labeledStatement = label ~ ":" ~ statement ^^ { case label ~ ":" ~ statement => LabeledStatement(label,statement) }
+	def labeledStatement = "@label" ~> identifier ~ ":" ~ statement ^^ { case label ~ ":" ~ statement => LabeledStatement(label,statement) }
 	
 	def throwStatement = "throw" ~> expression(true) ^^ { ThrowStatement(_) }
 	
@@ -245,7 +245,4 @@ object JSParser extends RegexParsers {
 	
 	def debugger = "debugger" ^^ { case _ => DebuggerStatement() }
 	
-	// Tests
-	def testNot: Parser[JSIdentifier] = not("""if\b""".r) ~> identifier
-	def testX(x: Boolean) = { if(x) ("hello" ~ "world" ^^ { case h ~ w => List("Hello","World") } ) else ("hello" ~ "and" ~ "bye" ~ "world" ^^ { case h ~ a ~ b ~ w => List("bye","world") }) } 
 }

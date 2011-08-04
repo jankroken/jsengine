@@ -38,5 +38,17 @@ class TestStringLiteral {
     	}
 	}
 
+    @Test def testStringWithColonAndSpace {
+    	val result = StringLiteral("'Date: '").getUnqotedString('\'')
+    	assertThat(result,is[Any]("Date: "))
+    }
+
+    @Test def testSlash {
+    	val result = StringLiteral("'/'").getUnqotedString('\'')
+    	assertThat(result,is[Any]("/"))
+    }
+    
+//    'Date: ', today.getMonth()+1, '/', today.getDate(), '/', today.getYear())
+
     
 }

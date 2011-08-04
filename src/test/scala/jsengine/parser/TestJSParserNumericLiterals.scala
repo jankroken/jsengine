@@ -14,6 +14,13 @@ import jsengine.ast.JSLiteralObject
 
 class TestJSParserNumbericLiterals {
 
+  
+    @Test def testZero {
+    	val source = "0"
+    	val ast = JSNumber("0")
+    	verifyNumericLiteral(source,ast)
+    }
+  
     @Test def testSimpleInteger {
     	val source = "1234"
     	val ast = JSNumber("1234")

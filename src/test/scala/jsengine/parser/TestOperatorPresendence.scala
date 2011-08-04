@@ -37,6 +37,12 @@ class testOperatorPresendence {
     	val ast = UnaryExpression(List(Operator("++")),JSNumber("1"))
     	verifyExpression(source,ast)
     }
+    
+    @Test def testDoubleUnary {
+        val source = "!!1"
+        val ast = UnaryExpression(List(Operator("!"),Operator("!")),JSNumber("1"))
+        verifyExpression(source,ast)
+    }
 
     @Test def testShift {
     	val source = "++1 >> 2"
