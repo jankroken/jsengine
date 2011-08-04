@@ -82,5 +82,26 @@ class TestStatements {
     					  
     	verifyStatement(source,ast)
     }
+    
+    @Test def testIf {
+       val source = """
+    		if (true) false
+       """
+       val ast = IfStatement(JSIdentifier("true"),JSIdentifier("false"),None)
+       verifyStatement(source,ast)
+    }
+    
+    @Test def testTryIf {
+       val source = """
+    		try { if (true) false } catch(foo) {}
+       """
+       val ast = TryStatement(JSBlock(List(IfStatement(JSIdentifier("true"),
+    		   										   JSIdentifier("false"),None))),
+    		   				 TryTail(Some(JSIdentifier("foo")),
+    		   				         Some(JSBlock(List())),
+    		   				         None))
+       verifyStatement(source,ast)
+    }
+    
 
 }

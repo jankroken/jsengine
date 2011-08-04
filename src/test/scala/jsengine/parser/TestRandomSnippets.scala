@@ -128,5 +128,111 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
     
+    @Test def testW3SchoolsThrowFirstIfPart {
+    	val source = """
+    			if ( x > 10 ) {
+    				throw "Err1"
+    			} 
+"""
+    	val ast = JSSource(List(
+    				IfStatement(
+    					BinaryExpression(
+    					    JSIdentifier("x"),
+    					    List(BinaryExtension(Operator(">"),JSNumber("10")))),
+    					JSBlock(List(ThrowStatement(JSString("Err1")))),
+    					None)))
+    	verifySource(source,ast)
+    }
+
+     @Test def testW3SchoolsThrowFullIfPart {
+    	val source = """
+    			if (x>10) {
+    				throw "Err1"
+    			} else if(x<0) {
+    				throw "Err2"
+    			} else if(isNaN(x)) {
+    				throw "Err3"
+    			}
+    	"""
+    	val ast = JSSource(List(
+    				IfStatement(
+    				    BinaryExpression(JSIdentifier("x"),List(BinaryExtension(Operator(">"),JSNumber("10")))),
+    				    JSBlock(List(ThrowStatement(JSString("Err1")))),
+    				    Some(
+    				        IfStatement(
+    				            BinaryExpression(JSIdentifier("x"),List(BinaryExtension(Operator("<"),JSNumber("0")))),
+    				            JSBlock(List(ThrowStatement(JSString("Err2")))),
+    				            Some(
+    				                IfStatement(
+    				                    CallExpression(0,JSIdentifier("isNaN"),List(ApplyArguments(List(JSIdentifier("x"))))),
+    				                    JSBlock(List(ThrowStatement(JSString("Err3")))),
+    				                    None)))))))
+    	verifySource(source,ast)
+    }
+    
+    @Test def testW3SchoolsThrow {
+    	val source = """
+    		var x=prompt("Enter a number between 0 and 10:","") ;
+    		try {  
+    			if (x>10) {
+    				throw "Err1"
+    			} else if(x<0) {
+    				throw "Err2"
+    			} else if(isNaN(x)) {
+    				throw "Err3"
+    			}
+    		} catch(er) {
+    			if(er=="Err1") {
+    				alert("Error! The value is too high")
+    			} ;
+    			if(er=="Err2") {
+    				alert("Error! The value is too low")
+    			} ;
+    			if(er=="Err3") {
+    				alert("Error! The value is not a number")
+    			}
+    		}
+    	"""
+    	val ast = JSSource(List(
+    			VariableDeclarations(List(
+    			    VariableDeclaration(
+    			        JSIdentifier("x"),
+    			        Some(CallExpression(0,JSIdentifier("prompt"),List(
+    			        		ApplyArguments(List(JSString("Enter a number between 0 and 10:"), JSString(""))))))))), 
+    			    TryStatement(JSBlock(List(
+    			        IfStatement(
+    			            BinaryExpression(JSIdentifier("x"),List(BinaryExtension(Operator(">"),JSNumber("10")))),
+    			            JSBlock(List(ThrowStatement(JSString("Err1")))),
+    			            Some(IfStatement(
+    			                BinaryExpression(JSIdentifier("x"),List(BinaryExtension(Operator("<"),JSNumber("0")))),
+    			                JSBlock(List(ThrowStatement(JSString("Err2")))),
+    			                Some(IfStatement(
+    			                    CallExpression(0,JSIdentifier("isNaN"),List(ApplyArguments(List(JSIdentifier("x"))))),
+    			                    JSBlock(List(ThrowStatement(JSString("Err3")))),None))))))),
+    			   TryTail(
+    			       Some(JSIdentifier("er")),
+    			       Some(JSBlock(List(
+    			           IfStatement(
+    			               BinaryExpression(JSIdentifier("er"),List(BinaryExtension(Operator("=="),JSString("Err1")))),
+    			               JSBlock(List(
+    			                   CallExpression(0,JSIdentifier("alert"),List(
+    			                       ApplyArguments(List(JSString("Error! The value is too high"))))))),
+    			               None), 
+    			           IfStatement(
+    			               BinaryExpression(JSIdentifier("er"),List(BinaryExtension(Operator("=="),JSString("Err2")))),
+    			               JSBlock(List(
+    			                   CallExpression(0,JSIdentifier("alert"),List(
+    			                       ApplyArguments(List(JSString("Error! The value is too low"))))))),
+    			               None), 
+    			          IfStatement(
+    			              BinaryExpression(JSIdentifier("er"),List(BinaryExtension(Operator("=="),JSString("Err3")))),
+    			              JSBlock(List(
+    			                  CallExpression(0,JSIdentifier("alert"),List(
+    			                      ApplyArguments(List(JSString("Error! The value is not a number"))))))),
+    			               None)))),
+    			      None))))
+    	verifySource(source,ast)
+    }
+    
     
 }

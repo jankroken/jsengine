@@ -147,7 +147,7 @@ object JSParser extends RegexParsers {
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
 	
-	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally|debugger)\b""".r
+	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|break|default|try|catch|finally|debugger|if|else|throw)\b""".r
 	def identifierString = """[a-zA-Z][a-zA-Z0-9]*""".r
 	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
 
@@ -178,12 +178,16 @@ object JSParser extends RegexParsers {
 	 * Statements
 	 */
 
-	def statement: Parser[JSStatement] = block | variableDeclaration(true) | expressionStatement | iterationStatement | 
-										 switchStatement  | break | continue | withStatement | tryStatement | debugger
+	def statement: Parser[JSStatement] = ifStatement | block | variableDeclaration(true) | expressionStatement | iterationStatement | 
+										 switchStatement  | break | continue | withStatement | tryStatement | throwStatement | debugger
 										 
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
 	def expressionStatement = not("""(function|,)\b""".r) ~> expression(true)
+	
+	def ifStatement = "if" ~! "(" ~> expression(true) ~ ")" ~ body ~ opt("else" ~> body) ^^ {
+	  case expr ~ ")" ~ truePart ~ falsePart => IfStatement(expr,truePart,falsePart)
+	}
 	
 	def sourceElement: Parser[JSSourceElement] = functionExpression | statement;
 
@@ -196,10 +200,10 @@ object JSParser extends RegexParsers {
 	
 	def iterationStatement = whileStatement | doWhileStatement | forStatement
 	
-	def whileStatement = "while" ~> ( "(" ~> expression(true) <~ ")" ) ~ whileBody ^^ { case cond ~ body => While(cond,body) }
-	def doWhileStatement = "do" ~> whileBody ~ ( "while" ~ "(" ~> expression(true) <~ ")" ) ^^  { case body ~ cond => DoWhile(body,cond) }
+	def whileStatement = "while" ~> ( "(" ~> expression(true) <~ ")" ) ~ body ^^ { case cond ~ body => While(cond,body) }
+	def doWhileStatement = "do" ~> body ~ ( "while" ~ "(" ~> expression(true) <~ ")" ) ^^  { case body ~ cond => DoWhile(body,cond) }
 	
-	def whileBody = blockStatement | whileSingleStatement
+	def body = blockStatement | whileSingleStatement
 	def whileSingleStatement : Parser[JSStatement] = not("{") ~> statement
 	def blockStatement = "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
@@ -235,7 +239,7 @@ object JSParser extends RegexParsers {
 	
 	def throwStatement = "throw" ~> expression(true) ^^ { ThrowStatement(_) }
 	
-	def tryStatement = "try" ~> block ~ tryTail ^^ { case block ~ tail => TryStatement(block,tail) } 
+	def tryStatement = "try" ~! block ~ tryTail ^^ { case "try" ~ block ~ tail => TryStatement(block,tail) } 
 	def tryTail = catchTail | finallyTail
 	def catchTail = "catch" ~ "(" ~> identifier ~ ")" ~ block ~ opt(finallyBlock) ^^ {
 	  case identifier ~ ")" ~ block ~ finallyBlock => TryTail(Some(identifier),Some(block),finallyBlock)
