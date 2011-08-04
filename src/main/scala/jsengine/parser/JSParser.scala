@@ -99,7 +99,7 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 
-	def bitwiseAndOperator = "&" ^^ { Operator(_) }
+	def bitwiseAndOperator = "&" <~ not("&") ^^ { Operator(_) }
 	def bitwiseAndExtension(withIn: Boolean) = bitwiseAndOperator ~ equalityExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
 	def bitwiseAndExpression(withIn: Boolean) = equalityExpression(withIn) ~ rep(bitwiseAndExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
@@ -147,14 +147,15 @@ object JSParser extends RegexParsers {
 	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
 	
 	
-	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|case|break|default|try|catch|finally|debugger|if|else|throw)\b""".r
-	def identifierString = """[a-zA-Z][a-zA-Z0-9]*""".r
+	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|case|break|default|try|catch|finally|debugger|if|else|throw|return|typeof|void|delete)\b""".r
+	def identifierString = """[a-zA-Z_$][a-zA-Z0-9_$]*""".r
 	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
 
 	def stringLiteral : Parser[JSString] = doubleQuotedStringLiteral | singleQuotedStringLiteral
 	def doubleQuotedStringLiteral = """"([^"\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*"""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\"'))} 
 	def singleQuotedStringLiteral = """'([^'\\\n]|\\[\\\n'"bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*'""".r ^^ { x => JSString(StringLiteral(x).getUnqotedString('\''))} 
-	def regexLiteral : Parser[JSRegexLiteral] = """/([^/\\\n]|\\[\\\n'"/bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/""".r ^^ { JSRegexLiteral(_)} 
+//	def regexLiteral : Parser[JSRegexLiteral] = """/([^/\\\n]|\\[\\\n'"/bfnrtv0]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/""".r ^^ { JSRegexLiteral(_)}
+	def regexLiteral : Parser[JSRegexLiteral] = """/(\\/|[^/])*/[a-z]*""".r ^^ { JSRegexLiteral(_) }
 	
 	def arrayLiteral : Parser[JSArrayLiteral] = "[" ~> rep(opt(assignmentExpression(true)) <~ ",") ~ opt(assignmentExpression(true)) <~ "]" ^^ { 
 	  	case exprlist ~ None  => JSArrayLiteral(exprlist)
@@ -179,7 +180,9 @@ object JSParser extends RegexParsers {
 	 */
 
 	def statement: Parser[JSStatement] = ifStatement | block | variableDeclaration(true) | expressionStatement | iterationStatement | 
-										 switchStatement  | break | continue | withStatement | tryStatement | throwStatement | debugger
+										 switchStatement  | break | continue | withStatement | tryStatement | throwStatement | debugger |
+										 returnStatement
+										 
 										 
 	def block : Parser[JSBlock]= "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
