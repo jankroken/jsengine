@@ -38,6 +38,18 @@ class TestJQuery {
     	 testFile("jquery_part3.js")
      }
 
+     @Test def testPart4 {
+    	 testFile("jquery_part4.js")
+     }
+     
+     @Test def testPart5 {
+    	 testFile("jquery_part5.js")
+     }
+     
+     @Test def testPart6 {
+    	 testFile("jquery_part6.js")
+     }
+
      @Test def testComplete {
     	 testFile("jquery-1.6.2.js")
      }

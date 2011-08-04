@@ -19,7 +19,7 @@ object JSParser extends RegexParsers {
 	      case ex ~ Some(x ~ expr) => JSExpression(List(ex,expr))
 	    } 
 
-	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | "(" ~> expression(true) <~ ")"
+	def primaryExpression: Parser[JSBaseExpression] = simpleLiteral | identifier | jsobject | nativeCall | functionExpression | "(" ~> expression(true) <~ ")"
 
 	def memberExpression : Parser[JSBaseExpression] = primaryExpression | functionExpression 
 	
@@ -144,10 +144,10 @@ object JSParser extends RegexParsers {
 	def propertyNameAndValue : Parser[(PropertyName, JSBaseExpression)] = propertyName ~ ":" ~ propertyValue ^^
 		{ case propertyName ~ ":" ~ propertyValue => (propertyName, propertyValue) }
 	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
-	def propertyValue : Parser[JSBaseExpression] = assignmentExpression(true)
+	def propertyValue : Parser[JSBaseExpression] = conditionalExpression(true)
 	
 	
-	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|case|break|default|try|catch|finally|debugger|if|else|throw|return|typeof|void|delete)\b""".r
+	def keywords = """(function|new|var|while|for|do|break|continue|with|switch|case|break|default|try|catch|finally|debugger|if|else|throw|return|typeof|void|delete|instanceof)\b""".r
 	def identifierString = """[a-zA-Z_$][a-zA-Z0-9_$]*""".r
 	def identifier : Parser[JSIdentifier] = not(keywords) ~> identifierString ^^ { JSIdentifier(_)}
 
@@ -192,7 +192,8 @@ object JSParser extends RegexParsers {
 	  case expr ~ ")" ~ truePart ~ falsePart => IfStatement(expr,truePart,falsePart)
 	}
 	
-	def sourceElement: Parser[JSSourceElement] = functionExpression | statement;
+//	def sourceElement: Parser[JSSourceElement] = functionExpression | statement;
+	def sourceElement: Parser[JSSourceElement] = statement;
 
 	def variableDeclaration(withIn: Boolean) : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable(withIn),",") ^^ { VariableDeclarations(_) }
 	
@@ -224,7 +225,7 @@ object JSParser extends RegexParsers {
 	  
 	def forInitExpression : Parser[JSStatement] = not("""var\z""".r) ~> expression(false)
 	
-	def continue = "continue" ~> opt(identifier) <~ ";" ^^ { ContinueStatement(_) }
+	def continue = "continue" ~> opt(identifier) ^^ { ContinueStatement(_) }
 	def break = "break" ~> opt(identifier)  ^^ { BreakStatement(_) }
 	def returnStatement = "return" ~> opt(expression(true)) ^^ { ReturnStatement(_) }
 	
