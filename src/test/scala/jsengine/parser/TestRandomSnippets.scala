@@ -64,5 +64,69 @@ class TestRandomSnippets {
         verifyStatement(source,ast)
     }
 
+    @Test def testW3SchoolsDisplayDate {
+    	val source = """
+    			function displayDate()
+    			{
+    				document.getElementById("demo").innerHTML=Date()
+    			}
+    	"""
+    	  val ast = JSSource(List(JSFunction(Some(JSIdentifier("displayDate")),List(),
+    			  			 				 List(AssignmentExpression(Operator("="),
+    			  			 						 				   CallExpression(0,JSIdentifier("document"),List(
+    			  			 						 						   ApplyLookup(JSIdentifier("getElementById")), 
+    			  			 						 						   ApplyArguments(List(JSString("demo"))), 
+    			  			 						 						   ApplyLookup(JSIdentifier("innerHTML")))),
+    			  			 						 				   CallExpression(0,JSIdentifier("Date"),List(ApplyArguments(List()))))))))
+    	  verifySource(source,ast)
+    }
+    
+    @Test def testW3SchoolsTryCatchExample {
+    	val source = """
+    		var txt="";
+    		function message() {
+    			try {
+    				adddlert("Welcome guest!")
+    			} catch(err) {
+    				txt="There was an error on this page.\n\n";
+    				txt+="Error description: " + err.description + "\n\n";
+    				txt+="Click OK to continue.\n\n";
+    				alert(txt)
+    			}
+    		}
+    	"""
+    	val ast = JSSource(List(
+    				VariableDeclarations(List(
+    					VariableDeclaration(JSIdentifier("txt"),Some(JSString(""))))), 
+    				JSFunction(Some(JSIdentifier("message")),List(),List(
+    				    TryStatement(
+    				        JSBlock(List(
+    				            CallExpression(0,JSIdentifier("adddlert"),List(ApplyArguments(List(JSString("Welcome guest!"))))))),
+    				        TryTail(Some(JSIdentifier("err")),
+    				                Some(JSBlock(List(
+    				                    AssignmentExpression(
+    				                        Operator("="),
+    				                        JSIdentifier("txt"),
+    				                        JSString("There was an error on this page.\n\n")), 
+    				                    AssignmentExpression(
+    				                    	Operator("+="),
+    				                    	JSIdentifier("txt"),
+    				                    	BinaryExpression(
+    				                    	    JSString("Error description: "),
+    				                    	    List(BinaryExtension(Operator("+"),
+    				                    	    					 CallExpression(0,JSIdentifier("err"),List(ApplyLookup(JSIdentifier("description"))))), 
+    				                    	    	 BinaryExtension(Operator("+"),
+    				                    	    			 		JSString("\n\n"))))), 
+    				                    AssignmentExpression(
+    				                        Operator("+="),
+    				                    	JSIdentifier("txt"),
+    				                    	JSString("Click OK to continue.\n\n")), 
+    				                    CallExpression(0,JSIdentifier("alert"),List(ApplyArguments(List(JSIdentifier("txt")))))))),
+    				                None))))))
+    				                    	    			 		    
+    				                    	    			 		    
+    	verifySource(source,ast)
+    }
+    
     
 }
