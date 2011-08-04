@@ -13,4 +13,5 @@ Current incompatibilities:
    semicolons are used as separators between statements, and not terminators
    a \n ++ b will be interpreted as (a++)\n b, instead of a \n (++b)
    labeles needs to be preceeded by @label
+   comments are not supported
    
