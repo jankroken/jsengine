@@ -14,17 +14,24 @@ jQuery.extend = jQuery.fn.extend = function() {
 		deep = target;
 		target = arguments[1] || {};
 		i = 2
-	}
+	};
 
 	if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
-		target = {};
-	}
+		target = {}
+	};
 
 	if ( length === i ) {
 		target = this;
-		--i;
-	}
+		--i
+	};
 
+	for ( ; i < length; i++ ) {
+		if ( (options = arguments[ i ]) != null ) {
+			for ( name in options ) {
+			}
+		}
+	};
+	
 	for ( ; i < length; i++ ) {
 		if ( (options = arguments[ i ]) != null ) {
 			for ( name in options ) {
@@ -32,28 +39,27 @@ jQuery.extend = jQuery.fn.extend = function() {
 				copy = options[ name ];
 
 				if ( target === copy ) {
-					continue;
-				}
+					continue
+				};
 
 				if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
 					if ( copyIsArray ) {
 						copyIsArray = false;
-						clone = src && jQuery.isArray(src) ? src : [];
-
+						clone = src && jQuery.isArray(src) ? src : []
 					} else {
-						clone = src && jQuery.isPlainObject(src) ? src : {};
-					}
+						clone = src && jQuery.isPlainObject(src) ? src : {}
+					};
 
-					target[ name ] = jQuery.extend( deep, clone, copy );
+					target[ name ] = jQuery.extend( deep, clone, copy )
 
 				} else if ( copy !== undefined ) {
-					target[ name ] = copy;
+					target[ name ] = copy
 				}
 			}
 		}
-	}
+	};
 
-	return target;
+	return target
 };
 
 jQuery.extend({

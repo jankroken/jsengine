@@ -10,7 +10,7 @@ case class EmptyStatement() extends JSStatement
 case class IfStatement(condition: JSBaseExpression, whenTrue: JSStatement, whenFalse: Option[JSStatement]) extends JSStatement 
 case class DoWhile (statement: JSStatement, condition: JSBaseExpression) extends JSStatement
 case class While (condition: JSBaseExpression, statement: JSStatement) extends JSStatement
-case class For(init: ForInit, update: ForUpdate, body: JSStatement) extends JSStatement
+case class For(init: Option[ForInit], update: ForUpdate, body: JSStatement) extends JSStatement
 case class ForInit(init: JSStatement)
 sealed trait ForUpdate
 case class ForInUpdate(statement: JSBaseExpression) extends ForUpdate

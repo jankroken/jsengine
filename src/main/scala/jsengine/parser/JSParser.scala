@@ -99,7 +99,7 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 
-	def bitwiseAndOperator = "&\\z".r <~ not("&") ^^ { Operator(_) }
+	def bitwiseAndOperator = "&(?!&)".r ^^ { Operator(_) }
 	def bitwiseAndExtension(withIn: Boolean) = bitwiseAndOperator ~ equalityExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
 	def bitwiseAndExpression(withIn: Boolean) = equalityExpression(withIn) ~ rep(bitwiseAndExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
@@ -113,7 +113,7 @@ object JSParser extends RegexParsers {
 	  case expr ~ extensions => BinaryExpression(expr,extensions)
 	}
 	
-	def bitwiseOrOperator = "\\|\\z".r <~ not("|") ^^ { Operator(_) }
+	def bitwiseOrOperator = "\\|(?!\\|)".r ^^ { Operator(_) }
 	def bitwiseOrExtension(withIn: Boolean) = bitwiseOrOperator ~ bitwiseXorExpression(withIn) ^^ { case oper ~ expr => BinaryExtension(oper,expr) }
 	def bitwiseOrExpression(withIn: Boolean) = bitwiseXorExpression(withIn) ~ rep(bitwiseOrExtension(withIn)) ^^ {
 	  case expr ~ List() => expr
@@ -196,7 +196,7 @@ object JSParser extends RegexParsers {
 
 	def variableDeclaration(withIn: Boolean) : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable(withIn),",") ^^ { VariableDeclarations(_) }
 	
-	def singleVariable(withIn: Boolean): Parser[VariableDeclaration] = identifier ~ opt("=" ~> assignmentExpression(withIn)) ^^ {
+	def singleVariable(withIn: Boolean): Parser[VariableDeclaration] = identifier ~ opt("=" ~> conditionalExpression(withIn)) ^^ {
 	  case identifier ~ None => VariableDeclaration(identifier,None)
 	  case identifier ~ Some(initialValue) => VariableDeclaration(identifier,Some(initialValue))
 	}
@@ -210,7 +210,7 @@ object JSParser extends RegexParsers {
 	def whileSingleStatement : Parser[JSStatement] = not("{") ~> statement
 	def blockStatement = "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
-	def forStatement: Parser[For] = "for" ~ "(" ~> forInit ~ forUpdate ~ ")"  ~ statement ^^ {
+	def forStatement: Parser[For] = "for" ~ "(" ~> opt(forInit) ~ forUpdate ~ ")"  ~ statement ^^ {
 	  case init ~ update ~ ")" ~ statement => For(init,update,statement)
 	}
 	
