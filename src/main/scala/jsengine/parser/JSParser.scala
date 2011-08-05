@@ -26,7 +26,9 @@ object JSParser extends RegexParsers {
 	def applyExtension : Parser[ApplicationExtension] = arrayLookupExtension | propertyLookupExtension | applyArguments
 	
     def arrayLookupExtension : Parser[ApplyLookup] = "[" ~> expression(true) <~ "]" ^^ { ApplyLookup(_) }
-	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { ApplyLookup(_) }
+	def propertyLookupExtension: Parser[ApplyLookup] =  "." ~> identifier ^^ { 
+	  case JSIdentifier(id) => ApplyLookup(JSString(id))
+	}
 
 	def applyArguments : Parser[ApplyArguments] = "(" ~> repsep(conditionalExpression(true),",") <~ ")" ^^ { ApplyArguments(_) }
 	

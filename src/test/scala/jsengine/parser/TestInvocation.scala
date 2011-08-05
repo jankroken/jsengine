@@ -32,13 +32,13 @@ class TestInvocation {
 
     @Test def testInvokeNewMember {
     	val source = "new hello.foo()"
-    	val ast = CallExpression(1,JSIdentifier("hello"),List(ApplyLookup(JSIdentifier("foo")), ApplyArguments(List())))
+    	val ast = CallExpression(1,JSIdentifier("hello"),List(ApplyLookup(JSString("foo")), ApplyArguments(List())))
     	verifyExpression(source,ast)
     }
 
     @Test def testInvokeMember {
     	val source = "hello.foo()"
-    	val ast = CallExpression(0,JSIdentifier("hello"),List(ApplyLookup(JSIdentifier("foo")), ApplyArguments(List())))
+    	val ast = CallExpression(0,JSIdentifier("hello"),List(ApplyLookup(JSString("foo")), ApplyArguments(List())))
  		verifyExpression(source,ast)
     }
 }
