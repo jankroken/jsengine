@@ -159,9 +159,9 @@ class JSRewriter {
     	}
     }
   
-    private def rewriteSource (source: JSSource) : JSSource = {
+    def rewriteSource (source: JSSource) : JSSource = {
     	source match {
-    	  case JSSource(list) => JSSource(list.map(rewriteStatement _))
+    	  case JSSource(statements) => JSSource((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))}))
     	}
     }
     
