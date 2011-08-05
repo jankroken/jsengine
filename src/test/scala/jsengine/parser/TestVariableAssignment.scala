@@ -93,6 +93,7 @@ class TestVariableAssignment {
 		))
 
     	verifySource(source,ast)
+
     }
 
     @Test def testSimpleAssignments {

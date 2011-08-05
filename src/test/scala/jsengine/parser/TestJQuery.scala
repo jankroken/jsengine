@@ -24,6 +24,11 @@ class TestJQuery {
      def testFile(filename: String) {
     	val result = JSParser.parse(JSParser.source,Source.fromURL(this.getClass().getClassLoader().getResource(filename)).reader)
     	println(result)
+    	result match {
+    	  case JSParser.Success(ast,_) => println(JSRewriter.rewriteSource(ast))
+    	  case JSParser.NoSuccess(message,src) => println("failed")	
+    	}
+
     }
 
      @Test def testPart1 {

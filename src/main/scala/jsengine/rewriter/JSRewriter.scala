@@ -2,7 +2,7 @@ package jsengine.parser
 
 import jsengine.ast._
 
-class JSRewriter {
+object JSRewriter {
 
     private def rewriteOptionExpression(optExpr: Option[JSBaseExpression]):Option[JSBaseExpression] = {
         optExpr match {
@@ -43,6 +43,10 @@ class JSRewriter {
 			  case OperatorCall(operator: Operator, args: List[JSBaseExpression]) => { // only to handle recursion in bottom-up replacement
 				  OperatorCall(operator,args.map(rewriteExpression _))
 			  }
+			  case Lookup(expr,index) => Lookup(rewriteExpression(expr),rewriteExpression(index))
+			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression _))
+			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression _))
+			  case Assign(left,value) => Assign(rewriteExpression(left), rewriteExpression(value))
 			  case BinaryExpression(right,List()) => rewriteExpression(right) 
 			  case BinaryExpression(right,BinaryExtension(operator,expr) :: tail) => {
 				  rewriteExpression(BinaryExpression(OperatorCall(operator,
@@ -122,8 +126,8 @@ class JSRewriter {
 			  																	  Some(JSBlock(rewriteStatement(whenFalse)))))
 			  case DoWhile (statement, condition)  => List(DoWhile(JSBlock(rewriteStatement(statement)),rewriteExpression(condition)))
 			  case While (condition, statement) => List(While(rewriteExpression(condition),JSBlock(rewriteStatement(statement))))
-			  case ForStatement(Some(id:JSIdentifier), ForInUpdate(expr),body) => List(ForIn(id,rewriteExpression(expr),body))
-			  case forStatement @ ForStatement(None, update:ForSemicolonUpdate,body) => rewriteStatement(forToWhile(forStatement)) 
+			  case ForStatement(Some(ForInit(init)), ForInUpdate(expr),body) => List(ForIn(JSBlock(rewriteStatement(init)),rewriteExpression(expr),body))
+			  case forStatement @ ForStatement(init, update:ForSemicolonUpdate,body) => rewriteStatement(forToWhile(forStatement)) 
 			  case ContinueStatement(label) => List(statement) 
 			  case BreakStatement(label) => List(statement)
 			  case ReturnStatement(None) => List(statement)

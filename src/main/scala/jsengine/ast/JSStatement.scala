@@ -1,6 +1,6 @@
 package jsengine.ast
 
-trait JSStatement
+trait JSStatement extends ASTNode
 
 case class JSBlock(statements : List[JSStatement]) extends JSStatement
 case class VariableDeclarations(declarations: List[VariableDeclaration]) extends JSStatement	// before rewrite
@@ -33,6 +33,6 @@ case class DebuggerStatement() extends JSStatement
 // After rewrite
 
 case class Declare(id: JSIdentifier) extends JSStatement
-case class ForIn(id: JSIdentifier, expr: JSBaseExpression, body: JSStatement) extends JSStatement
+case class ForIn(id: JSStatement, expr: JSBaseExpression, body: JSStatement) extends JSStatement
 case class Try (tryStatement: JSStatement, catchBlock: Option[Catch], finallyBlock: Option[JSStatement]) extends JSStatement
 case class Catch(id: JSIdentifier, statement: JSStatement)
