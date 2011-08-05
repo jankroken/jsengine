@@ -166,7 +166,7 @@ class JSRewriter {
     }
     
     
-  
+/*
 	private def templateRewrite[T <: ASTNode](node: T): T = {
 			node match {
 			  case JSExpression(expressions) => JSExpression(assignments.map(((x) => templateRewrite[JSBaseExpression](x))))
@@ -218,5 +218,5 @@ class JSRewriter {
 			  case _ => throw new RuntimeException("Implementation error: missing handling of AST node: "+_)
 			}
 	}
-  
+*/  
 }
