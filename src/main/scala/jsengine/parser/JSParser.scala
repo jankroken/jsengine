@@ -192,8 +192,8 @@ object JSParser extends RegexParsers {
 	  case expr ~ ")" ~ truePart ~ falsePart => IfStatement(expr,truePart,falsePart)
 	}
 	
-//	def sourceElement: Parser[JSSourceElement] = functionExpression | statement;
-	def sourceElement: Parser[JSSourceElement] = statement;
+	def sourceElement: Parser[JSSourceElement] = functionExpression | statement;
+//	def sourceElement: Parser[JSSourceElement] = statement;
 
 	def variableDeclaration(withIn: Boolean) : Parser[VariableDeclarations] = "var" ~> repsep(singleVariable(withIn),",") ^^ { VariableDeclarations(_) }
 	

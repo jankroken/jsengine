@@ -1,60 +1,55 @@
 
 jQuery.each("Boolean Number String Function Array Date RegExp Object".split(" "), function(i, name) {
-	class2type[ "[object " + name + "]" ] = name.toLowerCase();
+	class2type[ "[object " + name + "]" ] = name.toLowerCase()
 });
 
 browserMatch = jQuery.uaMatch( userAgent );
 if ( browserMatch.browser ) {
 	jQuery.browser[ browserMatch.browser ] = true;
-	jQuery.browser.version = browserMatch.version;
-}
+	jQuery.browser.version = browserMatch.version
+};
 
 if ( jQuery.browser.webkit ) {
-	jQuery.browser.safari = true;
-}
+	jQuery.browser.safari = true
+};
 
 if ( rnotwhite.test( "\xA0" ) ) {
 	trimLeft = /^[\s\xA0]+/;
-	trimRight = /[\s\xA0]+$/;
-}
+	trimRight = /[\s\xA0]+$/
+};
 
 rootjQuery = jQuery(document);
 
 if ( document.addEventListener ) {
 	DOMContentLoaded = function() {
 		document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-		jQuery.ready();
-	};
-
+		jQuery.ready()
+	}
 } else if ( document.attachEvent ) {
 	DOMContentLoaded = function() {
-		// Make sure body exists, at least, in case IE gets a little overzealous (ticket #5443).
 		if ( document.readyState === "complete" ) {
 			document.detachEvent( "onreadystatechange", DOMContentLoaded );
-			jQuery.ready();
+			jQuery.ready()
 		}
-	};
-}
+	}
+};
 
 function doScrollCheck() {
 	if ( jQuery.isReady ) {
-		return;
-	}
+		return
+	};
 
 	try {
-		document.documentElement.doScroll("left");
+		document.documentElement.doScroll("left")
 	} catch(e) {
 		setTimeout( doScrollCheck, 1 );
-		return;
-	}
+		return
+	};
 
-	jQuery.ready();
-}
+	jQuery.ready()
+};
 
 return jQuery;
-
-})();
-
 
 var
 	promiseMethods = "done fail isResolved isRejected promise then always pipe".split( " " ),
