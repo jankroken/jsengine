@@ -1,20 +1,19 @@
 package jsengine.ast
 
-trait JSStatement extends JSSourceElement
+trait JSStatement
 
 case class JSBlock(statements : List[JSStatement]) extends JSStatement
-case class VariableStatement(variableDeclararations : List[VariableDeclaration]) extends JSStatement
-case class VariableDeclarations(declarations: List[VariableDeclaration]) extends JSStatement with JSSourceElement
-case class VariableDeclaration(name : JSIdentifier, initialValue : Option[JSBaseExpression]) extends JSStatement
+case class VariableDeclarations(declarations: List[VariableDeclaration]) extends JSStatement	// before rewrite
+case class VariableDeclaration(name : JSIdentifier, initialValue : Option[JSBaseExpression]) extends JSStatement // before rewrite
 case class EmptyStatement() extends JSStatement
 case class IfStatement(condition: JSBaseExpression, whenTrue: JSStatement, whenFalse: Option[JSStatement]) extends JSStatement 
 case class DoWhile (statement: JSStatement, condition: JSBaseExpression) extends JSStatement
 case class While (condition: JSBaseExpression, statement: JSStatement) extends JSStatement
-case class For(init: Option[ForInit], update: ForUpdate, body: JSStatement) extends JSStatement
-case class ForInit(init: JSStatement)
-sealed trait ForUpdate
-case class ForInUpdate(statement: JSBaseExpression) extends ForUpdate
-case class ForSemicolonUpdate(test: Option[JSBaseExpression], update: Option[JSStatement]) extends ForUpdate
+case class ForStatement(init: Option[ForInit], update: ForUpdate, body: JSStatement) extends JSStatement // before rewrite
+case class ForInit(init: JSStatement) // before rewrite 
+sealed trait ForUpdate // before rewrite 
+case class ForInUpdate(statement: JSBaseExpression) extends ForUpdate // before rewrite
+case class ForSemicolonUpdate(test: Option[JSBaseExpression], update: Option[JSStatement]) extends ForUpdate // before update
 case class ContinueStatement(label: Option[JSIdentifier]) extends JSStatement
 case class BreakStatement(label: Option[JSIdentifier]) extends JSStatement
 case class ReturnStatement(value: Option[JSBaseExpression]) extends JSStatement
@@ -31,3 +30,9 @@ case class TryStatement(block: JSBlock, tryTail: TryTail) extends JSStatement
 case class TryTail(id: Option[JSIdentifier], catchBlock: Option[JSBlock], finallyBlock: Option[JSBlock])
 case class DebuggerStatement() extends JSStatement
 
+// After rewrite
+
+case class Declare(id: JSIdentifier) extends JSStatement
+case class ForIn(id: JSIdentifier, expr: JSBaseExpression, body: JSStatement) extends JSStatement
+case class Try (tryStatement: JSStatement, catchBlock: Option[Catch], finallyBlock: Option[JSStatement]) extends JSStatement
+case class Catch(id: JSIdentifier, statement: JSStatement)

@@ -211,8 +211,8 @@ object JSParser extends RegexParsers {
 	def whileSingleStatement : Parser[JSStatement] = not("{") ~> statement
 	def blockStatement = "{" ~> repsep(statement,";") <~ "}" ^^ { JSBlock(_) }
 	
-	def forStatement: Parser[For] = "for" ~ "(" ~> opt(forInit) ~ forUpdate ~ ")"  ~ statement ^^ {
-	  case init ~ update ~ ")" ~ statement => For(init,update,statement)
+	def forStatement: Parser[ForStatement] = "for" ~ "(" ~> opt(forInit) ~ forUpdate ~ ")"  ~ statement ^^ {
+	  case init ~ update ~ ")" ~ statement => ForStatement(init,update,statement)
 	}
 	
 	def forUpdate = forInUpdate | forSemicolonUpdate

@@ -41,7 +41,7 @@ class TestRandomSnippets {
     			reportCompare(true, !!(/\\s/.test(v.s)), 'Is ' + v.t + ' a space')
     		}
     	"""
-    	val ast = For(Some(ForInit(VariableDeclarations(List(VariableDeclaration(JSIdentifier("i"),Some(JSNumber("0"))))))),
+    	val ast = ForStatement(Some(ForInit(VariableDeclarations(List(VariableDeclaration(JSIdentifier("i"),Some(JSNumber("0"))))))),
     				  ForSemicolonUpdate(Some(BinaryExpression(JSIdentifier("i"),List(BinaryExtension(Operator("<"),CallExpression(0,JSIdentifier("whitespace"),List(ApplyLookup(JSIdentifier("length")))))))),
     						  			 Some(UnaryExpression(List(Operator("++")),JSIdentifier("i")))),
     				  JSBlock(List(VariableDeclarations(List(VariableDeclaration(JSIdentifier("v"),Some(CallExpression(0,JSIdentifier("whitespace"),List(ApplyLookup(JSIdentifier("i")))))))), 
@@ -249,7 +249,7 @@ class TestRandomSnippets {
         				            (JSIdentifier("fname"),JSString("John")), 
         				            (JSIdentifier("lname"),JSString("Doe")), 
         				            (JSIdentifier("age"),JSNumber("25")))))))), 
-        				For(
+        				ForStatement(
         				    Some(ForInit(JSIdentifier("x"))),ForInUpdate(JSIdentifier("person")),
         				    JSBlock(List(
         				        CallExpression(0,JSIdentifier("document"),List(
@@ -278,7 +278,7 @@ class TestRandomSnippets {
             VariableDeclarations(List(
                 VariableDeclaration(JSIdentifier("i"),
                 	Some(JSNumber("0"))))), 
-                For(
+                ForStatement(
                     Some(ForInit(
                         AssignmentExpression(Operator("="),JSIdentifier("i"),JSNumber("0")))),
                     ForSemicolonUpdate(
