@@ -145,7 +145,8 @@ object JSParser extends RegexParsers {
 		{ case keysAndValues:List[(PropertyName,JSBaseExpression)] => JSLiteralObject(List[(PropertyName,JSBaseExpression)]() ++ keysAndValues) }
 	def propertyNameAndValue : Parser[(PropertyName, JSBaseExpression)] = propertyName ~ ":" ~ propertyValue ^^
 		{ case propertyName ~ ":" ~ propertyValue => (propertyName, propertyValue) }
-	def propertyName : Parser[PropertyName] = identifier | stringLiteral | numericLiteral
+	def propertyName : Parser[PropertyName] = propertyNameIdentifier | stringLiteral | numericLiteral
+	def propertyNameIdentifier : Parser[PropertyName] = identifier ^^ { case JSIdentifier(id) => JSString(id) }
 	def propertyValue : Parser[JSBaseExpression] = conditionalExpression(true)
 	
 	

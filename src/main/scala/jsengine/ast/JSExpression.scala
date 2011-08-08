@@ -9,7 +9,7 @@ case class BinaryExtension(operator: Operator, right: JSBaseExpression)
 case class UnaryExpression(operators: List[Operator], expression: JSBaseExpression) extends JSBaseExpression
 case class PostfixExpression(expression: JSBaseExpression, operator: Operator) extends JSBaseExpression
 case class CallExpression(news: Int, function: JSBaseExpression, applicationExtendsions: List[ApplicationExtension]) extends JSBaseExpression
- trait ApplicationExtension
+trait ApplicationExtension
 case class ApplyArguments(arglist: List[JSBaseExpression]) extends ApplicationExtension
 case class ApplyLookup(expr: JSBaseExpression) extends ApplicationExtension
 case class JSArrayLiteral(elements : List[Option[JSBaseExpression]]) extends JSBaseExpression
@@ -23,7 +23,7 @@ case class JSNumber(val value: String) extends JSObject with PropertyName
 trait JSObject extends JSBaseExpression
 case class JSString(value: String) extends JSObject with PropertyName
 case class JSRegexLiteral(value: String) extends JSObject with PropertyName
-trait PropertyName
+trait PropertyName extends JSBaseExpression
 
 // after rewrite
 
@@ -32,3 +32,4 @@ case class OperatorCall(operator: Operator, arguments: List[JSBaseExpression]) e
 case class Lookup(expr: JSBaseExpression, index: JSBaseExpression) extends JSBaseExpression
 case class New(function: JSBaseExpression, arguments: List[JSBaseExpression]) extends JSBaseExpression
 case class Call(function: JSBaseExpression, arguments: List[JSBaseExpression]) extends JSBaseExpression
+case class BuiltIn(name: String) extends JSBaseExpression
