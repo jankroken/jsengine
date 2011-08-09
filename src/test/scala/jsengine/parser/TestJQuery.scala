@@ -13,7 +13,7 @@ import ParserTestSupport.verifyArrayLiteral
 import ParserTestSupport.verifyExpression
 import ParserTestSupport.verifyParsing
 import ParserTestSupport.verifySource
-import jsengine.parser.JSParser
+import jsengine.rewriter._
 import jsengine.ast._
 import scala.io.Source
 
@@ -25,7 +25,7 @@ class TestJQuery {
     	val result = JSParser.parse(JSParser.source,Source.fromURL(this.getClass().getClassLoader().getResource(filename)).reader)
     	println(result)
     	result match {
-    	  case JSParser.Success(ast,_) => println(JSCallRewriterewriter.rewriteSource(ast))
+    	  case JSParser.Success(ast,_) => println(JSCallRewriter.rewriteSource(ast))
     	  case JSParser.NoSuccess(message,src) => println("failed")	
     	}
 

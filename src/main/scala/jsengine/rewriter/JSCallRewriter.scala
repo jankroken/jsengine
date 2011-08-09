@@ -1,4 +1,4 @@
-package jsengine.parser
+package jsengine.rewriter
 
 import jsengine.ast._
 
@@ -18,7 +18,7 @@ object JSCallRewriter {
         }
     }
 
-    private def literalObjectToFunctionCall(o: JSLiteralObject): Call = {
+    private def literalObjectToFunctionCall(o: JSLiteralObject): New = {
     	def toCode(property: (JSExpression, JSExpression)):Assign = {
     		property match {
     		  	case (name,value) => Assign(name,value)
@@ -27,7 +27,7 @@ object JSCallRewriter {
     	val properties = o match { case JSLiteralObject(properties) => properties }
     	val source = properties.map((property) => property match { case (name,value) => Assign(name,value) })
     	val function = JSFunction(None,List(),source)
-    	Call(function,List())
+    	New(function,List())
     }
     
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
@@ -64,56 +64,57 @@ object JSCallRewriter {
   
     private def rewriteStatement (statement: JSStatement) : List[JSStatement] = {
     	statement match {
-			  case JSBlock(statements) => List(JSBlock((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))})))
-			  case VariableDeclarations(declarations) =>  ((List[JSStatement]() /: declarations) ((x,y) => { x ::: (rewriteStatement(y))}))
-			  case VariableDeclaration(name, None) => Declare(name) :: List() 
-			  case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()
-			  case EmptyStatement() => List(EmptyStatement())
-			  case IfStatement(condition, whenTrue, None) => List(IfStatement(rewriteExpression(condition),
+    	    case Declare(identifier) => List(Declare(identifier))
+			case JSBlock(statements) => List(JSBlock((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))})))
+			case VariableDeclarations(declarations) =>  ((List[JSStatement]() /: declarations) ((x,y) => { x ::: (rewriteStatement(y))}))
+			case VariableDeclaration(name, None) => Declare(name) :: List() 
+			case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()
+			case EmptyStatement() => List(EmptyStatement())
+			case IfStatement(condition, whenTrue, None) => List(IfStatement(rewriteExpression(condition),
 			  																	  JSBlock(rewriteStatement(whenTrue)),
-			  																	  None))
-			  case IfStatement(condition, whenTrue, Some(whenFalse)) => List(IfStatement(rewriteExpression(condition),
+					  																	  None))
+			case IfStatement(condition, whenTrue, Some(whenFalse)) => List(IfStatement(rewriteExpression(condition),
 			  																	  JSBlock(rewriteStatement(whenTrue)),
 			  																	  Some(JSBlock(rewriteStatement(whenFalse)))))
-			  case DoWhile (statement, condition)  => List(DoWhile(JSBlock(rewriteStatement(statement)),rewriteExpression(condition)))
-			  case While (condition, statement) => List(While(rewriteExpression(condition),JSBlock(rewriteStatement(statement))))
-			  case ContinueStatement(label) => List(statement) 
-			  case forIn @ ForIn(init,expr,source) => {
+			case DoWhile (statement, condition)  => List(DoWhile(JSBlock(rewriteStatement(statement)),rewriteExpression(condition)))
+			case While (condition, statement) => List(While(rewriteExpression(condition),JSBlock(rewriteStatement(statement))))
+			case ContinueStatement(label) => List(statement) 
+			case forIn @ ForIn(init,expr,source) => {
 			    forIn match {
 			    	case ForIn(JSBlock(List(Declare(y))),expr,source) => List(Declare(y),ForIn(y,expr,source))
 			    }
-			  }
-			  case BreakStatement(label) => List(statement)
-			  case ReturnStatement(None) => List(statement)
-			  case ReturnStatement(Some(value))  => List(ReturnStatement(Some(rewriteExpression(value))))
-			  case WithStatement(expr, statement) => List(WithStatement(rewriteExpression(expr),JSBlock(rewriteStatement(statement))))
-			  case SwitchStatement(expr, cases)  =>  {
-				  def rewriteCase(caseClause: CaseClause): CaseClause = {
+			}
+			case BreakStatement(label) => List(statement)
+			case ReturnStatement(None) => List(statement)
+			case ReturnStatement(Some(value))  => List(ReturnStatement(Some(rewriteExpression(value))))
+			case WithStatement(expr, statement) => List(WithStatement(rewriteExpression(expr),JSBlock(rewriteStatement(statement))))
+		    case SwitchStatement(expr, cases)  =>  {
+				def rewriteCase(caseClause: CaseClause): CaseClause = {
 				    caseClause match {
-				      case LabeledCaseClause(label,statements) => 
-				        LabeledCaseClause(label,(List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
-				      case DefaultClause(statements) => 
-				        DefaultClause((List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
-				      }
-			      }
-				  List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _)))
-			  }
-			  case LabeledStatement(label, statement) => List(LabeledStatement(label, JSBlock(rewriteStatement(statement))))
-			  case ThrowStatement(expr) => List(ThrowStatement(rewriteExpression(expr)))
-			  case TryStatement(block, TryTail(None,None,Some(finallyBlock))) => {
-				  List(Try(JSBlock(rewriteStatement(block)),None,Some(JSBlock(rewriteStatement(finallyBlock)))))
-			  }
-			  case TryStatement(block, TryTail(Some(id),Some(catchBlock),None)) => {
-				  List(Try(JSBlock(rewriteStatement(block)),Some(Catch(id,JSBlock(rewriteStatement(catchBlock)))),None)) 
-			  }
-			  case TryStatement(block, TryTail(Some(id),Some(catchBlock),Some(finallyStatement))) => {
-				  List(Try(JSBlock(rewriteStatement(block)),
-				           Some(Catch(id,JSBlock(rewriteStatement(catchBlock)))),
-				           Some(JSBlock(rewriteStatement(finallyStatement))))) 
-			  }
-			  case DebuggerStatement() => List(statement)
-			  case expr:JSBaseExpression => List(rewriteExpression(expr))
-			  case unhandledStatement => throw new RuntimeException("Implementation error: missing handling of AST node: "+unhandledStatement)
+				        case LabeledCaseClause(label,statements) => 
+				            LabeledCaseClause(label,(List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
+				        case DefaultClause(statements) => 
+				            DefaultClause((List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
+				        }
+			        }
+				    List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _)))
+			    }
+			case LabeledStatement(label, statement) => List(LabeledStatement(label, JSBlock(rewriteStatement(statement))))
+			case ThrowStatement(expr) => List(ThrowStatement(rewriteExpression(expr)))
+			case TryStatement(block, TryTail(None,None,Some(finallyBlock))) => {
+				List(Try(JSBlock(rewriteStatement(block)),None,Some(JSBlock(rewriteStatement(finallyBlock)))))
+			}
+			case TryStatement(block, TryTail(Some(id),Some(catchBlock),None)) => {
+				List(Try(JSBlock(rewriteStatement(block)),Some(Catch(id,JSBlock(rewriteStatement(catchBlock)))),None)) 
+			}
+			case TryStatement(block, TryTail(Some(id),Some(catchBlock),Some(finallyStatement))) => {
+				List(Try(JSBlock(rewriteStatement(block)),
+				         Some(Catch(id,JSBlock(rewriteStatement(catchBlock)))),
+				         Some(JSBlock(rewriteStatement(finallyStatement))))) 
+			}
+			case DebuggerStatement() => List(statement)
+			case expr:JSBaseExpression => List(rewriteExpression(expr))
+			case unhandledStatement => throw new RuntimeException("Implementation error: missing handling of AST node: "+unhandledStatement)
     	}
     }
   

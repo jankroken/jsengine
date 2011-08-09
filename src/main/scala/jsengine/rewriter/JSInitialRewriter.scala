@@ -1,4 +1,4 @@
-package jsengine.parser
+package jsengine.rewriter
 
 import jsengine.ast._
 
