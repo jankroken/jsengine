@@ -33,3 +33,4 @@ case class Lookup(expr: JSBaseExpression, index: JSBaseExpression) extends JSBas
 case class New(function: JSBaseExpression, arguments: List[JSBaseExpression]) extends JSBaseExpression
 case class Call(function: JSBaseExpression, arguments: List[JSBaseExpression]) extends JSBaseExpression
 case class BuiltIn(name: String) extends JSBaseExpression
+case class JSFunctionExpression(name: Option[JSIdentifier],variables: List[JSIdentifier],args: List[JSIdentifier], source: List[JSStatement]) extends JSBaseExpression

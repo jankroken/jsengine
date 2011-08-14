@@ -30,6 +30,21 @@ object JSCallRewriter {
     	New(function,List())
     }
     
+    private def rewriteStatementList(statements: List[JSStatement]):List[JSStatement] = {
+        statements match {
+            case List() => List()
+            case statement :: tail => rewriteStatement(statement) ::: rewriteStatementList(tail)
+        }
+    }
+    
+    private def rewriteExpressionList(exprList: List[JSBaseExpression]):List[JSBaseExpression] = {
+        exprList match {
+            case List() => List()
+            case expr :: tail => rewriteExpression(expr) :: rewriteExpressionList(tail)
+        }
+    }
+
+    
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
 			expression match {
 			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
@@ -39,7 +54,7 @@ object JSCallRewriter {
 				  						rewriteExpression(falseExpression))
 			  }
 			  case OperatorCall(Operator(name), args: List[JSBaseExpression]) => { // only to handle recursion in bottom-up replacement
-				  Call(BuiltIn(name),args)
+				  Call(BuiltIn(name),rewriteExpressionList(args))
 			  }
 			  case Lookup(expr,index) => Lookup(rewriteExpression(expr),rewriteExpression(index))
 			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression _))
@@ -49,8 +64,7 @@ object JSCallRewriter {
 			  case PostfixExpression(expression,Operator("++")) => Call(BuiltIn(")++"),List(expression))
 			  case JSArrayLiteral(elements) => Call(BuiltIn("array"),elements.map((oe) => rewriteExpression(optionToUndefined(oe))))
 			  case JSFunction(functionName,arguments, source)  => {
-			     val functionSource = ((List[JSStatement]() /: source) ((x,y) => { x ::: (rewriteStatement(y))}))
-			     JSFunction(functionName,arguments,functionSource)
+			     JSFunction(functionName,arguments,rewriteStatementList(source))
 			  }
 			  case JSBoolean(value) => JSBoolean(value)
 			  case JSIdentifier(value) => JSIdentifier(value)
@@ -65,8 +79,8 @@ object JSCallRewriter {
     private def rewriteStatement (statement: JSStatement) : List[JSStatement] = {
     	statement match {
     	    case Declare(identifier) => List(Declare(identifier))
-			case JSBlock(statements) => List(JSBlock((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))})))
-			case VariableDeclarations(declarations) =>  ((List[JSStatement]() /: declarations) ((x,y) => { x ::: (rewriteStatement(y))}))
+			case JSBlock(statements) => List(JSBlock(rewriteStatementList(statements)))
+			case VariableDeclarations(declarations) =>  (rewriteStatementList(declarations))
 			case VariableDeclaration(name, None) => Declare(name) :: List() 
 			case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()
 			case EmptyStatement() => List(EmptyStatement())
@@ -92,9 +106,9 @@ object JSCallRewriter {
 				def rewriteCase(caseClause: CaseClause): CaseClause = {
 				    caseClause match {
 				        case LabeledCaseClause(label,statements) => 
-				            LabeledCaseClause(label,(List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
+				            LabeledCaseClause(label,rewriteStatementList(statements))
 				        case DefaultClause(statements) => 
-				            DefaultClause((List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
+				            DefaultClause(rewriteStatementList(statements))
 				        }
 			        }
 				    List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _)))
@@ -120,62 +134,8 @@ object JSCallRewriter {
   
     def rewriteSource (source: JSSource) : JSSource = {
     	source match {
-    	  case JSSource(statements) => JSSource((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))}))
+    	  case JSSource(statements) => JSSource(rewriteStatementList(statements))
     	}
     }
-    
-    
-/*
-	private def templateRewrite[T <: ASTNode](node: T): T = {
-			node match {
-			  case JSExpression(expressions) => JSExpression(assignments.map(((x) => templateRewrite[JSBaseExpression](x))))
-			  case AssignmentExpression(operator, leftHand, righthand) 
-			  case ConditionalExpression(condition, trueExpression, falseExpression) 
-			  case BinaryExpression(right,extensions) 
-			  case BinaryExtension(operator,expr)
-			  case UnaryExpression(operators,expression) 
-			  case PostfixExpression(expression,operator) 
-			  case CallExpression(newCount, function, applications)
-			  case ApplyArguments(arglist) 
-			  case ApplyLookup(expr: JSBaseExpression) 
-			  case JSArrayLiteral(elements) 
-			  case JSFunction(functionName,arguments, source) 
-			  case JSBoolean(value) 
-			  case JSIdentifier(value) 
-			  case JSNativeCall(identifier) 
-			  case Operator(value)
-			  case JSLiteralObject(properties) 
-			  case JSNumber(val value: String) 
-			  case JSString(value) 
-			  case JSRegexLiteral(value) 
-			  case JSSource(sourceElements) 
-			  case JSBlock(statements) 
-			  case VariableStatement(variableDeclararations) 
-			  case VariableDeclarations(declarations) 
-			  case VariableDeclaration(name, initialValue) 
-			  case EmptyStatement() 
-			  case IfStatement(condition, whenTrue, whenFalse) 
-			  case DoWhile (statement, condition) 
-			  case While (condition, statement) 
-			  case For(init, update,body) 
-			  case ForInit(init)
-			  case ForInUpdate(statement) 
-			  case ForSemicolonUpdate(test, update) 
-			  case ContinueStatement(label) 
-			  case BreakStatement(label) 
-			  case ReturnStatement(value) 
-			  case WithStatement(expr, statement) 
-			  case SwitchStatement(expr, cases) 
-			  case LabeledCaseClause(label, statements) 
-			  case DefaultClause(statements) 
-			  case LabeledStatement(label, statement) 
-			  case ThrowStatement(expr) 
-			  case TryStatement(block, tryTail) 
-			  case TryTail(id, catchBlock, finallyBlock)
-			  case DebuggerStatement() 
-			  case JSUndefined() 
-			  case _ => throw new RuntimeException("Implementation error: missing handling of AST node: "+_)
-			}
-	}
-*/  
+  
 }

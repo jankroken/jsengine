@@ -11,7 +11,13 @@ object JSInitialRewriter {
         }
     }
   
-  
+    private def rewriteOptionStatement(optStatement: Option[JSStatement]):Option[JSStatement] = {
+        optStatement match {
+			case None => None
+			case Some(statement) => Some(JSBlock(rewriteStatement(statement)))
+        }
+    }
+    
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
 			expression match {
 			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
@@ -72,7 +78,7 @@ object JSInitialRewriter {
 			  }
 			  case JSArrayLiteral(elements) => JSArrayLiteral(elements.map(rewriteOptionExpression _))
 			  case JSFunction(functionName,arguments, source)  => {
-			     val functionSource = ((List[JSStatement]() /: source) ((x,y) => { x ::: x ::: (rewriteStatement(y))}))
+			     val functionSource = ((List[JSStatement]() /: source) ((x,y) => { x ::: (rewriteStatement(y))}))
 			     JSFunction(functionName,arguments,functionSource)
 			  }
 			  case JSBoolean(value) => JSBoolean(value)
@@ -118,12 +124,9 @@ object JSInitialRewriter {
 			  case VariableDeclaration(name, None) => Declare(name) :: List() 
 			  case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()
 			  case EmptyStatement() => List(EmptyStatement())
-			  case IfStatement(condition, whenTrue, None) => List(IfStatement(rewriteExpression(condition),
+			  case IfStatement(condition, whenTrue, whenFalse) => List(IfStatement(rewriteExpression(condition),
 			  																	  JSBlock(rewriteStatement(whenTrue)),
-			  																	  None))
-			  case IfStatement(condition, whenTrue, Some(whenFalse)) => List(IfStatement(rewriteExpression(condition),
-			  																	  JSBlock(rewriteStatement(whenTrue)),
-			  																	  Some(JSBlock(rewriteStatement(whenFalse)))))
+			  																	  rewriteOptionStatement(whenFalse)))
 			  case DoWhile (statement, condition)  => List(DoWhile(JSBlock(rewriteStatement(statement)),rewriteExpression(condition)))
 			  case While (condition, statement) => List(While(rewriteExpression(condition),JSBlock(rewriteStatement(statement))))
 			  case ForStatement(Some(ForInit(init)), ForInUpdate(expr),body) => List(ForIn(JSBlock(rewriteStatement(init)),rewriteExpression(expr),body))
