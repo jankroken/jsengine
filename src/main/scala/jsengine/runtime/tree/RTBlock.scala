@@ -1,0 +1,7 @@
+package jsengine.runtime.tree
+
+import jsengine.runtime.ExecutionContext
+
+class RTBlock(val expressions: List[RTExpression]) extends RTExpression {
+	def evaluate(context: ExecutionContext):RTObject = { throw new RuntimeException("Not implemented") }
+}

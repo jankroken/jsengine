@@ -18,6 +18,14 @@ object JSInitialRewriter {
         }
     }
     
+    private def rewriteStatementList(statements: List[JSStatement]):List[JSStatement] = {
+        statements match {
+            case List() => List()
+            case statement :: tail => rewriteStatement(statement) ::: rewriteStatementList(tail)
+        }
+    }
+  
+    
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
 			expression match {
 			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
@@ -119,7 +127,7 @@ object JSInitialRewriter {
     
     private def rewriteStatement (statement: JSStatement) : List[JSStatement] = {
     	statement match {
-			  case JSBlock(statements) => List(JSBlock((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))})))
+			  case JSBlock(statements) => List(JSBlock(rewriteStatementList(statements)))
 			  case VariableDeclarations(declarations) =>  ((List[JSStatement]() /: declarations) ((x,y) => { x ::: (rewriteStatement(y))}))
 			  case VariableDeclaration(name, None) => Declare(name) :: List() 
 			  case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()

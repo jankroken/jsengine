@@ -27,11 +27,10 @@ class TestRewriter {
     	    	             JSInitialRewriter.rewriteSource(ast))))))
     	  case JSParser.NoSuccess(message,src) => println("failed")
     	}
-
     }
      
      @Test def testPart1() {
 //       testFile("function1.js")
-       testFile("jquery_part2.js")
+       testFile("jquery_part1.js")
      }
 }
