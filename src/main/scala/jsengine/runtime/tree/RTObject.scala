@@ -4,6 +4,7 @@ import jsengine.runtime.ExecutionContext
 
 abstract class RTObject extends RTExpression {
 	var properties: List[RTNamedObjectProperty] = List()
+	def valueOf = this
 	
 	/*
 	  [[Prototype]] Object or Null The prototype of this object.

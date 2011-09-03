@@ -22,6 +22,13 @@ class JSRunnerTest1 {
 		val retval = new JSRunner().run(source)
 		assertThat(retval,is[Any](ScalaReturnUndefined))
 	}
+	
+	@Test def testVariableAssignmentAndLookup() {
+	    val source = "var x = true; x"
+	    val expected = ScalaReturnBoolean(true)
+	    val retval = new JSRunner().run(source)
+	    assertThat(retval,is[Any](expected))
+	}
 
 }
 

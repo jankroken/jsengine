@@ -5,4 +5,6 @@ import jsengine.runtime.tree.RTEnvironmentRecord
 
 object Stdlib_Undefined extends RTObject {
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
+	
+	override def toString = "<undefined>"
 }

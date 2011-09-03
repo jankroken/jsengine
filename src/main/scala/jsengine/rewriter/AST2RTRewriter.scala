@@ -29,10 +29,6 @@ object AST2RTRewriter {
         }
     }
 
-//    private def rewriteStatementList(statements: List[JSStatement]):List[JSStatement] = {
-//      return ((statements :\ (List[JSStatement]())) ((x,y) => { rewriteStatement(x) :: y }))
-//    }
-
     private def rewriteStatementList(statements: List[JSStatement]):List[RTExpression] = {
         statements match {
             case List() => List()
@@ -56,13 +52,16 @@ object AST2RTRewriter {
 			  case Lookup(expr,index) => Stdlib_Undefined
 			  case New(function,args) => Stdlib_Undefined
 			  case Call(function,args) => Stdlib_Undefined
-			  case Assign(left,value) => Stdlib_Undefined
+			  case Assign(left,value) => RTAssign(rewriteExpression(left),rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Stdlib_Undefined
 			  case PostfixExpression(expression,Operator("++")) => Stdlib_Undefined
 			  case JSFunction(functionName,arguments, source)  => Stdlib_Undefined
 			  case JSFunctionExpression(name,args,decl,source) => Stdlib_Undefined
 			  case JSBoolean(value) => Stdlib_Undefined
-			  case JSIdentifier(value) => Stdlib_Undefined
+			  case JSIdentifier("undefined") => Stdlib_Undefined
+			  case JSIdentifier("true") => Stdlib_Boolean(true)
+			  case JSIdentifier("false") => Stdlib_Boolean(false)
+			  case JSIdentifier(value) => RTGetReferenceById(RTId(value))
 			  case JSNativeCall(identifier) => Stdlib_Undefined
 			  case JSNumber(value) => Stdlib_Undefined 
 			  case JSString(value) => Stdlib_Undefined 
