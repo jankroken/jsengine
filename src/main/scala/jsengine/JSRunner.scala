@@ -34,6 +34,8 @@ class JSRunner {
     	result match {
     	  case Stdlib_Undefined => ScalaReturnUndefined
     	  case bool: Stdlib_Boolean => ScalaReturnBoolean(bool.nativeBooleanValue)
+    	  case number: Stdlib_Number => ScalaReturnNumber(number.nativeDoubleValue)
+    	  case string: Stdlib_String => ScalaReturnString(string.nativeStringValue)
     	  case _ => ScalaReturnBoolean(false)
     	}
 	}

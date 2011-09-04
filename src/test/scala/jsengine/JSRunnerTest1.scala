@@ -29,6 +29,20 @@ class JSRunnerTest1 {
 	    val retval = new JSRunner().run(source)
 	    assertThat(retval,is[Any](expected))
 	}
+	
+	@Test def testInteger() {
+		val source = "1.0"
+		val expected = ScalaReturnNumber(1.0)
+		val retval = new JSRunner().run(source)
+		assertThat(retval,is[Any](expected))
+	}
+	
+	@Test def testString() {
+		val source = "'hello world'"
+		val expected = ScalaReturnString("hello world")
+		val retval = new JSRunner().run(source)
+		assertThat(retval,is[Any](expected))
+	}
 
 }
 

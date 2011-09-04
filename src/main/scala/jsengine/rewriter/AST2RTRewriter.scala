@@ -63,8 +63,8 @@ object AST2RTRewriter {
 			  case JSIdentifier("false") => Stdlib_Boolean(false)
 			  case JSIdentifier(value) => RTGetReferenceById(RTId(value))
 			  case JSNativeCall(identifier) => Stdlib_Undefined
-			  case JSNumber(value) => Stdlib_Undefined 
-			  case JSString(value) => Stdlib_Undefined 
+			  case JSNumber(value) => Stdlib_Number(value) 
+			  case JSString(value) => Stdlib_String(value) 
 			  case JSRegexLiteral(value) => Stdlib_Undefined
 			}
     }
