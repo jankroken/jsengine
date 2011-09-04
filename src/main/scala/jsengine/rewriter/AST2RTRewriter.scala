@@ -46,12 +46,12 @@ object AST2RTRewriter {
     private def rewriteExpression (expression: JSBaseExpression): RTExpression = {
 			expression match {
 			  case OperatorCall (operator, args) => Stdlib_Undefined
-			  case BuiltIn(name) => Stdlib_Undefined
+			  case BuiltIn("&&") => Stdlib_Operator_BooleanAnd
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
 			  case Lookup(expr,index) => Stdlib_Undefined
 			  case New(function,args) => Stdlib_Undefined
-			  case Call(function,args) => Stdlib_Undefined
+			  case Call(function,args) => RTSimpleFunctionCall(rewriteExpression(function),rewriteExpressionList(args))
 			  case Assign(left,value) => RTAssign(rewriteExpression(left),rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Stdlib_Undefined
 			  case PostfixExpression(expression,Operator("++")) => Stdlib_Undefined
@@ -95,6 +95,7 @@ object AST2RTRewriter {
     }
   
     def rewriteSource (source: JSSource) : RTSource = {
+      println("RT: rewriting "+source)
     	source match {
     	  case JSSource(statements) => RTSource(rewriteStatementList(statements))
     	}

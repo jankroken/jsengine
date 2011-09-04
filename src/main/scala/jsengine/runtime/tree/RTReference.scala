@@ -14,6 +14,7 @@ class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	}
 	
 	override def valueOf = value
+    override def toBoolean() = { Stdlib_Boolean(true) } // @TODO: verify
 }
 
 object RTReference {
@@ -24,4 +25,5 @@ object RTReference {
 
 case class RTNoReference() extends RTReferenceType {
     def evaluate(env: RTEnvironmentRecord):RTObject = { this }
+    override def toBoolean():Stdlib_Boolean = { Stdlib_Boolean(false) }
 }

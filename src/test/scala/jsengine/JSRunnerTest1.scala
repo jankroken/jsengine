@@ -43,6 +43,13 @@ class JSRunnerTest1 {
 		val retval = new JSRunner().run(source)
 		assertThat(retval,is[Any](expected))
 	}
+	
+	@Test def testBooleanAnd() {
+		val source = "true && false"
+		val expected = ScalaReturnBoolean(false)
+		val retval = new JSRunner().run(source)
+		assertThat(retval,is[Any](expected))
+	}
 
 }
 

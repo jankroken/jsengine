@@ -1,10 +1,13 @@
 package jsengine.runtime.tree
 
 import jsengine.runtime.ExecutionContext
+import jsengine.runtime.library._
 
 abstract class RTObject extends RTExpression {
 	var properties: List[RTNamedObjectProperty] = List()
 	def valueOf = this
+	
+	def toBoolean: Stdlib_Boolean
 	
 	/*
 	  [[Prototype]] Object or Null The prototype of this object.

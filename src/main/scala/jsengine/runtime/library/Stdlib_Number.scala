@@ -6,6 +6,8 @@ import jsengine.runtime.tree.RTEnvironmentRecord
 class Stdlib_Number(value: Double) extends RTObject {
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	def nativeDoubleValue = value
+	def toBoolean: Stdlib_Boolean = { throw new RuntimeException("not implemented") }
+
 }
 
 object Stdlib_Number {

@@ -2,7 +2,7 @@ package jsengine.runtime.tree
 
 import jsengine.runtime.ExecutionContext
 
-class RTFunction extends RTObject {
-  	def evaluate(env: RTEnvironmentRecord):RTObject = { throw new RuntimeException("Not implemented") }
-
+abstract class RTFunction extends RTObject {
+  	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
+  	def call(callObject: CallObject):RTObject
 }
