@@ -131,9 +131,10 @@ object FunctionDeclarationRewriter {
     }
     
     private def rewriteFunctionStatement(func: JSFunction) = {
-    	val JSFunction(Some(name),_,_) = func    	
+    	val JSFunction(Some(name),_,_) = func 
+    	val declare = Declare(name)
     	val assign = Assign(name,rewriteFunction(func))
-    	SplitSource(assign)
+    	SplitSource(List(declare),List(),List(assign))
     }
     
     private def rewriteStatement (statement: JSStatement) : SplitSource = {

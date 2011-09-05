@@ -17,6 +17,10 @@ class RTAssign(left: RTExpression, value: RTExpression) extends RTExpression {
   		Stdlib_Undefined
   		// 
   	}
+  	
+  	override def toString():String = {
+  		"assign("+left+','+value+")"
+  	}
 }
 
 object RTAssign {

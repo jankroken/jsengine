@@ -42,9 +42,20 @@ object AST2RTRewriter {
             case expr :: tail => rewriteExpression(expr) :: rewriteExpressionList(tail)
         }
     }
+    
+    private def rewriteId(id: JSIdentifier):RTId = {
+    	id match { case JSIdentifier(foo) => RTId(foo) } 
+    }
+    
+    private def rewriteOptionId(optionalId: Option[JSIdentifier]):Option[RTId] = {
+    	optionalId match {
+    		case None => None
+    		case Some(id) => Some(rewriteId(id))
+    	}
+    }
 
     private def rewriteExpression (expression: JSBaseExpression): RTExpression = {
-			expression match {
+		expression match {
 			  case OperatorCall (operator, args) => Stdlib_Undefined
 			  case BuiltIn("&&") => Stdlib_Operator_BooleanAnd
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
@@ -56,7 +67,9 @@ object AST2RTRewriter {
 			  case PostfixExpression(expression,Operator("--")) => Stdlib_Undefined
 			  case PostfixExpression(expression,Operator("++")) => Stdlib_Undefined
 			  case JSFunction(functionName,arguments, source)  => Stdlib_Undefined
-			  case JSFunctionExpression(name,args,decl,source) => Stdlib_Undefined
+			  case JSFunctionExpression(name,args,decl,source) => {
+				  RTUserFunction(rewriteOptionId(name),args.map(rewriteId),decl.map(rewriteId),rewriteStatementList(source))
+			  }
 			  case JSBoolean(value) => Stdlib_Undefined
 			  case JSIdentifier("undefined") => Stdlib_Undefined
 			  case JSIdentifier("true") => Stdlib_Boolean(true)

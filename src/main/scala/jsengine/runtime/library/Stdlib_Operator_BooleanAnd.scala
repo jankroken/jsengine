@@ -11,9 +11,9 @@ object Stdlib_Operator_BooleanAnd extends RTFunction {
         } else {
         	callObject.args(1).toBoolean
         }
-        	
         
     }
   	def toBoolean: Stdlib_Boolean = { throw new RuntimeException("not implemented") }
+    override def toString = "lib_&&"	
 
 }

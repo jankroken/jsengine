@@ -50,6 +50,13 @@ class JSRunnerTest1 {
 		val retval = new JSRunner().run(source)
 		assertThat(retval,is[Any](expected))
 	}
+	
+	@Test def testSimpleFunction() {
+		val source = "function foo() { true } ; foo()";
+		val expected = ScalaReturnBoolean(true)
+		val retval = new JSRunner().run(source)
+		assertThat(retval,is[Any](expected))
+	}
 
 }
 

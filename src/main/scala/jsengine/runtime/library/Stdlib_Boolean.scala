@@ -7,7 +7,7 @@ class Stdlib_Boolean(value: Boolean) extends RTObject {
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	def nativeBooleanValue = value
 	def toBoolean: Stdlib_Boolean = this
-
+	override def toString:String = "lib_"+value.toString	
 }
 
 object Stdlib_Boolean {
