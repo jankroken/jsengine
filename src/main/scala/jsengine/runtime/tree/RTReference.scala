@@ -23,7 +23,10 @@ object RTReference {
     }
 }
 
-case class RTNoReference() extends RTReferenceType {
+case class RTNoReference(val referenced_name: RTId) extends RTReferenceType {
     def evaluate(env: RTEnvironmentRecord):RTObject = { this }
     override def toBoolean():Stdlib_Boolean = { Stdlib_Boolean(false) }
+    override def valueOf():RTObject = {
+        throw new RTReferenceError(""+referenced_name.value+" is not defined")
+    }
 }

@@ -3,8 +3,7 @@ package jsengine
 import scala.io.Source
 import jsengine.rewriter.Rewriter
 import jsengine.parser.JSParser
-import jsengine.runtime.tree.RTSource
-import jsengine.runtime.tree.RTEnvironmentRecord
+import jsengine.runtime.tree._
 import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
@@ -29,15 +28,24 @@ class JSRunner {
 	}
 	
 	private def runRTSource(source: RTSource) = {
-    	val result = source.evaluate(env)
-    	println("result from source = "+result)
-    	result match {
-    	  case Stdlib_Undefined => ScalaReturnUndefined
-    	  case bool: Stdlib_Boolean => ScalaReturnBoolean(bool.nativeBooleanValue)
-    	  case number: Stdlib_Number => ScalaReturnNumber(number.nativeDoubleValue)
-    	  case string: Stdlib_String => ScalaReturnString(string.nativeStringValue)
-    	  case _ => ScalaReturnNotImplemented()
-    	}
+	    try {
+	    	val result = source.evaluate(env)
+	    	println("result from source = "+result)
+	    	result match {
+	    	  case Stdlib_Undefined => ScalaReturnUndefined
+	    	  case bool: Stdlib_Boolean => ScalaReturnBoolean(bool.nativeBooleanValue)
+	    	  case number: Stdlib_Number => ScalaReturnNumber(number.nativeDoubleValue)
+	    	  case string: Stdlib_String => ScalaReturnString(string.nativeStringValue)
+	    	  case _ => ScalaReturnNotImplemented()
+	    	}
+	    } catch {
+	        case referenceError: RTReferenceError => 
+	            println("ReferenceError: "+referenceError.msg)
+	            ScalaReturnException(referenceError)
+	        case typeError: RTTypeError => 
+	            println("TypeError: "+typeError.msg)
+	            ScalaReturnException(typeError)
+	    }
 	}
 	
 }

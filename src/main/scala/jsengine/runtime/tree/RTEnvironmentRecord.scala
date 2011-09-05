@@ -15,7 +15,7 @@ class RTEnvironmentRecord {
   def getReference(id: RTId): RTReferenceType = {
       val storedReference = references.get(id)
       storedReference match {
-        case None => RTNoReference()
+        case None => RTNoReference(id)
         case Some(ref) => ref
       }
   }

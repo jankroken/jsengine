@@ -13,7 +13,7 @@ class RTUserFunction(val name: Option[RTId],val args: List[RTId],val decl: List[
 		  environment match {
 		    case None => throw new RuntimeException("environment is not set")
 		    case Some(env) => {
-		    	retValue = expr.evaluate(env)
+		    	retValue = expr.evaluate(env).valueOf
 		    }
 		  }
 		}
