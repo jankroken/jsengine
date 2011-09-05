@@ -15,6 +15,10 @@ class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	
 	override def valueOf = value
     override def toBoolean() = { Stdlib_Boolean(true) } // @TODO: verify
+	
+  	override def isObject = false
+	override def isPrimitive = false
+
 }
 
 object RTReference {
@@ -29,4 +33,7 @@ case class RTNoReference(val referenced_name: RTId) extends RTReferenceType {
     override def valueOf():RTObject = {
         throw new RTReferenceError(""+referenced_name.value+" is not defined")
     }
+  	override def isObject = false
+	override def isPrimitive = false
+
 }

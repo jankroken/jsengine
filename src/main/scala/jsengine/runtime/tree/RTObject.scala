@@ -8,6 +8,8 @@ abstract class RTObject extends RTExpression {
 	def valueOf = this
 	
 	def toBoolean: Stdlib_Boolean
+	def isObject: Boolean
+	def isPrimitive: Boolean
 	
 	/*
 	  [[Prototype]] Object or Null The prototype of this object.

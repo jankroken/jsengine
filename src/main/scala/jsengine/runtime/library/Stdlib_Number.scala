@@ -8,6 +8,9 @@ class Stdlib_Number(value: Double) extends RTObject {
 	def nativeDoubleValue = value
 	def toBoolean: Stdlib_Boolean = { throw new RuntimeException("not implemented") }
 
+	override def isObject = false
+	override def isPrimitive = true
+
 }
 
 object Stdlib_Number {

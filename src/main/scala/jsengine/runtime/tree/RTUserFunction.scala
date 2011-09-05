@@ -23,6 +23,10 @@ class RTUserFunction(val name: Option[RTId],val args: List[RTId],val decl: List[
   	override def toString():String = {
   		"function("+name+","+args+","+decl+","+source+")"
   	}
+  	
+  	override def isObject = true
+	override def isPrimitive = false
+
 }
 
 object RTUserFunction {
