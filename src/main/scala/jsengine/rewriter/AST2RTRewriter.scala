@@ -58,6 +58,7 @@ object AST2RTRewriter {
 		expression match {
 			  case OperatorCall (operator, args) => Stdlib_Undefined
 			  case BuiltIn("&&") => Stdlib_Operator_BooleanAnd
+        case BuiltIn("+") => Stdlib_Operator_Plus
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
 			  case Lookup(expr,index) => Stdlib_Undefined
@@ -93,10 +94,10 @@ object AST2RTRewriter {
 			case ContinueStatement(label) => Stdlib_Undefined 
 			case ForIn(init,expr,source) => Stdlib_Undefined
 			case BreakStatement(label) => Stdlib_Undefined
-			case ReturnStatement(None) => Stdlib_Undefined
-			case ReturnStatement(Some(value))  => Stdlib_Undefined
+			case ReturnStatement(None) => RTReturn(Stdlib_Undefined)
+			case ReturnStatement(Some(value))  => RTReturn(rewriteExpression(value))
 			case WithStatement(expr, statement) => Stdlib_Undefined
-		    case SwitchStatement(expr, cases) => Stdlib_Undefined
+		  case SwitchStatement(expr, cases) => Stdlib_Undefined
 			case LabeledStatement(label, statement) => Stdlib_Undefined
 			case ThrowStatement(expr) => new Stdlib_Throw(rewriteExpression(expr))
 			case Try(statement, Some(Catch(id,catchStatement)), finallyStatement) => new RTTry()

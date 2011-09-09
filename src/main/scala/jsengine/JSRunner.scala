@@ -10,7 +10,7 @@ import jsengine.runtime.library._
 class JSRunner {
   
     val context = new ExecutionContext()
-    val env = new RTEnvironmentRecord()
+    val env = new RTEnvironmentRecord(None)
   
 	def run(source: Source):ScalaReturn = {
 		ScalaReturnUndefined

@@ -9,6 +9,8 @@ import org.junit.Assert.fail
 import jsengine.ast.JSString
 import jsengine.ast.JSSource
 import jsengine.parser.JSParser
+import jsengine.runtime.library._
+
 
 class JSRunnerTest1 {
 	@Test def testUndefined() {
@@ -52,18 +54,32 @@ class JSRunnerTest1 {
 	}
 	
 	@Test def testSimpleFunction() {
-		val source = "function foo() { true } ; foo()";
+		val source = "function foo() { return true } ; foo()";
 		val expected = ScalaReturnBoolean(true)
 		val retval = new JSRunner().run(source)
 		assertThat(retval,is[Any](expected))
 	}
 	
 	@Test def testFunctionArgument() {
-	    val source = "function foo(x) { x } ; foo(true)"
+	    val source = "function foo(x) { return x } ; foo(true)"
 	    val expected = ScalaReturnBoolean(true)
 	    val retval = new JSRunner().run(source)
 	    assertThat(retval,is[Any](expected))
 	}
+
+  @Test def testSimpleAddition() {
+      val source = "2+3"
+      val expected = new ScalaReturnNumber(5.0)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
+  }
+
+  @Test def testFunctionScope() {
+      val source = "var a = 3; function foo(x) { var c = 5; return a+x+c }; foo(1)"
+      val expected = new ScalaReturnNumber(9.0)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
+  }
 
 }
 
