@@ -46,15 +46,15 @@ class TestJSSource {
     	  
     	val ast = JSSource(List(
     			JSLiteralObject(List(
-    			    (JSIdentifier("name"),JSLiteralObject(List(
-    			    		(JSIdentifier("first"),JSString("Bruce")),
-    			    		(JSIdentifier("last"),JSString("Springsteen"))
+    			    (JSString("name"),JSLiteralObject(List(
+    			    		(JSString("first"),JSString("Bruce")),
+    			    		(JSString("last"),JSString("Springsteen"))
     			    ))),
-    			    (JSIdentifier("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
+    			    (JSString("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
     			    		JSString("The Darkness on the Edge of Town"),
     			    		JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     			    ))),
-    			    (JSIdentifier("year"),JSNumber("1978")),
+    			    (JSString("year"),JSNumber("1978")),
     			    (JSNumber("1337"),JSString("true"))
     			)),
     			JSFunction(Some(JSIdentifier("helloworld")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("helloworld")))),
@@ -87,17 +87,17 @@ class TestJSSource {
     	  	JSSource(List(
     	  			JSFunction(Some(JSIdentifier("outerObject")),List(JSIdentifier("foo")),List(
 	    	  			JSLiteralObject(
-		    	  			List((JSIdentifier("name"),JSLiteralObject(List(
-		    	  							(JSIdentifier("first"),JSString("Bruce")),
-		    	  							(JSIdentifier("last"),JSString("Springsteen"))
+		    	  			List((JSString("name"),JSLiteralObject(List(
+		    	  							(JSString("first"),JSString("Bruce")),
+		    	  							(JSString("last"),JSString("Springsteen"))
 		    	  						  ))),
-		    	  				(JSIdentifier("album"),JSFunction(None,List(),List(
+		    	  				(JSString("album"),JSFunction(None,List(),List(
 		    	  							JSLiteralObject(List(
-		    	  								(JSIdentifier("album1"),JSString("The Darkness on the Edge of Town"))
+		    	  								(JSString("album1"),JSString("The Darkness on the Edge of Town"))
 		    	  							)),
 		    	  							JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
 		    	  						 ))),
-		    	  				(JSIdentifier("year"),JSNumber("1978")),
+		    	  				(JSString("year"),JSNumber("1978")),
 		    	  				(JSNumber("1337"),JSString("true"))
 		    	  			)
 		    	  		),

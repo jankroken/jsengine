@@ -6,13 +6,7 @@ import org.junit.Assert.assertThat
 import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
-import ParserTestSupport.getASTOrFail
-import ParserTestSupport.verifyFunction
-import ParserTestSupport.verifyLiteralObject
-import ParserTestSupport.verifyArrayLiteral
-import ParserTestSupport.verifyExpression
-import ParserTestSupport.verifyParsing
-import ParserTestSupport.verifySource
+import ParserTestSupport._
 import jsengine.rewriter._
 import jsengine.ast._
 import scala.io.Source
@@ -28,7 +22,6 @@ class TestJQuery {
     	  case JSParser.Success(ast,_) => println(JSCallRewriter.rewriteSource(ast))
     	  case JSParser.NoSuccess(message,src) => println("failed")	
     	}
-
     }
 
      @Test def testPart1 {

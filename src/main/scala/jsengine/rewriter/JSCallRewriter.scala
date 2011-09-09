@@ -96,6 +96,7 @@ object JSCallRewriter {
 			case forIn @ ForIn(init,expr,source) => {
 			    forIn match {
 			    	case ForIn(JSBlock(List(Declare(y))),expr,source) => List(Declare(y),ForIn(y,expr,source))
+            case _ => throw new RuntimeException("should not happen")
 			    }
 			}
 			case BreakStatement(label) => List(statement)

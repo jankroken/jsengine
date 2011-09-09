@@ -90,6 +90,7 @@ object FunctionDeclarationRewriter {
     	  		val SplitSource(declarations,functions,rewrittenStatements) = rewriteStatementList(source)
     	  		SplitCase(declarations,functions,List(DefaultClause(rewrittenStatements)))
     	  	}
+          case _ => throw new RuntimeException("should not happen")
     	}
     }
     

@@ -93,7 +93,7 @@ a Function object is executed. Of the standard built-in
 ECMAScript objects, only  Function objects implement 
 [[Scope]].
 [[FormalParameters]] List of Strings A possibly empty List containing the identifier  Strings of a 
-Function‘s  FormalParameterList. Of the standard built-in 
+Functions  FormalParameterList. Of the standard built-in
 ECMAScript objects, only  Function objects implement 
 [[FormalParameterList]].
 [[Code]] ECMAScript code The ECMAScript code of a function. Of the standard built-in 

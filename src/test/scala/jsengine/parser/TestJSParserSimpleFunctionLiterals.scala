@@ -56,7 +56,7 @@ class TestJSParserSimpleFunctionLiterals {
     		}
     		"""
     	val ast = JSLiteralObject(List(
-    			(JSIdentifier("name"),JSFunction(Some(JSIdentifier("myName")),List(),List(JSNativeCall(JSIdentifier("hello")))))
+    			(JSString("name"),JSFunction(Some(JSIdentifier("myName")),List(),List(JSNativeCall(JSIdentifier("hello")))))
     	))  
     	
     	verifyLiteralObject(source,ast)
@@ -79,15 +79,15 @@ class TestJSParserSimpleFunctionLiterals {
     		 }
     	"""
     	val ast = JSLiteralObject(List(
-    				(JSIdentifier("name"),JSLiteralObject(List(
-    				    (JSIdentifier("first"),JSString("Bruce")),
-    				    (JSIdentifier("last"),JSString("Springsteen"))
+    				(JSString("name"),JSLiteralObject(List(
+    				    (JSString("first"),JSString("Bruce")),
+    				    (JSString("last"),JSString("Springsteen"))
     				))),
-    				(JSIdentifier("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
+    				(JSString("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
     										 JSString("The Darkness on the Edge of Town"),
     										 JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     									 ))),
-    				(JSIdentifier("year"),JSNumber("1978")),
+    				(JSString("year"),JSNumber("1978")),
     				(JSNumber("1337"),JSString("true"))
     			))
 
@@ -116,17 +116,17 @@ class TestJSParserSimpleFunctionLiterals {
     	val ast =
     	  JSFunction(Some(JSIdentifier("outerObject")),List(JSIdentifier("foo")),List(
     			  JSLiteralObject(List(
-    				(JSIdentifier("name"),JSLiteralObject(List(
-    				    (JSIdentifier("first"),JSString("Bruce")),
-    				    (JSIdentifier("last"),JSString("Springsteen"))
+    				(JSString("name"),JSLiteralObject(List(
+    				    (JSString("first"),JSString("Bruce")),
+    				    (JSString("last"),JSString("Springsteen"))
     				))),
-    				(JSIdentifier("album"),JSFunction(None,List(),List(
+    				(JSString("album"),JSFunction(None,List(),List(
     										 JSLiteralObject(List(
-    												 (JSIdentifier("album1"),JSString("The Darkness on the Edge of Town"))
+    												 (JSString("album1"),JSString("The Darkness on the Edge of Town"))
     										 )),
     										 JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     									 ))),
-    				(JSIdentifier("year"),JSNumber("1978")),
+    				(JSString("year"),JSNumber("1978")),
     				(JSNumber("1337"),JSString("true"))
     			  )),
     			  JSNativeCall(JSIdentifier("goodbyeworld"))

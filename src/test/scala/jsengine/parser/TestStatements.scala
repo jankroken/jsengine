@@ -28,13 +28,13 @@ class TestStatements {
     
     @Test def testForIn {
     	val source = "for (n in { a: 1}) x++"
-    	val ast = ForStatement(Some(ForInit(JSIdentifier("n"))),ForInUpdate(JSLiteralObject(List((JSIdentifier("a"),JSNumber("1"))))),PostfixExpression(JSIdentifier("x"),Operator("++")))
+    	val ast = ForStatement(Some(ForInit(JSIdentifier("n"))),ForInUpdate(JSLiteralObject(List((JSString("a"),JSNumber("1"))))),PostfixExpression(JSIdentifier("x"),Operator("++")))
     	verifyStatement(source,ast)
     }
 
     @Test def testForSemicolon {
     	val source = "for (n + { a: 2}; n < z++ ; n++) x--"
-    	val ast = ForStatement(Some(ForInit(BinaryExpression(JSIdentifier("n"),List(BinaryExtension(Operator("+"),JSLiteralObject(List((JSIdentifier("a"),JSNumber("2"))))))))),
+    	val ast = ForStatement(Some(ForInit(BinaryExpression(JSIdentifier("n"),List(BinaryExtension(Operator("+"),JSLiteralObject(List((JSString("a"),JSNumber("2"))))))))),
     				  ForSemicolonUpdate(Some(BinaryExpression(JSIdentifier("n"),List(BinaryExtension(Operator("<"),PostfixExpression(JSIdentifier("z"),Operator("++")))))),
     						  			 Some(PostfixExpression(JSIdentifier("n"),Operator("++")))),
     				  PostfixExpression(JSIdentifier("x"),Operator("--")))
@@ -53,10 +53,10 @@ class TestStatements {
     		switch(1) {
     			case 4+1 :
     				print("hello");
-    				break;
+    				break
     			case 5:
     				print("world");
-    				break;
+    				break
     			default:
     		}
     	"""

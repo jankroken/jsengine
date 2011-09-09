@@ -74,15 +74,15 @@ class TestVariableAssignment {
     			VariableDeclarations(List(
     			    VariableDeclaration(JSIdentifier("o"),
     			    	Some(JSLiteralObject(List(
-    			    		(JSIdentifier("name"),JSLiteralObject(List(
-    			    				(JSIdentifier("first"),JSString("Bruce")),
-    			    				(JSIdentifier("last"),JSString("Springsteen"))
+    			    		(JSString("name"),JSLiteralObject(List(
+    			    				(JSString("first"),JSString("Bruce")),
+    			    				(JSString("last"),JSString("Springsteen"))
     			    		))),
-    			    		(JSIdentifier("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
+    			    		(JSString("album"),JSFunction(Some(JSIdentifier("myAlbum")),List(),List(
     			    				JSString("The Darkness on the Edge of Town"),
     			    				JSNativeCall(JSIdentifier("favouritebrucespringsteenalbum"))
     			    		))),
-    			    		(JSIdentifier("year"),JSNumber("1978")),
+    			    		(JSString("year"),JSNumber("1978")),
     			    		(JSNumber("1337") -> JSString("true"))
     			    	))
     			    ))

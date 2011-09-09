@@ -29,7 +29,7 @@ class TestRandomSnippets {
     	"""
     	val ast = JSFunction(Some(JSIdentifier("PrintDate")),List(),
     						 List(AssignmentExpression(Operator("="),JSIdentifier("today"),CallExpression(1,JSIdentifier("Date"),List(ApplyArguments(List())))), 
-    						      CallExpression(0,JSIdentifier("document"),List(ApplyLookup(JSIdentifier("write")), ApplyArguments(List(JSString("Date: "), BinaryExpression(CallExpression(0,JSIdentifier("today"),List(ApplyLookup(JSIdentifier("getMonth")), ApplyArguments(List()))),List(BinaryExtension(Operator("+"),JSNumber("1")))), JSString("/"), CallExpression(0,JSIdentifier("today"),List(ApplyLookup(JSIdentifier("getDate")), ApplyArguments(List()))), JSString("/"), CallExpression(0,JSIdentifier("today"),List(ApplyLookup(JSIdentifier("getYear")), ApplyArguments(List())))))))))
+    						      CallExpression(0,JSIdentifier("document"),List(ApplyLookup(JSString("write")), ApplyArguments(List(JSString("Date: "), BinaryExpression(CallExpression(0,JSIdentifier("today"),List(ApplyLookup(JSString("getMonth")), ApplyArguments(List()))),List(BinaryExtension(Operator("+"),JSNumber("1")))), JSString("/"), CallExpression(0,JSIdentifier("today"),List(ApplyLookup(JSString("getDate")), ApplyArguments(List()))), JSString("/"), CallExpression(0,JSIdentifier("today"),List(ApplyLookup(JSString("getYear")), ApplyArguments(List())))))))))
     	verifyFunction(source,ast)
     }
 
@@ -42,21 +42,21 @@ class TestRandomSnippets {
     		}
     	"""
     	val ast = ForStatement(Some(ForInit(VariableDeclarations(List(VariableDeclaration(JSIdentifier("i"),Some(JSNumber("0"))))))),
-    				  ForSemicolonUpdate(Some(BinaryExpression(JSIdentifier("i"),List(BinaryExtension(Operator("<"),CallExpression(0,JSIdentifier("whitespace"),List(ApplyLookup(JSIdentifier("length")))))))),
+    				  ForSemicolonUpdate(Some(BinaryExpression(JSIdentifier("i"),List(BinaryExtension(Operator("<"),CallExpression(0,JSIdentifier("whitespace"),List(ApplyLookup(JSString("length")))))))),
     						  			 Some(UnaryExpression(List(Operator("++")),JSIdentifier("i")))),
     				  JSBlock(List(VariableDeclarations(List(VariableDeclaration(JSIdentifier("v"),Some(CallExpression(0,JSIdentifier("whitespace"),List(ApplyLookup(JSIdentifier("i")))))))), 
     				          CallExpression(0,JSIdentifier("reportCompare"),List(
     				              ApplyArguments(List(JSIdentifier("true"), 
     				        		  				  UnaryExpression(List(Operator("!"), Operator("!")),
     				        		  				 				  CallExpression(0,JSRegexLiteral("/\\\\s/"),List(
-    				        		  				 				      ApplyLookup(JSIdentifier("test")), 
+    				        		  				 				      ApplyLookup(JSString("test")),
     				        		  				 					  ApplyArguments(List(
-    				        		  				 					      CallExpression(0,JSIdentifier("v"),List(ApplyLookup(JSIdentifier("s"))))))))), 
+    				        		  				 					      CallExpression(0,JSIdentifier("v"),List(ApplyLookup(JSString("s"))))))))),
     				        		  				  BinaryExpression(JSString("Is "),
     				        		  				 				  List(BinaryExtension(
     				        		  				 						   Operator("+"),
     				        		  				 						   CallExpression(0,JSIdentifier("v"),List(
-    				        		  				 					           ApplyLookup(JSIdentifier("t"))))), 
+    				        		  				 					           ApplyLookup(JSString("t"))))),
     				        		  				 					   BinaryExtension(
     				        		  				 					       Operator("+"),
     				        		  				 					       JSString(" a space")))))))))))    	
@@ -74,9 +74,9 @@ class TestRandomSnippets {
     	  val ast = JSSource(List(JSFunction(Some(JSIdentifier("displayDate")),List(),
     			  			 				 List(AssignmentExpression(Operator("="),
     			  			 						 				   CallExpression(0,JSIdentifier("document"),List(
-    			  			 						 						   ApplyLookup(JSIdentifier("getElementById")), 
+    			  			 						 						   ApplyLookup(JSString("getElementById")),
     			  			 						 						   ApplyArguments(List(JSString("demo"))), 
-    			  			 						 						   ApplyLookup(JSIdentifier("innerHTML")))),
+    			  			 						 						   ApplyLookup(JSString("innerHTML")))),
     			  			 						 				   CallExpression(0,JSIdentifier("Date"),List(ApplyArguments(List()))))))))
     	  verifySource(source,ast)
     }
@@ -114,7 +114,7 @@ class TestRandomSnippets {
     				                    	BinaryExpression(
     				                    	    JSString("Error description: "),
     				                    	    List(BinaryExtension(Operator("+"),
-    				                    	    					 CallExpression(0,JSIdentifier("err"),List(ApplyLookup(JSIdentifier("description"))))), 
+    				                    	    					 CallExpression(0,JSIdentifier("err"),List(ApplyLookup(JSString("description"))))),
     				                    	    	 BinaryExtension(Operator("+"),
     				                    	    			 		JSString("\n\n"))))), 
     				                    AssignmentExpression(
@@ -246,14 +246,14 @@ class TestRandomSnippets {
         				VariableDeclarations(List(
         				    VariableDeclaration(JSIdentifier("person"),Some(
         				        JSLiteralObject(List(
-        				            (JSIdentifier("fname"),JSString("John")), 
-        				            (JSIdentifier("lname"),JSString("Doe")), 
-        				            (JSIdentifier("age"),JSNumber("25")))))))), 
+        				            (JSString("fname"),JSString("John")),
+        				            (JSString("lname"),JSString("Doe")),
+        				            (JSString("age"),JSNumber("25")))))))),
         				ForStatement(
         				    Some(ForInit(JSIdentifier("x"))),ForInUpdate(JSIdentifier("person")),
         				    JSBlock(List(
         				        CallExpression(0,JSIdentifier("document"),List(
-        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyLookup(JSString("write")),
         				            ApplyArguments(List(
         				                BinaryExpression(
         				                    CallExpression(0,JSIdentifier("person"),List(
@@ -292,12 +292,12 @@ class TestRandomSnippets {
                                 BreakStatement(None))),
                             None), 
                         CallExpression(0,JSIdentifier("document"),List(
-                            ApplyLookup(JSIdentifier("write")), 
+                            ApplyLookup(JSString("write")),
                             ApplyArguments(List(
                                 BinaryExpression(JSString("The number is "),List(
                                     BinaryExtension(Operator("+"),JSIdentifier("i")))))))), 
                         CallExpression(0,JSIdentifier("document"),List(
-                            ApplyLookup(JSIdentifier("write")), 
+                            ApplyLookup(JSString("write")),
                             ApplyArguments(List(JSString("<br />"))))))))))
         verifySource(source,ast)
     }
@@ -329,26 +329,26 @@ class TestRandomSnippets {
         				VariableDeclarations(List(
         				    VariableDeclaration(
         				        JSIdentifier("theDay"),
-        				        Some(CallExpression(0,JSIdentifier("d"),List(ApplyLookup(JSIdentifier("getDay")), ApplyArguments(List()))))))), 
+        				        Some(CallExpression(0,JSIdentifier("d"),List(ApplyLookup(JSString("getDay")), ApplyArguments(List()))))))),
         				SwitchStatement(JSIdentifier("theDay"),List(
         				    LabeledCaseClause(JSNumber("5"),List(
         				        CallExpression(0,JSIdentifier("document"),List(
-        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyLookup(JSString("write")),
         				            ApplyArguments(List(JSString("Finally Friday"))))), 
         				        BreakStatement(None))), 
         				    LabeledCaseClause(JSNumber("6"),List(
         				        CallExpression(0,JSIdentifier("document"),List(
-        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyLookup(JSString("write")),
         				            ApplyArguments(List(JSString("Super Saturday"))))), 
         				        BreakStatement(None))), 
         				    LabeledCaseClause(JSNumber("0"),List(
         				        CallExpression(0,JSIdentifier("document"),List(
-        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyLookup(JSString("write")),
         				            ApplyArguments(List(JSString("Sleepy Sunday"))))), 
         				        BreakStatement(None))), 
         				    DefaultClause(List(
         				        CallExpression(0,JSIdentifier("document"),List(
-        				            ApplyLookup(JSIdentifier("write")), 
+        				            ApplyLookup(JSString("write")),
         				            ApplyArguments(List(JSString("I'm looking forward to this weekend!")))))))))))
         				            
         verifySource(source,ast)

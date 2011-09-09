@@ -122,6 +122,7 @@ object JSInitialRewriter {
     	  		  case Some(ForInit(initStatement)) => JSBlock(List(initStatement,whileStatement))
     	  		}
     	  	}
+          case _ => throw new RuntimeException("should not happen")
     	}
     }
     
