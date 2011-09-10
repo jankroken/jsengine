@@ -30,7 +30,7 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
         }
     } catch {
       case ret: RTReturnException => {
-        retValue = ret.value
+        retValue = ret.value.valueOf
       }
     }
     retValue

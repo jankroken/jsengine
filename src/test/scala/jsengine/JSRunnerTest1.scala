@@ -88,5 +88,32 @@ class JSRunnerTest1 {
       assertThat(retval,is[Any](expected))
   }
 
+  @Test def testMultipleCalls() {
+      val source =
+        "function a() { return 2 };" +
+        "function b() { return a()*3 };" +
+        "b()"
+      val expected = new ScalaReturnDouble(6.0)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
+  }
+
+  @Test def testClosure() {
+      val source =
+        "function counter() {"+
+        "   var x = 0; "+
+        "   function accessor() { "+
+        "      x = x + 1; "+
+        "      return x "+
+        "   }; "+
+        "   return accessor "+
+        "}; "+
+        "var count = counter();"+
+        "count() + count()"
+      val expected = ScalaReturnDouble(3.0)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
+  }
+
 }
 

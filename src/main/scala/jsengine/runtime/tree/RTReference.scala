@@ -3,6 +3,7 @@ package jsengine.runtime.tree
 import jsengine.runtime.library._
 
 trait RTReferenceType extends RTObject
+
 class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	var value: RTObject = Stdlib_Undefined
 	var strict_reference: Boolean = false
@@ -18,6 +19,7 @@ class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	
   	override def isObject = false
 	override def isPrimitive = false
+  override def toString = "ref(" + referenced_name + ")"
 
 }
 
