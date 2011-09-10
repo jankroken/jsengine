@@ -10,7 +10,9 @@ abstract class RTObject extends RTExpression {
 	def toBoolean: Stdlib_Boolean
 	def isObject: Boolean
 	def isPrimitive: Boolean
-	
+
+  def toNumber():Stdlib_Number = { Stdlib_Number(NaN) }
+
 	/*
 	  [[Prototype]] Object or Null The prototype of this object.
 [[Class]] String A  String value indicating a specification defined 

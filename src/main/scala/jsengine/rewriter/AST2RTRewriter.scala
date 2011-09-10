@@ -59,6 +59,9 @@ object AST2RTRewriter {
 			  case OperatorCall (operator, args) => Stdlib_Undefined
 			  case BuiltIn("&&") => Stdlib_Operator_BooleanAnd
         case BuiltIn("+") => Stdlib_Operator_Plus
+        case BuiltIn("-") => Stdlib_Operator_Minus
+        case BuiltIn(">") => Stdlib_Operator_GreaterThan
+        case BuiltIn("*") => Stdlib_Operator_Multiply
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
 			  case Lookup(expr,index) => Stdlib_Undefined
@@ -82,13 +85,24 @@ object AST2RTRewriter {
 			  case JSRegexLiteral(value) => Stdlib_Undefined
 			}
     }
-  
+
+    private def optionToUndefined(optionExpr:Option[RTExpression]) = {
+        optionExpr match {
+          case None => Stdlib_Undefined
+          case Some(expr) => expr
+        }
+    }
+
     private def rewriteStatement (statement: JSStatement) : RTExpression = {
     	statement match {
     	    case Declare(JSIdentifier(id)) => RTDeclare(RTId(id))
     	    case EmptyStatement() => Stdlib_Undefined
     	    case JSBlock(statements) => new RTBlock(rewriteStatementList(statements))
-			case IfStatement(condition, whenTrue, whenFalse) => Stdlib_Undefined
+			case IfStatement(condition, whenTrue, whenFalse) => {
+          RTCond(rewriteExpression(condition),
+                 rewriteStatement(whenTrue),
+                 optionToUndefined(rewriteOptionStatement(whenFalse)))
+      }
 			case DoWhile (statement, condition)  => Stdlib_Undefined
 			case While (condition, statement) => Stdlib_Undefined
 			case ContinueStatement(label) => Stdlib_Undefined 

@@ -34,7 +34,7 @@ class JSRunnerTest1 {
 	
 	@Test def testInteger() {
 		val source = "1.0"
-		val expected = ScalaReturnNumber(1.0)
+		val expected = ScalaReturnDouble(1.0)
 		val retval = new JSRunner().run(source)
 		assertThat(retval,is[Any](expected))
 	}
@@ -69,14 +69,21 @@ class JSRunnerTest1 {
 
   @Test def testSimpleAddition() {
       val source = "2+3"
-      val expected = new ScalaReturnNumber(5.0)
+      val expected = new ScalaReturnDouble(5.0)
       val retval = new JSRunner().run(source)
       assertThat(retval,is[Any](expected))
   }
 
   @Test def testFunctionScope() {
       val source = "var a = 3; function foo(x) { var c = 5; return a+x+c }; foo(1)"
-      val expected = new ScalaReturnNumber(9.0)
+      val expected = new ScalaReturnDouble(9.0)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
+  }
+
+  @Test def testRecursion() {
+      val source = "function fib(x) { if(x>1) { return x*fib(x-1) } else { return 1 } }; fib(5)"
+      val expected = new ScalaReturnDouble(120.0)
       val retval = new JSRunner().run(source)
       assertThat(retval,is[Any](expected))
   }
