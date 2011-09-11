@@ -3,7 +3,7 @@ package jsengine.runtime.library
 import jsengine.runtime.tree.RTObject
 import jsengine.runtime.tree.RTEnvironmentRecord
 
-class Stdlib_Boolean(value: Boolean) extends RTObject {
+class Stdlib_Boolean(value: Boolean) extends RTObject(None) {
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	def nativeBooleanValue = value
 	def toBoolean: Stdlib_Boolean = this

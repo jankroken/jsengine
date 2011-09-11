@@ -3,7 +3,7 @@ package jsengine.runtime.library
 import jsengine.runtime.tree.RTObject
 import jsengine.runtime.tree.RTEnvironmentRecord
 
-class Stdlib_Number(val value: NumericValue) extends RTObject {
+class Stdlib_Number(val value: NumericValue) extends RTObject(Some(Stdlib_Object)) {
 
   def evaluate(env: RTEnvironmentRecord): RTObject = this
 

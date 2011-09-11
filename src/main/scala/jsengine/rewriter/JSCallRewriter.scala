@@ -25,7 +25,9 @@ object JSCallRewriter {
     		}
     	}
     	val properties = o match { case JSLiteralObject(properties) => properties }
-    	val source = properties.map((property) => property match { case (name,value) => Assign(name,value) })
+    	val source = properties.map((property) => property match {
+        case (name,value) => Assign(Lookup(JSIdentifier("this"),name),value)
+      })
     	val function = JSFunction(None,List(),source)
     	New(function,List())
     }

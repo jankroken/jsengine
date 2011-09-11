@@ -27,7 +27,7 @@ class JSRunner {
 		runRTSource(rtAST)
 	}
 	
-	private def runRTSource(source: RTSource) = {
+	private def runRTSource(source: RTSource):ScalaReturn = {
 	    try {
 	    	val result = source.evaluate(env)
 	    	println("result from source = "+result)
@@ -41,16 +41,19 @@ class JSRunner {
               case PositiveInfinity => ScalaPositiveInfinity
               case NegativeInfinity => ScalaNegativeInfinity
               case DoubleValue(dv) => ScalaReturnDouble(dv)
+            }
           }
-        }
+          case obj: RTObject => ScalaReturnObject()
 	    	  case _ => ScalaReturnNotImplemented()
 	    	}
 	    } catch {
 	        case referenceError: RTReferenceError => 
 	            println("ReferenceError: "+referenceError.msg)
+              referenceError.printStackTrace()
 	            ScalaReturnException(referenceError)
 	        case typeError: RTTypeError => 
 	            println("TypeError: "+typeError.msg)
+              typeError.printStackTrace()
 	            ScalaReturnException(typeError)
 	    }
 	}

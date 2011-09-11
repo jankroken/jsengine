@@ -2,7 +2,7 @@ package jsengine.runtime.tree
 
 import jsengine.runtime.library._
 
-trait RTReferenceType extends RTObject
+abstract class  RTReferenceType extends RTObject(None)
 
 class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	var value: RTObject = Stdlib_Undefined

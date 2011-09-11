@@ -12,17 +12,18 @@ import jsengine.parser.JSParser
 import jsengine.runtime.library._
 
 
-class JSRunnerTest1 {
+class JSRunnerTestBasics {
+
 	@Test def testUndefined() {
-		val source = "undefined"
-		val retval = new JSRunner().run(source)
-		assertThat(retval,is[Any](ScalaReturnUndefined))
+      val source = "undefined"
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](ScalaReturnUndefined))
 	}
 
 	@Test def testTwoUndefined() {
-		val source = "undefined;undefined"
-		val retval = new JSRunner().run(source)
-		assertThat(retval,is[Any](ScalaReturnUndefined))
+      val source = "undefined;undefined"
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](ScalaReturnUndefined))
 	}
 	
 	@Test def testVariableAssignmentAndLookup() {
@@ -33,32 +34,39 @@ class JSRunnerTest1 {
 	}
 	
 	@Test def testInteger() {
-		val source = "1.0"
-		val expected = ScalaReturnDouble(1.0)
-		val retval = new JSRunner().run(source)
-		assertThat(retval,is[Any](expected))
+      val source = "1.0"
+      val expected = ScalaReturnDouble(1.0)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
 	}
 	
 	@Test def testString() {
-		val source = "'hello world'"
-		val expected = ScalaReturnString("hello world")
-		val retval = new JSRunner().run(source)
-		assertThat(retval,is[Any](expected))
+      val source = "'hello world'"
+      val expected = ScalaReturnString("hello world")
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
 	}
 	
 	@Test def testBooleanAnd() {
-		val source = "true && false"
-		val expected = ScalaReturnBoolean(false)
-		val retval = new JSRunner().run(source)
-		assertThat(retval,is[Any](expected))
+      val source = "true && false"
+      val expected = ScalaReturnBoolean(false)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
 	}
 	
 	@Test def testSimpleFunction() {
-		val source = "function foo() { return true } ; foo()";
-		val expected = ScalaReturnBoolean(true)
-		val retval = new JSRunner().run(source)
-		assertThat(retval,is[Any](expected))
+      val source = "function foo() { return true } ; foo()";
+      val expected = ScalaReturnBoolean(true)
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
 	}
+
+  @Test def testSimpleFunctionNoReturn() {
+      val source = "function foo() { 1 }; foo()"
+      val expected = ScalaReturnUndefined
+      val retval = new JSRunner().run(source)
+      assertThat(retval,is[Any](expected))
+  }
 	
 	@Test def testFunctionArgument() {
 	    val source = "function foo(x) { return x } ; foo(true)"

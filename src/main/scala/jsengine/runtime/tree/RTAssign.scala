@@ -12,7 +12,10 @@ class RTAssign(left: RTExpression, value: RTExpression) extends RTExpression {
   		  	  // assign var in global object
   		  	  Stdlib_Undefined
   		  	}
-  		  	case _ => throw new RTTypeError("Not a reference: "+left)
+          case property: RTObjectPropertyProxy => {
+              property.setValue(realValue)
+          }
+  		  	case _ => throw new RTTypeError("Not a reference: "+ref)
   		}
   		Stdlib_Undefined
   		// 

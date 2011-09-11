@@ -3,31 +3,12 @@ package jsengine.runtime.tree
 import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
-abstract class RTObject(val prototype: Option[RTObject]) extends RTExpression {
-//	var properties: List[RTNamedObjectProperty] = List()
-  var properties: Map[RTObjectPropertyKey,RTNamedObjectProperty] = Map()
+class RTUserObject(prototype: RTObject) extends RTObject(Some(prototype)) {
 
-  def isPrimitive:Boolean
-  def isObject:Boolean
-  def toBoolean:Stdlib_Boolean
-  def evaluate(env: RTEnvironmentRecord):RTObject
-
-  def setProperty(key: RTObject, value: RTObject) = {
-    properties = properties + (RTObjectPropertyKey(key) -> RTNamedObjectProperty(value))
-  }
-
-  def getProperty(key: RTObject): Option[RTNamedObjectProperty] = {
-    properties.get(RTObjectPropertyKey(key))
-  }
-
-  def valueOf:RTObject = this
-
-  def toNumber():Stdlib_Number = { Stdlib_Number(NaN) }
-
-  def newCall(call: CallObject):RTObject = {
-    throw new RuntimeException("Not implemented")
-  }
-
+  override def isPrimitive = false
+  override def isObject = true
+  override def toBoolean:Stdlib_Boolean = Stdlib_Boolean(true)
+  override def evaluate(env: RTEnvironmentRecord) = this
 
 	/*
 [[Class]] String A  String value indicating a specification defined

@@ -64,8 +64,8 @@ object AST2RTRewriter {
         case BuiltIn("*") => Stdlib_Operator_Multiply
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
-			  case Lookup(expr,index) => Stdlib_Undefined
-			  case New(function,args) => Stdlib_Undefined
+			  case Lookup(expr,index) => RTLookup(rewriteExpression(expr),rewriteExpression(index))
+			  case New(function,args) => RTNewCall(rewriteExpression(function),rewriteExpressionList(args))
 			  case Call(function,args) => RTSimpleFunctionCall(rewriteExpression(function),rewriteExpressionList(args))
 			  case Assign(left,value) => RTAssign(rewriteExpression(left),rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Stdlib_Undefined
