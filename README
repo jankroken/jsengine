@@ -9,9 +9,14 @@ project is to learn, and not to provide the world with yet another javascript
 runtime, the project will end when there's no worthwhile challenges left.
 
 Current incompatibilities:
-   no automatic semicolon insertion
-   semicolons are used as separators between statements, and not terminators
-   a \n ++ b will be interpreted as (a++)\n b, instead of a \n (++b)
-   labels needs to be preceeded by @label
-   comments are not supported
+ - no automatic semicolon insertion
+ - semicolons are used as separators between statements, and not terminators
+ - a \n ++ b will be interpreted as (a++)\n b, instead of a \n (++b)
+ - labels needs to be preceeded by @label
+ - comments are not supported
+ - currently transforms assignments like 'a += x' into 'a = a + x'. This is
+   performed before the evaluation of a, meaning that a.e. 'a[i++] += 1' is
+   transformed into 'a[i++] = a[i++] + 1', which is clearly wrong. This is
+   done just to get onwards with the implementation, and will be fixed once
+   the actual runtime implementation is in place
    

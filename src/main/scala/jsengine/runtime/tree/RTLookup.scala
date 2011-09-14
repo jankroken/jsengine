@@ -2,10 +2,11 @@ package jsengine.runtime.tree
 
 import jsengine.runtime.library._
 
-class RTLookup(expr: RTExpression, index: RTExpression) extends RTExpression {
+class RTLookup(containerExpression: RTExpression, indexExpression: RTExpression) extends RTExpression {
   	def evaluate(env: RTEnvironmentRecord):RTObjectPropertyProxy = {
-      val container = expr.evaluate(env).valueOf
-      val index = expr.evaluate(env).valueOf
+      val container = containerExpression.evaluate(env).valueOf
+      val index = indexExpression.evaluate(env).valueOf
+      println("lookup.eval: (%s,%s)".format(container,index))
       container match {
         case obj: RTObject => {
           RTObjectPropertyProxy(obj,index)
@@ -13,7 +14,7 @@ class RTLookup(expr: RTExpression, index: RTExpression) extends RTExpression {
         case _ => throw new RuntimeException("Unhandled property container: "+container)
       }
   	}
-    override def toString = "lookup(%s,%s)".format(expr,index)
+    override def toString = "lookup(%s,%s)".format(containerExpression,indexExpression)
 }
 
 object RTLookup {

@@ -31,21 +31,12 @@ class JSRunner {
 	    try {
 	    	val result = source.evaluate(env)
 	    	println("result from source = "+result)
-	    	result match {
-	    	  case Stdlib_Undefined => ScalaReturnUndefined
-	    	  case bool: Stdlib_Boolean => ScalaReturnBoolean(bool.nativeBooleanValue)
-	    	  case string: Stdlib_String => ScalaReturnString(string.nativeStringValue)
-          case number:Stdlib_Number => {
-            number.value match {
-              case NaN => ScalaNaN
-              case PositiveInfinity => ScalaPositiveInfinity
-              case NegativeInfinity => ScalaNegativeInfinity
-              case DoubleValue(dv) => ScalaReturnDouble(dv)
-            }
-          }
-          case obj: RTObject => ScalaReturnObject()
-	    	  case _ => ScalaReturnNotImplemented()
-	    	}
+        val scalaReturnValue = result match {
+          case obj:RTObject => ScalaReturn(obj)
+          case _ => throw new RuntimeException("Unhandled return: "+result)
+        }
+        println("Scala Return: "+scalaReturnValue)
+        scalaReturnValue
 	    } catch {
 	        case referenceError: RTReferenceError => 
 	            println("ReferenceError: "+referenceError.msg)

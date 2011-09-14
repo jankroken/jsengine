@@ -41,7 +41,7 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
       val environment = new RTEnvironmentRecord(functionEnvironment)
 
       val objectPrototype:RTObject = getProperty(Stdlib_String("prototype")) match {
-        case None => Stdlib_Object_Number
+        case None => Stdlib_Object
         case Some(objRef) => {
             if (objRef.value.isObject) {
                 objRef.value

@@ -10,6 +10,10 @@ class RTUserObject(prototype: RTObject) extends RTObject(Some(prototype)) {
   override def toBoolean:Stdlib_Boolean = Stdlib_Boolean(true)
   override def evaluate(env: RTEnvironmentRecord) = this
 
+  override def toString():String = {
+     "UserObject(%s)[prototype:%s]".format(properties.toString(),prototype.toString)
+  }
+
 	/*
 [[Class]] String A  String value indicating a specification defined
 classification of objects.
@@ -126,4 +130,11 @@ property.
 
 	  
 	 */
+}
+
+object RTUserObject {
+  def apply(prototype: RTObject) = {
+    new RTUserObject(prototype)
+  }
+
 }

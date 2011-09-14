@@ -21,7 +21,7 @@ object JSCallRewriter {
     private def literalObjectToFunctionCall(o: JSLiteralObject): New = {
     	def toCode(property: (JSExpression, JSExpression)):Assign = {
     		property match {
-    		  	case (name,value) => Assign(name,value)
+    		  	case (name,value) => Assign(Lookup(JSIdentifier("this"),name),value)
     		}
     	}
     	val properties = o match { case JSLiteralObject(properties) => properties }

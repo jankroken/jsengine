@@ -2,21 +2,24 @@ package jsengine.runtime.tree
 
 import jsengine.runtime.library._
 
-class RTObjectPropertyProxy(val obj: RTObject, index: RTObject) extends RTReferenceType {
+class RTObjectPropertyProxy(val obj: RTObject, index: RTObject) extends RTObject(None) {
 	var strict_reference: Boolean = false
 	
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	
 	def setValue(value: RTObject) {
+    println("proxy.setValue(%s) <= %s",index,value)
     obj.setProperty(index,value)
 	}
 
   def getValue() {
+    println("proxy.getValue(%s from %s) => %s",index,obj,obj.getProperty(index))
     obj.getProperty(index)
   }
 	
 	override def valueOf() = {
     val optionalReference = obj.getProperty(index)
+    println("proxy.valueOf (%s . %s) => %s".format(obj, index,optionalReference))
     optionalReference match {
       case None => Stdlib_Undefined
       case Some(ref) => ref.value
