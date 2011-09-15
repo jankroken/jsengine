@@ -2,15 +2,7 @@ package jsengine
 
 import org.junit.Test
 import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
-import org.junit.Assert.fail
-
-import jsengine.ast.JSString
-import jsengine.ast.JSSource
-import jsengine.parser.JSParser
-import jsengine.runtime.library._
-import jsengine.runtime.tree.RTUserObject
 
 
 class JSRunnerTestObjects {
@@ -46,6 +38,13 @@ class JSRunnerTestObjects {
   @Test def testObjectFunction() {
     val source = "var a = { f: function () { return 3 } };a.f()"
     val expected = ScalaReturnDouble(3.0)
+    val retval = new JSRunner().run(source)
+    assertThat(retval,is[Any](expected))
+  }
+
+  @Test def nonexistentmember() {
+    val source = "var foo = {};foo.bar"
+    val expected = ScalaReturnUndefined
     val retval = new JSRunner().run(source)
     assertThat(retval,is[Any](expected))
   }

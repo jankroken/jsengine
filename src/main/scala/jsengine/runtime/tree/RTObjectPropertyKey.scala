@@ -3,7 +3,12 @@ package jsengine.runtime.tree
 class RTObjectPropertyKey(val keyObject: RTObject) {
   private def getIndexValue = {
     try {
-      keyObject.toNumber().toString()
+      val numberString = keyObject.toNumber().toString()
+      if(numberString == "NaN") {
+        keyObject.toString
+      } else {
+        numberString
+      }
     } catch {
       case _ => keyObject.toString()
     }
@@ -12,19 +17,21 @@ class RTObjectPropertyKey(val keyObject: RTObject) {
 
   override def hashCode = key.hashCode
   override def equals(that: Any):Boolean = {
+      println("RTObjectPropertyKey.equals(%s,%s)".format(this,that))
       that match {
-        case otherKey:RTObjectPropertyKey => key.equals(otherKey.key)
+        case otherKey:RTObjectPropertyKey => {
+          println("RTObjectPropertyKey.equals:2(%s,%s)".format(key,otherKey.key))
+          key.equals(otherKey.key)
+        }
         case _ => false
       }
   }
   override def toString = "okey("+keyObject.toString+")"
-//  override def toString = "okey"
 
 }
 
 object RTObjectPropertyKey {
   def apply(keyObject: RTObject) = {
-      println("creating a new propertyKey with value: %s".format(keyObject))
       new RTObjectPropertyKey(keyObject)
   }
 }

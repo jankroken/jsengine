@@ -6,7 +6,7 @@ class RTLookup(containerExpression: RTExpression, indexExpression: RTExpression)
   	def evaluate(env: RTEnvironmentRecord):RTObjectPropertyProxy = {
       val container = containerExpression.evaluate(env).valueOf
       val index = indexExpression.evaluate(env).valueOf
-      println("lookup.eval: (%s,%s)".format(container,index))
+//      println("lookup.eval: (%s,%s)".format(container,index))
       container match {
         case obj: RTObject => {
           RTObjectPropertyProxy(obj,index)

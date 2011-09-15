@@ -13,6 +13,17 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
   override def call(callObject: CallObject): RTObject = {
 
     val environment = new RTEnvironmentRecord(functionEnvironment)
+    callObject.thisRef match {
+      case Some(thisRef) => {
+        environment.declare(RTId("this"))
+        environment.getReference(RTId("this")) match {
+          case ref:RTReference => {
+            ref.setValue(thisRef)
+          }
+        }
+      }
+      case None =>
+    }
     for ((id, value) <- args.zip(callObject.args)) {
       println(id + " <- " + value)
       environment.declare(id)
