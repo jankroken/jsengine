@@ -56,5 +56,16 @@ class JSRunnerTestObjects {
     assertThat(retval,is[Any](expected))
   }
 
+  @Test def testConstructorFunction() {
+    val source = "function Construct(value) {" +
+                 "  this.v = value "+
+                 "}; "+
+                 "var o = new Construct(10); "+
+                 "o.v"
+    val expected = ScalaReturnDouble(10)
+    val retval = new JSRunner().run(source)
+    assertThat(retval,is[Any](expected))
+  }
+
 }
 

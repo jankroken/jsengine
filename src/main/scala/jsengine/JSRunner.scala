@@ -29,7 +29,7 @@ class JSRunner {
 	
 	private def runRTSource(source: RTSource):ScalaReturn = {
 	    try {
-	    	val result = source.evaluate(env)
+	    	val result = source.evaluate(env).valueOf
 	    	println("result from source = "+result)
         val scalaReturnValue = result match {
           case obj:RTObject => ScalaReturn(obj)

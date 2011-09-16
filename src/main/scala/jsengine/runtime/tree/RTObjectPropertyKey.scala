@@ -17,10 +17,8 @@ class RTObjectPropertyKey(val keyObject: RTObject) {
 
   override def hashCode = key.hashCode
   override def equals(that: Any):Boolean = {
-      println("RTObjectPropertyKey.equals(%s,%s)".format(this,that))
       that match {
         case otherKey:RTObjectPropertyKey => {
-          println("RTObjectPropertyKey.equals:2(%s,%s)".format(key,otherKey.key))
           key.equals(otherKey.key)
         }
         case _ => false
