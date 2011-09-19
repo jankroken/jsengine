@@ -64,7 +64,7 @@ object JSCallRewriter {
 			  case Assign(left,value) => Assign(rewriteExpression(left), rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Call(BuiltIn(")--"),List(expression))
 			  case PostfixExpression(expression,Operator("++")) => Call(BuiltIn(")++"),List(expression))
-			  case JSArrayLiteral(elements) => Call(BuiltIn("array"),elements.map((oe) => rewriteExpression(optionToUndefined(oe))))
+			  case JSArrayLiteral(elements) => New(BuiltIn("array"),elements.map((oe) => rewriteExpression(optionToUndefined(oe))))
 			  case JSFunction(functionName,arguments, source)  => {
 			     JSFunction(functionName,arguments,rewriteStatementList(source))
 			  }

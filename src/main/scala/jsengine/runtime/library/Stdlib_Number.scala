@@ -15,6 +15,17 @@ class Stdlib_Number(val value: NumericValue) extends RTObject(Some(Stdlib_Object
   override def isPrimitive = true
   override def toString():String = ""+value
   override def toNumber = this
+  def isDoubleValue = value match {
+    case double: DoubleValue => true
+    case _ => false
+  }
+
+  def forcedDoubleValue:Double = {
+    value match {
+      case DoubleValue(dv) => dv
+      case _ => throw new RuntimeException("forcedDoubleValue: not a double value: "+value)
+    }
+  }
 }
 
 object Stdlib_Number {

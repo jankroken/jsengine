@@ -5,7 +5,7 @@ import org.junit.Assert.assertThat
 import org.hamcrest.CoreMatchers.is
 
 
-class JSRunnerTestObjects {
+class JSRunnerTestSimpleObjects {
 
 	@Test def testBlockNotObject() {
 		val source = "{}"

@@ -62,6 +62,7 @@ object AST2RTRewriter {
         case BuiltIn("-") => Stdlib_Operator_Minus
         case BuiltIn(">") => Stdlib_Operator_GreaterThan
         case BuiltIn("*") => Stdlib_Operator_Multiply
+        case BuiltIn("array") => Stdlib_Object_Array
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
 			  case Lookup(expr,index) => RTLookup(rewriteExpression(expr),rewriteExpression(index))
