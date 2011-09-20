@@ -79,6 +79,7 @@ object AST2RTRewriter {
 			  case JSIdentifier("undefined") => Stdlib_Undefined
 			  case JSIdentifier("true") => Stdlib_Boolean(true)
 			  case JSIdentifier("false") => Stdlib_Boolean(false)
+        case JSIdentifier("NaN") => Stdlib_Number(NaN)
 			  case JSIdentifier(value) => RTGetReferenceById(RTId(value))
 			  case JSNativeCall(identifier) => Stdlib_Undefined
 			  case JSNumber(value) => Stdlib_Number(value) 
