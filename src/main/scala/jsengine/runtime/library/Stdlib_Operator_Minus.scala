@@ -4,7 +4,23 @@ import jsengine.runtime.tree._
 
 object Stdlib_Operator_Minus extends RTFunction {
 
-    def call(callObject: CallObject):RTObject = {
+
+  def call(callObject: CallObject):RTObject = {
+    callObject.args.length match {
+      case 1 => callUnary(callObject)
+      case 2 => callBinary(callObject)
+      case _ => throw new RuntimeException("Builtin: - : Wrong number of arguments(%s):%s".format(callObject.args.length,callObject.args))
+    }
+  }
+
+  def callUnary(callObject: CallObject):RTObject = {
+      val val1 = callObject.args(0).toNumber()
+      return negate(val1)
+  }
+
+
+
+    def callBinary(callObject: CallObject):RTObject = {
         val val1 = callObject.args(0).toNumber()
         val val2 = callObject.args(1).toNumber()
         return subNumbers(val1,val2)
@@ -13,18 +29,28 @@ object Stdlib_Operator_Minus extends RTFunction {
     override def toString = "lib_-"
 
     private def subNumbers(number1:Stdlib_Number, number2: Stdlib_Number):Stdlib_Number = {
-        (number1.value,number2.value) match {
-          case (NaN,_) => Stdlib_Number(NaN)
-          case (_,NaN) => Stdlib_Number(NaN)
-          case (PositiveInfinity,NegativeInfinity) => Stdlib_Number(NaN)
-          case (NegativeInfinity,PositiveInfinity) => Stdlib_Number(NaN)
-          case (PositiveInfinity,_) => Stdlib_Number(PositiveInfinity)
-          case (_,PositiveInfinity) => Stdlib_Number(NegativeInfinity)
-          case (NegativeInfinity,_) => Stdlib_Number(NegativeInfinity)
-          case (_,NegativeInfinity) => Stdlib_Number(PositiveInfinity)
-          case (DoubleValue(d1),DoubleValue(d2)) => Stdlib_Number(d1-d2)
-        }
+      (number1.value,number2.value) match {
+        case (NaN,_) => Stdlib_Number(NaN)
+        case (_,NaN) => Stdlib_Number(NaN)
+        case (PositiveInfinity,NegativeInfinity) => Stdlib_Number(NaN)
+        case (NegativeInfinity,PositiveInfinity) => Stdlib_Number(NaN)
+        case (PositiveInfinity,_) => Stdlib_Number(PositiveInfinity)
+        case (_,PositiveInfinity) => Stdlib_Number(NegativeInfinity)
+        case (NegativeInfinity,_) => Stdlib_Number(NegativeInfinity)
+        case (_,NegativeInfinity) => Stdlib_Number(PositiveInfinity)
+        case (DoubleValue(d1),DoubleValue(d2)) => Stdlib_Number(d1-d2)
+      }
     }
+
+  private def negate(number:Stdlib_Number):Stdlib_Number = {
+    val value = number.value match {
+      case NaN => NaN
+      case PositiveInfinity => NegativeInfinity
+      case NegativeInfinity => PositiveInfinity
+      case DoubleValue(d1) => DoubleValue(-d1)
+    }
+    Stdlib_Number(value)
+  }
 
     private def addStrings(object1:RTObject,object2:RTObject) = {
         Stdlib_String(object1.toString+object2.toString)
