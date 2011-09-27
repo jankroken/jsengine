@@ -12,5 +12,6 @@ object Stdlib_Undefined extends RTObject(None) {
 	
 	override def isObject = false
 	override def isPrimitive = true
+  override def typeof = "undefined"
 
 }

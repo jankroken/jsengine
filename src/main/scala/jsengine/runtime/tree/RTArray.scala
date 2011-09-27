@@ -11,6 +11,7 @@ class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
   override def isObject = true
   override def toBoolean:Stdlib_Boolean = Stdlib_Boolean(true)
   override def evaluate(env: RTEnvironmentRecord) = this
+  override def typeof = "object"
 
   override def toString():String = {
      "["+arrayContent+"]"

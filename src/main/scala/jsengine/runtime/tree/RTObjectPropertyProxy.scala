@@ -4,6 +4,7 @@ import jsengine.runtime.library._
 
 class RTObjectPropertyProxy(val obj: RTObject, index: RTObject) extends RTObject(None) {
 	var strict_reference: Boolean = false
+  override def typeof = "internal:objectpropertyproxy"
 	
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	

@@ -11,6 +11,7 @@ abstract class RTObject(val prototype: Option[RTObject]) extends RTExpression {
   def isObject:Boolean
   def toBoolean:Stdlib_Boolean
   def evaluate(env: RTEnvironmentRecord):RTObject
+  def typeof:String
 
   def setProperty(key: RTObject, value: RTObject) = {
     properties = properties + (RTObjectPropertyKey(key) -> RTNamedObjectProperty(value))

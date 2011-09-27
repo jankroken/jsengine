@@ -12,4 +12,5 @@ object Stdlib_Null extends RTObject(None) {
 	
 	override def isObject = false
 	override def isPrimitive = true
+  override def typeof = "object"
 }

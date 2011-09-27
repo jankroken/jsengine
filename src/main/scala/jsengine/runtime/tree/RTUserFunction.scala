@@ -10,6 +10,8 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
     this
   }
 
+  override def typeof = "function"
+
   override def call(callObject: CallObject): RTObject = {
 
     val environment = new RTEnvironmentRecord(functionEnvironment)
@@ -24,9 +26,12 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
       }
       case None =>
     }
+    for (arg <- args) {
+      environment.declare(arg)
+    }
+
     for ((id, value) <- args.zip(callObject.args)) {
       println(id + " <- " + value)
-      environment.declare(id)
       environment.getReference(id) match {
         case ref: RTReference => ref.setValue(value)
       }
@@ -49,49 +54,53 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
   }
 
   override def newCall(callObject: CallObject): RTObject = {
-      val environment = new RTEnvironmentRecord(functionEnvironment)
+    val environment = new RTEnvironmentRecord(functionEnvironment)
 
-      val objectPrototype:RTObject = getProperty(Stdlib_String("prototype")) match {
-        case None => Stdlib_Object
-        case Some(objRef) => {
-            if (objRef.value.isObject) {
-                objRef.value
-            } else {
-                Stdlib_Object_Number
-            }
-        }
-      }
+    for (arg <- args) {
+      environment.declare(arg)
+    }
 
-      val createdObject = new RTUserObject(objectPrototype)
-      environment.declare(RTId("this"))
-      environment.getReference(RTId("this")) match {
-        case ref: RTReference => ref.setValue(createdObject)
-      }
-
-      for ((id, value) <- args.zip(callObject.args)) {
-        println(id + " <- " + value)
-        environment.declare(id)
-        environment.getReference(id) match {
-          case ref: RTReference => ref.setValue(value)
-        }
-      }
-      decl.map(environment.declare(_))
-      var retValue: RTObject = Stdlib_Undefined
-      try {
-          for (expr <- source) {
-              expr.evaluate(environment).valueOf
+    val objectPrototype:RTObject = getProperty(Stdlib_String("prototype")) match {
+      case None => Stdlib_Object
+      case Some(objRef) => {
+          if (objRef.value.isObject) {
+              objRef.value
+          } else {
+              Stdlib_Object_Number
           }
-      } catch {
-        case ret: RTReturnException => {
-          retValue = ret.value.valueOf
-        }
-      }
-      if (retValue.valueOf.isObject) {
-          return retValue;
-      } else {
-          return createdObject
       }
     }
+
+    val createdObject = new RTUserObject(objectPrototype)
+    environment.declare(RTId("this"))
+    environment.getReference(RTId("this")) match {
+      case ref: RTReference => ref.setValue(createdObject)
+    }
+
+    for ((id, value) <- args.zip(callObject.args)) {
+      println(id + " <- " + value)
+      environment.declare(id)
+      environment.getReference(id) match {
+        case ref: RTReference => ref.setValue(value)
+      }
+    }
+    decl.map(environment.declare(_))
+    var retValue: RTObject = Stdlib_Undefined
+    try {
+        for (expr <- source) {
+            expr.evaluate(environment).valueOf
+        }
+    } catch {
+      case ret: RTReturnException => {
+        retValue = ret.value.valueOf
+      }
+    }
+    if (retValue.valueOf.isObject) {
+        return retValue;
+    } else {
+        return createdObject
+    }
+  }
 
   override def toBoolean(): Stdlib_Boolean = {
     Stdlib_Boolean(true)

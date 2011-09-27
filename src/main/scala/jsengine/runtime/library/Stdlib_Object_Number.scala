@@ -8,5 +8,6 @@ object Stdlib_Object_Number extends RTObject(None) {
   override def toBoolean = Stdlib_Boolean(true)
   override def isObject = true
   override def isPrimitive = false
+  override def typeof = "function"
 
 }

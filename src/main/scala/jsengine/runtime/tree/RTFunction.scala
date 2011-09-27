@@ -8,5 +8,6 @@ abstract class RTFunction extends RTObject(Some(Stdlib_Object_Function)) {
   	def call(callObject: CallObject):RTObject
   	
   	override def isObject = false
+  override def typeof = "function"
 	override def isPrimitive = false
 }

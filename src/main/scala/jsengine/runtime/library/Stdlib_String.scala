@@ -11,4 +11,5 @@ case class Stdlib_String(val value: String) extends RTObject(Some(Stdlib_Object)
 	override def isObject = false
 	override def isPrimitive = true
   override def toString = "string('"+value+"')"
+  override def typeof = "string"
 }

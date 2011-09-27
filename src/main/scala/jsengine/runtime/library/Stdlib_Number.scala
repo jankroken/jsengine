@@ -15,6 +15,7 @@ class Stdlib_Number(val value: NumericValue) extends RTObject(Some(Stdlib_Object
   override def isPrimitive = true
   override def toString():String = ""+value
   override def toNumber = this
+  override def typeof = "number"
   def isDoubleValue = value match {
     case double: DoubleValue => true
     case _ => false

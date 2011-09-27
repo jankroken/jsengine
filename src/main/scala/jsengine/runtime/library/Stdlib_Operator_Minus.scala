@@ -4,7 +4,6 @@ import jsengine.runtime.tree._
 
 object Stdlib_Operator_Minus extends RTFunction {
 
-
   def call(callObject: CallObject):RTObject = {
     callObject.args.length match {
       case 1 => callUnary(callObject)

@@ -3,12 +3,13 @@ package jsengine.runtime.tree
 import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
-class RTUserObject(prototype: RTObject) extends RTObject(Some(prototype)) {
+class RTUserObject(prototype: RTObject,var baseValue: Option[RTObject] = None) extends RTObject(Some(prototype)) {
 
   override def isPrimitive = false
   override def isObject = true
   override def toBoolean:Stdlib_Boolean = Stdlib_Boolean(true)
   override def evaluate(env: RTEnvironmentRecord) = this
+  override def typeof = "object"
 
   override def toString():String = {
      "UserObject(%s)[prototype:%s]".format(properties.toString(),prototype.toString)
