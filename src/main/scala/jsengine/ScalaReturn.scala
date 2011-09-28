@@ -7,6 +7,7 @@ trait ScalaReturn;
 case class ScalaReturnDouble(value: Double) extends ScalaReturn
 case class ScalaReturnString(value: String) extends ScalaReturn
 case object ScalaReturnUndefined extends ScalaReturn
+case object ScalaReturnNull extends ScalaReturn
 case class ScalaReturnBoolean(bool: Boolean) extends ScalaReturn
 case class ScalaReturnException(jsexception: Throwable) extends ScalaReturn
 case class ScalaReturnNotImplemented()  extends ScalaReturn
@@ -19,6 +20,7 @@ object ScalaReturn {
   def apply(obj: RTObject):ScalaReturn = {
     obj match {
       case Stdlib_Undefined => ScalaReturnUndefined
+      case Stdlib_Null => ScalaReturnNull
       case bool: Stdlib_Boolean => ScalaReturnBoolean(bool.nativeBooleanValue)
       case string: Stdlib_String => ScalaReturnString(string.nativeStringValue)
       case number:Stdlib_Number => {

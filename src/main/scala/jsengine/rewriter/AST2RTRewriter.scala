@@ -66,6 +66,9 @@ object AST2RTRewriter {
         case BuiltIn("typeof") => Stdlib_Operator_Typeof
         case BuiltIn("void") => Stdlib_Operator_Void
         case BuiltIn("===") => Stdlib_Operator_Equals3
+        case BuiltIn("==") => Stdlib_Operator_Equals2
+        case BuiltIn("!==") => Stdlib_Operator_NotEquals3
+        case BuiltIn("!=") => Stdlib_Operator_NotEquals2
 			  case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
 			  case Lookup(expr,index) => RTLookup(rewriteExpression(expr),rewriteExpression(index))
@@ -84,6 +87,7 @@ object AST2RTRewriter {
 			  case JSIdentifier("false") => Stdlib_Boolean(false)
         case JSIdentifier("NaN") => Stdlib_Number(NaN)
         case JSIdentifier("Infinity") => Stdlib_Number(PositiveInfinity)
+        case JSIdentifier("null") => Stdlib_Null
 			  case JSIdentifier(value) => RTGetReferenceById(RTId(value))
 			  case JSNativeCall(identifier) => Stdlib_Undefined
 			  case JSNumber(value) => Stdlib_Number(value) 
