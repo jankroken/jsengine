@@ -1,16 +1,18 @@
 package jsengine
 
+import runtime.{LibraryNameAssigner, ExecutionContext}
 import scala.io.Source
 import jsengine.rewriter.Rewriter
 import jsengine.parser.JSParser
 import jsengine.runtime.tree._
-import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
 class JSRunner {
   
     val context = new ExecutionContext()
     val env = new RTEnvironmentRecord(None)
+    LibraryNameAssigner.assignLibraryObjects(env)
+
   
 	def run(source: Source):ScalaReturn = {
 		ScalaReturnUndefined
