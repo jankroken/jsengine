@@ -6,6 +6,7 @@ import tree.{RTReference, RTId, RTObject, RTEnvironmentRecord}
 object LibraryNameAssigner {
   def assignLibraryObjects(env: RTEnvironmentRecord) {
     assignLibraryObject(env,"Object",Stdlib_Object)
+    assignLibraryObject(env,"String",Stdlib_Object_String)
   }
 
   def assignLibraryObject(env: RTEnvironmentRecord, name: String, obj: RTObject) {

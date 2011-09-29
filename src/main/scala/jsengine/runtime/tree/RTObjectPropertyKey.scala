@@ -3,7 +3,7 @@ package jsengine.runtime.tree
 class RTObjectPropertyKey(val keyObject: RTObject) {
   private def getIndexValue = {
     try {
-      val numberString = keyObject.toNumber().toString()
+      val numberString = keyObject.numberValue().toString()
       if(numberString == "NaN") {
         keyObject.toString
       } else {

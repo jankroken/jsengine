@@ -6,12 +6,14 @@ object Stdlib_Object extends RTFunction {
 
   var functionEnvironment: Option[RTEnvironmentRecord] = None
 
+
   override def evaluate(env: RTEnvironmentRecord): RTObject = {
     functionEnvironment = Some(env);
     this
   }
 
-  override def toBoolean = Stdlib_Boolean(true)
+  override def booleanValue = Stdlib_Boolean(true)
+  override def stringValue = Stdlib_String("[object Object]")
   override def isObject = true
   override def isPrimitive = false
   override def toString = "Object"

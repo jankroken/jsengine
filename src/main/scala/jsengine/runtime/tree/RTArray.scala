@@ -9,7 +9,8 @@ class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
 
   override def isPrimitive = false
   override def isObject = true
-  override def toBoolean:Stdlib_Boolean = Stdlib_Boolean(true)
+  override def booleanValue = Stdlib_Boolean(true)
+  override def stringValue = Stdlib_String("[ <RTArray:TODO> ]")
   override def evaluate(env: RTEnvironmentRecord) = this
   override def typeof = "object"
 

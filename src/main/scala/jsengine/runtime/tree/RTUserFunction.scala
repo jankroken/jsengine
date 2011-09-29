@@ -11,6 +11,8 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
   }
 
   override def typeof = "function"
+  override def stringValue = Stdlib_String("function...(full decl/source should be included)")
+  override def booleanValue = Stdlib_Boolean(true)
 
   override def call(callObject: CallObject): RTObject = {
 
@@ -100,10 +102,6 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
     } else {
         return createdObject
     }
-  }
-
-  override def toBoolean(): Stdlib_Boolean = {
-    Stdlib_Boolean(true)
   }
 
   override def toString(): String = {

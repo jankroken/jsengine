@@ -4,7 +4,7 @@ import jsengine.runtime.library._
 
 class RTCond(val cond:RTExpression, val whenTrue:RTExpression, val whenFalse:RTExpression) extends RTExpression {
   	def evaluate(env: RTEnvironmentRecord):RTObject = {
-        val selector = cond.evaluate(env).valueOf.toBoolean.nativeBooleanValue
+        val selector = cond.evaluate(env).valueOf.booleanValue.nativeBooleanValue
         if (selector) {
             whenTrue.evaluate(env)
         } else {

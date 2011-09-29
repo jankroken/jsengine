@@ -7,14 +7,15 @@ class Stdlib_Number(val value: NumericValue) extends RTObject(Some(Stdlib_Object
 
   def evaluate(env: RTEnvironmentRecord): RTObject = this
 
-  def toBoolean: Stdlib_Boolean = {
+  def booleanValue: Stdlib_Boolean = {
     throw new RuntimeException("not implemented")
   }
 
   override def isObject = false
   override def isPrimitive = true
   override def toString():String = ""+value
-  override def toNumber = this
+  override def numberValue = this
+  override def stringValue = Stdlib_String(toString)
   override def typeof = "number"
   def isDoubleValue = value match {
     case double: DoubleValue => true

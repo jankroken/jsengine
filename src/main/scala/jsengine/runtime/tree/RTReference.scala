@@ -8,6 +8,7 @@ class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	var value: RTObject = Stdlib_Undefined
 	var strict_reference: Boolean = false
   override def typeof = "internal:reference"
+  override def stringValue = Stdlib_String("internal:reference")
 	
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	
@@ -16,7 +17,7 @@ class RTReference(val referenced_name: RTId) extends RTReferenceType {
 	}
 	
 	override def valueOf = value
-    override def toBoolean() = { Stdlib_Boolean(true) } // @TODO: verify
+    override def booleanValue() = { Stdlib_Boolean(true) } // @TODO: verify
 	
   	override def isObject = false
 	override def isPrimitive = false
@@ -32,7 +33,8 @@ object RTReference {
 
 case class RTNoReference(val referenced_name: RTId) extends RTReferenceType {
   def evaluate(env: RTEnvironmentRecord):RTObject = { this }
-  override def toBoolean():Stdlib_Boolean = { Stdlib_Boolean(false) }
+  override def booleanValue():Stdlib_Boolean = { Stdlib_Boolean(false) }
+  override def stringValue = Stdlib_String("internal:noreference")
   override def valueOf():RTObject = {
       throw new RTReferenceError(""+referenced_name.value+" is not defined")
   }

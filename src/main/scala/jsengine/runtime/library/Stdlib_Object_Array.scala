@@ -6,7 +6,8 @@ object Stdlib_Object_Array extends RTFunction {
 
   var functionEnvironment:Option[RTEnvironmentRecord] = None
 
-  override def toBoolean = Stdlib_Boolean(true)
+  override def booleanValue = Stdlib_Boolean(true)
+  override def stringValue = Stdlib_String("function Array() { <native code> }")
   override def isObject = true
   override def isPrimitive = false
 

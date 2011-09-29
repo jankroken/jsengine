@@ -1,15 +1,34 @@
 package jsengine.runtime.library
 
-import jsengine.runtime.tree.RTObject
-import jsengine.runtime.tree.RTEnvironmentRecord
+import jsengine.runtime.tree.{RTNamedObjectProperty, RTObject, RTEnvironmentRecord}
 
-case class Stdlib_String(val value: String) extends RTObject(Some(Stdlib_Object)) {
+case class Stdlib_String(val value: String, val isObject: Boolean = false) extends RTObject(Some(Stdlib_Object_String)) {
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	def nativeStringValue = value
-	def toBoolean: Stdlib_Boolean = { Stdlib_Boolean(value.length() > 0) }
+	override def booleanValue: Stdlib_Boolean = { Stdlib_Boolean(value.length() > 0) }
+  override def stringValue = this
+  override def numberValue = {
+    if(value.length == 0) {
+      Stdlib_Number(0.0)
+    } else {
+      try {
+        Stdlib_Number(value.toDouble)
+      } catch {
+        case e => Stdlib_Number(NaN)
+      }
+    }
+  }
 
-	override def isObject = false
 	override def isPrimitive = true
   override def toString = "string('"+value+"')"
   override def typeof = "string"
+
+  override def getProperty(key:RTObject):Option[RTNamedObjectProperty] = {
+    key match {
+      case Stdlib_String("length",_) => Some(RTNamedObjectProperty(Stdlib_Number(value.length)))
+      case Stdlib_String("constructor",_) => Some(RTNamedObjectProperty(Stdlib_Object_String))
+      case _ => super.getProperty(key)
+    }
+  }
+
 }

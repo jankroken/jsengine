@@ -26,7 +26,8 @@ class RTObjectPropertyProxy(val obj: RTObject, index: RTObject) extends RTObject
       case Some(ref) => ref.value
     }
   }
-  override def toBoolean() = { throw new RuntimeException("should never be called") }
+  override def booleanValue() = { throw new RuntimeException("should never be called") }
+  override def stringValue = Stdlib_String("internal:objectpropertyproxy")
 	
   override def isObject = { throw new RuntimeException("should never be called") }
 	override def isPrimitive = { throw new RuntimeException("should never be called")}

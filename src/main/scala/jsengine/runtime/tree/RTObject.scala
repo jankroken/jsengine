@@ -9,7 +9,9 @@ abstract class RTObject(val prototype: Option[RTObject]) extends RTExpression {
 
   def isPrimitive:Boolean
   def isObject:Boolean
-  def toBoolean:Stdlib_Boolean
+  def booleanValue:Stdlib_Boolean
+  def stringValue:Stdlib_String
+  def numberValue():Stdlib_Number = { Stdlib_Number(NaN) }
   def evaluate(env: RTEnvironmentRecord):RTObject
   def typeof:String
 
@@ -23,7 +25,6 @@ abstract class RTObject(val prototype: Option[RTObject]) extends RTExpression {
 
   def valueOf:RTObject = this
 
-  def toNumber():Stdlib_Number = { Stdlib_Number(NaN) }
 
   def newCall(call: CallObject):RTObject = {
     throw new RuntimeException("Not implemented")

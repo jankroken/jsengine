@@ -7,9 +7,11 @@ class RTUserObject(prototype: RTObject,var baseValue: Option[RTObject] = None) e
 
   override def isPrimitive = false
   override def isObject = true
-  override def toBoolean:Stdlib_Boolean = Stdlib_Boolean(true)
+  override def booleanValue:Stdlib_Boolean = Stdlib_Boolean(true)
+  override def stringValue = Stdlib_String("[object Object]")
   override def evaluate(env: RTEnvironmentRecord) = this
   override def typeof = "object"
+
 
   override def toString():String = {
      "UserObject(%s)[prototype:%s]".format(properties.toString(),prototype.toString)
