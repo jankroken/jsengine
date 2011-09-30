@@ -43,13 +43,13 @@ object Stdlib_Operator_Minus extends RTFunction {
   }
 
   private def negate(number:Stdlib_Number):Stdlib_Number = {
-    val value = number.value match {
-      case NaN => NaN
-      case PositiveInfinity => NegativeInfinity
-      case NegativeInfinity => PositiveInfinity
-      case DoubleValue(d1) => DoubleValue(-d1)
+    number.value match {
+      case NaN => Stdlib_Number(NaN)
+      case PositiveInfinity => Stdlib_Number(NegativeInfinity)
+      case NegativeInfinity => Stdlib_Number(PositiveInfinity)
+      case DoubleValue(0.0) => Stdlib_Number(DoubleValue(0.0),!number.negated)
+      case DoubleValue(d1) => Stdlib_Number(DoubleValue(-d1))
     }
-    Stdlib_Number(value)
   }
 
   private def addStrings(object1:RTObject,object2:RTObject) = {

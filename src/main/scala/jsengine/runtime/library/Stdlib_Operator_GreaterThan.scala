@@ -24,8 +24,8 @@ object Stdlib_Operator_GreaterThan extends RTFunction {
 
   private def compareNumbers(number1:Stdlib_Number, number2: Stdlib_Number) = {
     (number1.value,number2.value) match {
-      case (NaN,_) => Stdlib_Boolean(true)
-      case (_,NaN) => Stdlib_Boolean(true)
+      case (NaN,_) => Stdlib_Boolean(false)
+      case (_,NaN) => Stdlib_Boolean(false)
       case (PositiveInfinity,NegativeInfinity) => Stdlib_Boolean(true)
       case (NegativeInfinity,PositiveInfinity) => Stdlib_Boolean(false)
       case (PositiveInfinity,_) => Stdlib_Boolean(true)

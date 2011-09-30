@@ -56,7 +56,7 @@ object AST2RTRewriter {
   private def rewriteExpression (expression: JSBaseExpression): RTExpression = {
     expression match {
       case OperatorCall (operator, args) => Stdlib_Undefined
-      case BuiltIn("&&") => Stdlib_Operator_BooleanAnd
+      case BuiltIn("&&") => Stdlib_Operator_LogicalAnd
       case BuiltIn("+") => Stdlib_Operator_Plus
       case BuiltIn("-") => Stdlib_Operator_Minus
       case BuiltIn(">") => Stdlib_Operator_GreaterThan
@@ -69,6 +69,12 @@ object AST2RTRewriter {
       case BuiltIn("==") => Stdlib_Operator_Equals2
       case BuiltIn("!==") => Stdlib_Operator_NotEquals3
       case BuiltIn("!=") => Stdlib_Operator_NotEquals2
+      case BuiltIn("<=") => Stdlib_Operator_LessThanOrEquals2
+      case BuiltIn("<==") => Stdlib_Operator_LessThanOrEquals3
+      case BuiltIn(">=") => Stdlib_Operator_GreaterThanOrEquals2
+      case BuiltIn(">==") => Stdlib_Operator_GreaterThanOrEquals3
+      case BuiltIn("||") => Stdlib_Operator_LogicalOr
+      case BuiltIn("/") => Stdlib_Operator_Divide
       case JSExpression(expressions) => new RTBlock(rewriteExpressionList(expressions))
       case ConditionalExpression(condition, trueExpression, falseExpression) => Stdlib_Undefined
       case Lookup(expr,index) => RTLookup(rewriteExpression(expr),rewriteExpression(index))

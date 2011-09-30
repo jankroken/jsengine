@@ -19,4 +19,5 @@ Current incompatibilities:
    transformed into 'a[i++] = a[i++] + 1', which is clearly wrong. This is
    done just to get onwards with the implementation, and will be fixed once
    the actual runtime implementation is in place
+ - || also evaluates its second argument, even when the first evaluates to true
    

@@ -7,6 +7,7 @@ object LibraryNameAssigner {
   def assignLibraryObjects(env: RTEnvironmentRecord) {
     assignLibraryObject(env,"Object",Stdlib_Object)
     assignLibraryObject(env,"String",Stdlib_Object_String)
+    assignLibraryObject(env,"Number",Stdlib_Object_Number)
   }
 
   def assignLibraryObject(env: RTEnvironmentRecord, name: String, obj: RTObject) {

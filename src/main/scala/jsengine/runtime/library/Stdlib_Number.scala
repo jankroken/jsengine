@@ -3,7 +3,7 @@ package jsengine.runtime.library
 import jsengine.runtime.tree.RTObject
 import jsengine.runtime.tree.RTEnvironmentRecord
 
-class Stdlib_Number(val value: NumericValue) extends RTObject(Some(Stdlib_Object)) {
+case class Stdlib_Number(val value: NumericValue, val negated: Boolean = false) extends RTObject(Some(Stdlib_Object)) {
 
   def evaluate(env: RTEnvironmentRecord): RTObject = this
 
@@ -31,7 +31,8 @@ class Stdlib_Number(val value: NumericValue) extends RTObject(Some(Stdlib_Object
 }
 
 object Stdlib_Number {
-  def apply(value: String) = new Stdlib_Number(DoubleValue(value.toDouble))
-  def apply(value: NumericValue) = new Stdlib_Number(value)
-  def apply(value: Double) = new Stdlib_Number(DoubleValue(value))
+  def apply(value: String):Stdlib_Number = Stdlib_Number(DoubleValue(value.toDouble))
+  def apply(value: String, negated: Boolean):Stdlib_Number = Stdlib_Number(DoubleValue(value.toDouble),negated)
+  def apply(value: Double, negated: Boolean):Stdlib_Number = Stdlib_Number(DoubleValue(value),negated)
+  def apply(value: Double):Stdlib_Number = Stdlib_Number(DoubleValue(value))
 }
