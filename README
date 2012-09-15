@@ -1,12 +1,14 @@
-This is a simple/naive implementation of javascript in scala
-The reason for this project is to thoroughly learn javascript,
-and at the same time practice making interpreters using
-combinator parsing in scala.
+This is a simple and partial implementation of JavaScript in
+Scala. The background for this project is/was to thoroughly
+learn JavaScript, and at the same time getting experience
+writing language implementations using combinator parsers
+in Scala.
 
-This project aims at implementing the full ECMA 262 standard, but most likely
-won't do it. The degree of completion remains to be seen. As the aim of this
-project is to learn, and not to provide the world with yet another javascript
-runtime, the project will end when there's no worthwhile challenges left.
+This project is targetted at implementing the full ECMA 262
+standard. However, the goal of this project is to learn, rather
+than provide the world with yet another JavaScript runtime.
+Because of this, the project will be terminated when the amount
+of work outweights the learning effect.
 
 Current incompatibilities:
  - no automatic semicolon insertion
