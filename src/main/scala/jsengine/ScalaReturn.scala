@@ -42,10 +42,6 @@ object ScalaReturn {
           val scalaValue = ScalaReturn(value.value)
           properties = properties ++ Map[String,ScalaReturn](scalaKey -> scalaValue)
         }
-//          yield Map(key -> ScalaReturn(value))
-//        }
-//        val properties = obj.properties.map(((key,value)) => {(key.toString -> ScalaReturn(value))})
-//        val properties : Map[String,ScalaReturn] = Map()
         ScalaReturnObject(properties)
       }
       case _ => ScalaReturnNotImplemented()

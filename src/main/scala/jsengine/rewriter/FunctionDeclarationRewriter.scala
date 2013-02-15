@@ -12,26 +12,23 @@ sealed case class SplitCase(declarations: List[Declare], fassigns: List[Assign],
 
 object FunctionDeclarationRewriter {
 
-    private def rewriteOptionExpression(optExpr: Option[JSBaseExpression]):Option[JSBaseExpression] = {
-        optExpr match {
-			case None => None
-			case Some(expr) => Some(rewriteExpression(expr))
-        }
-    }
-  
-    private def optionToUndefined (optExpr: Option[JSBaseExpression]): JSBaseExpression = {
-        optExpr match {
-			case None => JSIdentifier("undefined")
-			case Some(expr) => expr
-        }
-    }
+    private def rewriteOptionExpression(optExpr: Option[JSBaseExpression]):Option[JSBaseExpression] =
+      optExpr match {
+        case None => None
+        case Some(expr) => Some(rewriteExpression(expr))
+      }
 
-    private def rewriteExpressionList(exprList: List[JSBaseExpression]):List[JSBaseExpression] = {
-        exprList match {
-            case List() => List()
-            case expr :: tail => rewriteExpression(expr) :: rewriteExpressionList(tail)
-        }
-    }
+    private def optionToUndefined (optExpr: Option[JSBaseExpression]): JSBaseExpression =
+      optExpr match {
+        case None => JSIdentifier("undefined")
+        case Some(expr) => expr
+      }
+
+    private def rewriteExpressionList(exprList: List[JSBaseExpression]):List[JSBaseExpression] =
+      exprList match {
+          case List() => List()
+          case expr :: tail => rewriteExpression(expr) :: rewriteExpressionList(tail)
+      }
 
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
 			expression match {
@@ -65,12 +62,12 @@ object FunctionDeclarationRewriter {
     	val newCond = rewriteExpression(cond)
     	val SplitSource(trueDeclares, trueFunctions, trueSource) = rewriteStatement(whenTrue)
     	optWhenFalse match {
-    	  	case None => return SplitSource(trueDeclares, trueFunctions, List(IfStatement(newCond,JSBlock(trueSource),None)))
+    	  	case None => SplitSource(trueDeclares, trueFunctions, List(IfStatement(newCond,JSBlock(trueSource),None)))
     	  	case Some(whenFalse) => {
     	  		val SplitSource(falseDeclares, falseFunctions, falseSource) = rewriteStatement(whenFalse)
-    	  		return SplitSource(trueDeclares ::: falseDeclares, 
-    	  					trueFunctions ::: falseFunctions, 
-    	  					List(IfStatement(newCond,JSBlock(trueSource),Some(JSBlock(falseSource)))))
+    	  		SplitSource(trueDeclares ::: falseDeclares,
+    	  					      trueFunctions ::: falseFunctions,
+    	  					      List(IfStatement(newCond,JSBlock(trueSource),Some(JSBlock(falseSource)))))
     	  	}
     	}
     	

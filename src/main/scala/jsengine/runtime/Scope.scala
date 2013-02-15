@@ -12,6 +12,6 @@ sealed class Scope(parent: Option[Scope]) {
 }
 
 object Scope {
-	def apply():Scope = new Scope(None)
+	def apply = new Scope(None)
 	def apply(outerScope:Scope) = new Scope(Some(outerScope))
 }

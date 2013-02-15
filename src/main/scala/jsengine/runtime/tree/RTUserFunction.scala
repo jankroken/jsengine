@@ -39,9 +39,6 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
       }
     }
     decl.map(environment.declare(_))
-    //    for (id <- decl) {
-    //      environment.declare(id)
-    //    }
     var retValue: RTObject = Stdlib_Undefined
     try {
         for (expr <- source) {
@@ -97,16 +94,11 @@ class RTUserFunction(val name: Option[RTId], val args: List[RTId], val decl: Lis
         retValue = ret.value.valueOf
       }
     }
-    if (retValue.valueOf.isObject) {
-        return retValue;
-    } else {
-        return createdObject
-    }
+    if (retValue.valueOf.isObject) retValue
+    else createdObject
   }
 
-  override def toString(): String = {
-    "function(" + name + "," + args + "," + decl + "," + source + ")"
-  }
+  override def toString = "function(" + name + "," + args + "," + decl + "," + source + ")"
 
   override def isObject = true
 

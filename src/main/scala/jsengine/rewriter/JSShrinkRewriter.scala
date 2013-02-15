@@ -25,10 +25,6 @@ object JSShrinkRewriter {
         }
     }
 
-//    private def rewriteStatementList(statements: List[JSStatement]):List[JSStatement] = {
-//      return ((statements :\ (List[JSStatement]())) ((x,y) => { rewriteStatement(x) :: y }))
-//    }
-
     private def rewriteStatementList(statements: List[JSStatement]):List[JSStatement] = {
         statements match {
             case List() => List()
@@ -75,16 +71,15 @@ object JSShrinkRewriter {
 			}
     }
   
-    private def rewriteStatement (statement: JSStatement) : JSStatement = {
-    	statement match {
-    	    case Declare(identifier) => Declare(identifier)
-    	    case JSBlock(List()) => EmptyStatement()
-    	    case JSBlock(List(statement)) => rewriteStatement(statement)
-    	    case JSBlock(a::b::tail) => JSBlock(rewriteStatementList(a::b::tail))
+    private def rewriteStatement (statement: JSStatement) : JSStatement = statement match {
+      case Declare(identifier) => Declare(identifier)
+      case JSBlock(List()) => EmptyStatement()
+      case JSBlock(List(statement)) => rewriteStatement(statement)
+      case JSBlock(a::b::tail) => JSBlock(rewriteStatementList(a::b::tail))
 			case EmptyStatement() => EmptyStatement()
 			case IfStatement(condition, whenTrue, whenFalse) => IfStatement(rewriteExpression(condition),
-			  														   rewriteStatement(whenTrue),
-					  												   rewriteOptionStatement(whenFalse))
+                       rewriteStatement(whenTrue),
+                       rewriteOptionStatement(whenFalse))
 			case DoWhile (statement, condition)  => DoWhile(rewriteStatement(statement),rewriteExpression(condition))
 			case While (condition, statement) => While(rewriteExpression(condition),rewriteStatement(statement))
 			case ContinueStatement(label) => statement 
@@ -93,35 +88,28 @@ object JSShrinkRewriter {
 			case ReturnStatement(None) => statement
 			case ReturnStatement(Some(value))  => ReturnStatement(Some(rewriteExpression(value)))
 			case WithStatement(expr, statement) => WithStatement(rewriteExpression(expr),rewriteStatement(statement))
-		    case SwitchStatement(expr, cases)  =>  {
-				def rewriteCase(caseClause: CaseClause): CaseClause = {
-				    caseClause match {
-				        case LabeledCaseClause(label,statements) => 
-				            LabeledCaseClause(label,rewriteStatementList(statements))
-				        case DefaultClause(statements) => 
-				            DefaultClause(rewriteStatementList(statements))
-				        }
-			        }
-				    SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _))
-			    }
-			case LabeledStatement(label, statement) => LabeledStatement(label, rewriteStatement(statement))
+      case SwitchStatement(expr, cases)  =>  {
+				def rewriteCase(caseClause: CaseClause): CaseClause = caseClause match {
+          case LabeledCaseClause(label,statements) =>
+            LabeledCaseClause(label,rewriteStatementList(statements))
+          case DefaultClause(statements) =>
+            DefaultClause(rewriteStatementList(statements))
+        }
+        SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _))
+      }
+      case LabeledStatement(label, statement) => LabeledStatement(label, rewriteStatement(statement))
 			case ThrowStatement(expr) => ThrowStatement(rewriteExpression(expr))
 			case Try(statement, Some(Catch(id,catchStatement)), finallyStatement) => Try(rewriteStatement(statement),
-																			         Some(Catch(id,rewriteStatement(catchStatement))),
-																			         rewriteOptionStatement(finallyStatement))
+               Some(Catch(id,rewriteStatement(catchStatement))),
+               rewriteOptionStatement(finallyStatement))
 			case Try(statement, None, finallyStatement) => Try(rewriteStatement(statement),
-															   None,
-															   rewriteOptionStatement(finallyStatement))																			
+               None,
+               rewriteOptionStatement(finallyStatement))
 			case DebuggerStatement() => statement
 			case expr:JSBaseExpression => rewriteExpression(expr)
 			case unhandledStatement => throw new RuntimeException("Implementation error: missing handling of AST node: "+unhandledStatement)
-    	}
     }
   
-    def rewriteSource (source: JSSource) : JSSource = {
-    	source match {
-    	  case JSSource(statements) => JSSource(rewriteStatementList(statements))
-    	}
-    }
-        
+    def rewriteSource (source: JSSource) = JSSource(rewriteStatementList(source.sourceElements))
+
 }

@@ -4,7 +4,7 @@ import jsengine.runtime.tree.RTObject
 import jsengine.runtime.tree.RTEnvironmentRecord
 
 case class Stdlib_Boolean(value: Boolean) extends RTObject(None) {
-	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
+	def evaluate(env: RTEnvironmentRecord):RTObject = this
 	def nativeBooleanValue = value
 	override def booleanValue: Stdlib_Boolean = this
   override def stringValue = Stdlib_String(""+value)

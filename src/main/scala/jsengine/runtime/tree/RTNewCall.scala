@@ -12,10 +12,7 @@ class RTNewCall(functionExpression: RTExpression, args: List[RTExpression]) exte
 		    case _ => throw new RuntimeException("not implemented: call:"+functionValue)
   		}	
   	}
-  	override def toString():String = {
-  	    "new("+functionExpression+","+args+")"
-  	}
-  	
+  	override def toString = "new("+functionExpression+","+args+")"
 }
 
 object RTNewCall {

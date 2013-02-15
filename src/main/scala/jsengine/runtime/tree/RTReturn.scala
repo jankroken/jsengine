@@ -8,7 +8,5 @@ class RTReturn(expr: RTExpression) extends RTExpression {
 }
 
 object RTReturn {
-    def apply(expr: RTExpression) = {
-        new RTReturn(expr)
-    }
+  def apply(expr: RTExpression) = new RTReturn(expr)
 }

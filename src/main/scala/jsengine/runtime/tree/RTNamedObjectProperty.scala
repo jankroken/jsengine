@@ -9,7 +9,6 @@ class RTNamedObjectProperty(val value: RTObject) {
 	var get = Stdlib_Undefined
 	var set = Stdlib_Undefined
   override def toString = "ovalue(%s)".format(value)
-//  override def toString = ov
 
 }
 

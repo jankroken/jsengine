@@ -43,8 +43,6 @@ object Stdlib_Object_Array extends RTFunction {
     array
   }
 
-  override def toString:String = {
-      return "Array"
-  }
+  override def toString:String = "Array"
 
 }

@@ -4,20 +4,17 @@ import jsengine.runtime.library._
 import jsengine.runtime._
 
 class RTSource(val statements: List[RTExpression]) {
-    def evaluate(env: RTEnvironmentRecord):RTObject = {
-		var retValue: RTObject = Stdlib_Undefined;
-		for (statement <- statements) {
-		  retValue = statement.evaluate(env).valueOf
-		}
-		retValue
+  def evaluate(env: RTEnvironmentRecord):RTObject = {
+    var retValue: RTObject = Stdlib_Undefined;
+    for (statement <- statements) {
+      retValue = statement.evaluate(env).valueOf
     }
-    
-    override def toString():String = {
-        return "<source: "+statements+">"
-    }
+    retValue
+  }
+
+  override def toString = return "<source: "+statements+">"
 }
 
 object RTSource {
-    def apply(statements : List[RTExpression]) = new RTSource(statements)
-    
+  def apply(statements : List[RTExpression]) = new RTSource(statements)
 }

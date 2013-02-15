@@ -8,14 +8,11 @@ object BuiltinNativeCalls {
 	
 	private val nativecalls: Map[String, () => JSObject] = Map("helloworld" -> helloworld)
   
-	def executeNativeCall(name: String):JSObject = {
-	  	return nativecalls(name)()
-	}
-  
-  
+	def executeNativeCall(name: String):JSObject = nativecalls(name)()
+
 	def helloworld():JSObject = {
 	  println("hello world");
-	  return JSUndefined()
+	  JSUndefined()
 	}
   
 }

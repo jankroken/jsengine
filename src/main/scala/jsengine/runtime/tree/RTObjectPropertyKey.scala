@@ -4,11 +4,8 @@ class RTObjectPropertyKey(val keyObject: RTObject) {
   private def getIndexValue = {
     try {
       val numberString = keyObject.numberValue().toString()
-      if(numberString == "NaN") {
-        keyObject.toString
-      } else {
-        numberString
-      }
+      if(numberString == "NaN") keyObject.toString
+      else numberString
     } catch {
       case _ => keyObject.toString()
     }

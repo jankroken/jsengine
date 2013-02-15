@@ -18,7 +18,7 @@ class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
      "["+arrayContent+"]"
   }
 
-  override def setProperty(key: RTObject, value: RTObject) = {
+  override def setProperty(key: RTObject, value: RTObject) =
     key match {
       case indexNumber: Stdlib_Number if indexNumber.isDoubleValue => {
         val index = indexNumber.forcedDoubleValue.toInt
@@ -27,10 +27,9 @@ class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
       }
       case _ => super.setProperty(key,value)
     }
-  }
 
 
-  override def getProperty(key: RTObject): Option[RTNamedObjectProperty] = {
+  override def getProperty(key: RTObject): Option[RTNamedObjectProperty] =
     key match {
       case indexNumber: Stdlib_Number if indexNumber.isDoubleValue => {
         val index = indexNumber.forcedDoubleValue.toInt
@@ -42,13 +41,10 @@ class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
       }
       case _ => super.getProperty(key)
     }
-  }
 
 
 }
 
 object RTArray {
-  def apply() = {
-    new RTArray
-  }
+  def apply() = new RTArray
 }
