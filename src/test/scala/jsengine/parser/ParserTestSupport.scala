@@ -2,18 +2,18 @@ package jsengine.parser
 
 import org.junit.Assert.fail
 import jsengine.ast._
-import org.junit.Assert.assertThat;
-import org.hamcrest.CoreMatchers.is;
+import org.junit.Assert.assertThat
+import org.hamcrest.CoreMatchers.is
 
 object ParserTestSupport {
   
 	def getASTOrFail(parseResult:JSParser.ParseResult[ASTNode]):ASTNode = {
 		parseResult match {
-		  case JSParser.Success(ast,_) => return ast
+		  case JSParser.Success(ast,_) => ast
 		  case JSParser.NoSuccess(message,tree) => {
 			  println(parseResult)
 		      fail(message)
-			  return null // only to trick compiler
+			  null // only to trick compiler
 		  }
 		}
 	}

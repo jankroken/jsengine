@@ -1,6 +1,5 @@
 package jsengine.runtime.tree
 
-import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
 abstract class RTObject(val prototype: Option[RTObject]) extends RTExpression {

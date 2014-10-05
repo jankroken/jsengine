@@ -2,15 +2,7 @@ package jsengine
 
 import org.junit.Test
 import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
-import org.junit.Assert.fail
-
-import jsengine.ast.JSString
-import jsengine.ast.JSSource
-import jsengine.parser.JSParser
-import jsengine.runtime.library._
-
 
 class JSRunnerTestBasics {
 

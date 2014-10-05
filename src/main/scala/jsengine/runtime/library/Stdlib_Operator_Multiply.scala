@@ -9,7 +9,7 @@ object Stdlib_Operator_Multiply extends RTFunction {
     val val2 = callObject.args(1)
     (val1,val2) match {
       case (num1:Stdlib_Number,num2:Stdlib_Number) => multiplyNumbers(num1,num2)
-      case _ => throw new RuntimeException("Not implemented: +("+val1+","+val2+")")
+      case _ => throw new RuntimeException(s"Not implemented: +($val1,$val2)")
     }
   }
   def booleanValue: Stdlib_Boolean = { throw new RuntimeException("not implemented") }

@@ -15,7 +15,7 @@ object Stdlib_Operator_GreaterThan extends RTFunction {
       case (o, b2: Stdlib_Boolean) => compareNumbers(o.numberValue,b2.numberValue)
       case (s1:Stdlib_String, o) => compareStrings(s1,o.stringValue)
       case (o,s2:Stdlib_String) => compareStrings(o.stringValue,s2)
-      case _ => throw new RuntimeException("Not implemented: +("+val1+","+val2+")")
+      case _ => throw new RuntimeException(s"Not implemented: +($val1,$val2)")
     }
   }
   def booleanValue: Stdlib_Boolean = { throw new RuntimeException("not implemented") }

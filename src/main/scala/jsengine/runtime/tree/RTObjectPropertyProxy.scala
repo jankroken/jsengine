@@ -13,12 +13,12 @@ class RTObjectPropertyProxy(val obj: RTObject, index: RTObject) extends RTObject
     obj.setProperty(index,value)
 	}
 
-  def getValue() {
+  def getValue {
 //   println("proxy.getValue(%s from %s) => %s",index,obj,obj.getProperty(index))
     obj.getProperty(index)
   }
 	
-	override def valueOf() = {
+	override def valueOf = {
     val optionalReference = obj.getProperty(index)
 //    println("proxy.valueOf (%s . %s) => %s".format(obj, index,optionalReference))
     optionalReference match {
@@ -26,7 +26,7 @@ class RTObjectPropertyProxy(val obj: RTObject, index: RTObject) extends RTObject
       case Some(ref) => ref.value
     }
   }
-  override def booleanValue() = { throw new RuntimeException("should never be called") }
+  override def booleanValue = { throw new RuntimeException("should never be called") }
   override def stringValue = Stdlib_String("internal:objectpropertyproxy")
 	
   override def isObject = { throw new RuntimeException("should never be called") }

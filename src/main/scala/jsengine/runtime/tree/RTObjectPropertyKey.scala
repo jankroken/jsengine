@@ -7,7 +7,7 @@ class RTObjectPropertyKey(val keyObject: RTObject) {
       if(numberString == "NaN") keyObject.toString
       else numberString
     } catch {
-      case _ => keyObject.toString()
+      case _:Throwable => keyObject.toString
     }
   }
   val key:String = getIndexValue
@@ -15,13 +15,12 @@ class RTObjectPropertyKey(val keyObject: RTObject) {
   override def hashCode = key.hashCode
   override def equals(that: Any):Boolean = {
       that match {
-        case otherKey:RTObjectPropertyKey => {
+        case otherKey:RTObjectPropertyKey =>
           key.equals(otherKey.key)
-        }
         case _ => false
       }
   }
-  override def toString = "okey("+keyObject.toString+")"
+  override def toString = s"okey(${keyObject.toString})"
 
 }
 

@@ -36,7 +36,7 @@ case class RTNoReference(val referenced_name: RTId) extends RTReferenceType {
   override def booleanValue() = Stdlib_Boolean(false)
   override def stringValue = Stdlib_String("internal:noreference")
   override def valueOf:RTObject = {
-      throw new RTReferenceError(""+referenced_name.value+" is not defined")
+      throw new RTReferenceError(s"${referenced_name.value} is not defined")
   }
   override def isObject = false
 	override def isPrimitive = false

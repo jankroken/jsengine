@@ -2,7 +2,6 @@ package jsengine.rewriter
 
 import jsengine.ast._
 import jsengine.runtime.tree._
-import jsengine.runtime.types._
 import jsengine.runtime.library._
 
 object AST2RTRewriter {
@@ -15,11 +14,6 @@ object AST2RTRewriter {
   private def rewriteOptionStatement(optStatement: Option[JSStatement]):Option[RTExpression] = optStatement match {
     case None => None
     case Some(statement) => Some(rewriteStatement(statement))
-  }
-
-  private def optionToUndefined (optExpr: Option[JSBaseExpression]): JSBaseExpression = optExpr match {
-    case None => JSIdentifier("undefined")
-    case Some(expr) => expr
   }
 
   private def rewriteStatementList(statements: List[JSStatement]):List[RTExpression] = statements match {
@@ -86,11 +80,6 @@ object AST2RTRewriter {
     case JSRegexLiteral(value) => Stdlib_Undefined
   }
 
-  private def optionToUndefined(optionExpr:Option[RTExpression]) = optionExpr match {
-    case None => Stdlib_Undefined
-    case Some(expr) => expr
-  }
-
   private def rewriteStatement (statement: JSStatement) : RTExpression = statement match {
     case Declare(JSIdentifier(id)) => RTDeclare(RTId(id))
     case EmptyStatement() => Stdlib_Undefined
@@ -98,7 +87,7 @@ object AST2RTRewriter {
     case IfStatement(condition, whenTrue, whenFalse) => {
         RTCond(rewriteExpression(condition),
                rewriteStatement(whenTrue),
-               optionToUndefined(rewriteOptionStatement(whenFalse)))
+               rewriteOptionStatement(whenFalse).getOrElse(Stdlib_Undefined))
     }
     case DoWhile (statement, condition)  => Stdlib_Undefined
     case While (condition, statement) => Stdlib_Undefined

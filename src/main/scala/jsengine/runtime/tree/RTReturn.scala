@@ -4,7 +4,7 @@ class RTReturn(expr: RTExpression) extends RTExpression {
   def evaluate(env: RTEnvironmentRecord): RTObject = {
     throw new RTReturnException(expr.evaluate(env))
   }
-  override def toString = "return("+expr+")"
+  override def toString = s"return($expr)"
 }
 
 object RTReturn {

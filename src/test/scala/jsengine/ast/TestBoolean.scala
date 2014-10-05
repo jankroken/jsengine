@@ -2,11 +2,8 @@ package jsengine.ast
 
 import org.junit.Test
 import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
 import org.hamcrest.CoreMatchers.is
 import org.hamcrest.CoreMatchers.not
-import org.junit.Assert.fail
-import jsengine.library.BuiltinObjects
 
 class TestBoolean {
 

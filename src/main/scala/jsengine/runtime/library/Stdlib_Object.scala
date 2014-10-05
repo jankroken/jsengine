@@ -8,7 +8,7 @@ object Stdlib_Object extends RTFunction {
 
 
   override def evaluate(env: RTEnvironmentRecord): RTObject = {
-    functionEnvironment = Some(env);
+    functionEnvironment = Some(env)
     this
   }
 

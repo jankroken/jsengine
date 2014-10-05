@@ -11,7 +11,7 @@ object BuiltinNativeCalls {
 	def executeNativeCall(name: String):JSObject = nativecalls(name)()
 
 	def helloworld():JSObject = {
-	  println("hello world");
+	  println("hello world")
 	  JSUndefined()
 	}
   

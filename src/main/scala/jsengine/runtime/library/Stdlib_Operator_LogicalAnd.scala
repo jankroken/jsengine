@@ -4,8 +4,8 @@ import jsengine.runtime.tree._
 object Stdlib_Operator_LogicalAnd extends RTFunction {
 
   def call(callObject: CallObject):RTObject = {
-    val Stdlib_Boolean(val1) = callObject.args(0).valueOf.booleanValue;
-    val Stdlib_Boolean(val2) = callObject.args(1).valueOf.booleanValue;
+    val Stdlib_Boolean(val1) = callObject.args(0).valueOf.booleanValue
+    val Stdlib_Boolean(val2) = callObject.args(1).valueOf.booleanValue
     Stdlib_Boolean(val1 && val2)
   }
   def booleanValue: Stdlib_Boolean = { throw new RuntimeException("not implemented") }

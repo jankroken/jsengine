@@ -2,17 +2,13 @@ package jsengine.parser
 
 import org.junit.Test
 
-import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
-import org.hamcrest.CoreMatchers.is
-import org.junit.Assert.fail
 import ParserTestSupport._
 import jsengine.ast._
 
 class TestRandomSnippets {
   
   
-    @Test def testSimpleCall {
+    @Test def testSimpleCall() {
     	val source = """
     			foo('Date: ')
     	"""
@@ -20,7 +16,7 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
 
-    @Test def testWhile {
+    @Test def testWhile() {
     	val source = """
 			function PrintDate() {
     			today = new Date() ;
@@ -33,7 +29,7 @@ class TestRandomSnippets {
     	verifyFunction(source,ast)
     }
 
-    @Test def testFor {
+    @Test def testFor() {
     	val source = """
     		for (var i = 0; i < whitespace.length; ++i)
     		{
@@ -64,7 +60,7 @@ class TestRandomSnippets {
         verifyStatement(source,ast)
     }
 
-    @Test def testW3SchoolsDisplayDate {
+    @Test def testW3SchoolsDisplayDate() {
     	val source = """
     			function displayDate()
     			{
@@ -81,7 +77,7 @@ class TestRandomSnippets {
     	  verifySource(source,ast)
     }
     
-    @Test def testW3SchoolsTryCatchExample {
+    @Test def testW3SchoolsTryCatchExample() {
     	val source = """
     		var txt="";
     		function message() {
@@ -128,7 +124,7 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
     
-    @Test def testW3SchoolsThrowFirstIfPart {
+    @Test def testW3SchoolsThrowFirstIfPart() {
     	val source = """
     			if ( x > 10 ) {
     				throw "Err1"
@@ -144,7 +140,7 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
 
-     @Test def testW3SchoolsThrowFullIfPart {
+     @Test def testW3SchoolsThrowFullIfPart() {
     	val source = """
     			if (x>10) {
     				throw "Err1"
@@ -170,7 +166,7 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
     
-    @Test def testW3SchoolsThrow {
+    @Test def testW3SchoolsThrow() {
     	val source = """
     		var x=prompt("Enter a number between 0 and 10:","") ;
     		try {  
@@ -234,7 +230,7 @@ class TestRandomSnippets {
     	verifySource(source,ast)
     }
     
-    @Test def testW3SchoolsForIn {
+    @Test def testW3SchoolsForIn() {
         val source = """
         	var person={fname:"John",lname:"Doe",age:25}; 
 
@@ -263,7 +259,7 @@ class TestRandomSnippets {
         verifySource(source,ast)
     }
 
-    @Test def testW3SchoolsBreakLoops {
+    @Test def testW3SchoolsBreakLoops() {
         val source = """
         	var i=0;
         	for (i=0;i<=10;i++) {
@@ -302,7 +298,7 @@ class TestRandomSnippets {
         verifySource(source,ast)
     }
 
-    @Test def testW3SchoolsSwitch {
+    @Test def testW3SchoolsSwitch() {
         val source = """
         	var d=new Date();
         	var theDay=d.getDay();

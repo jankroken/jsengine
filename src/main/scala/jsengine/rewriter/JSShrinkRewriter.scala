@@ -43,15 +43,15 @@ object JSShrinkRewriter {
 			expression match {
 			  case OperatorCall (operator, args) => OperatorCall(operator, rewriteExpressionList(args))
 			  case BuiltIn(name) => expression
-			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
+			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => {
 				  ConditionalExpression(rewriteExpression(condition),
 				  						rewriteExpression(trueExpression),
 				  						rewriteExpression(falseExpression))
 			  }
 			  case Lookup(expr,index) => Lookup(rewriteExpression(expr),rewriteExpression(index))
-			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression _))
-			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression _))
+			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression))
+			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression))
 			  case Assign(left,value) => Assign(rewriteExpression(left), rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Call(BuiltIn(")--"),List(expression))
 			  case PostfixExpression(expression,Operator("++")) => Call(BuiltIn(")++"),List(expression))
@@ -95,7 +95,7 @@ object JSShrinkRewriter {
           case DefaultClause(statements) =>
             DefaultClause(rewriteStatementList(statements))
         }
-        SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _))
+        SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase))
       }
       case LabeledStatement(label, statement) => LabeledStatement(label, rewriteStatement(statement))
 			case ThrowStatement(expr) => ThrowStatement(rewriteExpression(expr))

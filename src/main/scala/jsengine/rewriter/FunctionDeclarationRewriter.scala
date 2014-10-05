@@ -34,15 +34,15 @@ object FunctionDeclarationRewriter {
 			expression match {
 			  case OperatorCall (operator, args) => OperatorCall(operator, rewriteExpressionList(args))
 			  case BuiltIn(name) => expression
-			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
+			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => {
 				  ConditionalExpression(rewriteExpression(condition),
 				  						rewriteExpression(trueExpression),
 				  						rewriteExpression(falseExpression))
 			  }
 			  case Lookup(expr,index) => Lookup(rewriteExpression(expr),rewriteExpression(index))
-			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression _))
-			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression _))
+			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression))
+			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression))
 			  case Assign(left,value) => Assign(rewriteExpression(left), rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Call(BuiltIn(")--"),List(expression))
 			  case PostfixExpression(expression,Operator("++")) => Call(BuiltIn(")++"),List(expression))
@@ -118,7 +118,7 @@ object FunctionDeclarationRewriter {
     	val declares = tryDeclarations ::: catchDecl ::: finallyDecl
     	val functions = tryFunctions ::: catchFunc ::: finallyFunc
     	val resTry = Try(JSBlock(tryStatements),optCatch,optFinally)
-    	return SplitSource(declares,functions,List(resTry))
+    	SplitSource(declares,functions,List(resTry))
     }
     
     private def rewriteFunction(func: JSFunction):JSFunctionExpression = {
@@ -144,36 +144,31 @@ object FunctionDeclarationRewriter {
     	    }
 			case EmptyStatement() => SplitSource(List(), List(), List(EmptyStatement()))
 			case ifStatement@IfStatement(condition, whenTrue, whenFalse) => rewriteIf(ifStatement) 
-			case DoWhile (statement, condition)  => { 
+			case DoWhile (statement, condition)  =>
 				val SplitSource(dwDeclare, dwFunctions, dwStatements) = rewriteStatement(statement)
 				SplitSource(dwDeclare,dwFunctions,List(DoWhile(JSBlock(dwStatements),rewriteExpression(condition))))
-			}
-			case While (condition, statement) => { 
+			case While (condition, statement) =>
 				val SplitSource(wDeclare, wFunctions, wStatements) = rewriteStatement(statement)
 				SplitSource(wDeclare,wFunctions,List(While(rewriteExpression(condition),JSBlock(wStatements))))
-			}
 			case ContinueStatement(label) => SplitSource(statement)
-			case ForIn(init,expr,body) => { 
+			case ForIn(init,expr,body) =>
 				val SplitSource(initDeclares, initFunctions, initStatements) = rewriteStatement(init)
 				val SplitSource(bodyDeclares, bodyFunctions, bodyStatements) = rewriteStatement(body)
 				SplitSource(initDeclares ::: bodyDeclares, initFunctions ::: bodyFunctions, 
 						List(ForIn(JSBlock(initStatements),
 								   rewriteExpression(expr),
 								   JSBlock(bodyStatements))))
-			}
 			case BreakStatement(label) => SplitSource(statement)
 			case ReturnStatement(None) => SplitSource(statement)
 			case ReturnStatement(Some(value))  => SplitSource(ReturnStatement(Some(rewriteExpression(value))))
-			case WithStatement(expr, statement) => { 
+			case WithStatement(expr, statement) =>
 				val SplitSource(withDeclares,withFunctions,withStatements) = rewriteStatement(statement)
 				val withExpr = rewriteExpression(expr)
 				SplitSource(withDeclares,withFunctions,List(WithStatement(withExpr,JSBlock(withStatements))))
-			}
 		    case switch @ SwitchStatement(expr, cases)  =>  rewriteSwitch(switch)
-			case LabeledStatement(label, statement) => {
+			case LabeledStatement(label, statement) =>
 				val SplitSource(decl,func,source) = rewriteStatement(statement)
 				SplitSource(decl,func,List(LabeledStatement(label,JSBlock(source))))
-			}
 			case tryStatement @ Try(statement,catchBlock,finallyBlock) => rewriteTry(tryStatement)
 			case ThrowStatement(expr) => SplitSource(ThrowStatement(rewriteExpression(expr)))
 			case DebuggerStatement() => SplitSource(statement)
@@ -186,12 +181,11 @@ object FunctionDeclarationRewriter {
 	
 	def rewriteStatementList(statements: List[JSStatement]):SplitSource = {
     	statements match {
-    	  case List() => return SplitSource()
-    	  case statement :: tail => {
+    	  case List() => SplitSource()
+    	  case statement :: tail =>
     		  val SplitSource(tailDeclares, tailFunctions, tailStatements) = rewriteStatementList(tail)
     		  val SplitSource(declares,functions,statements) = rewriteStatement(statement)
-    		  return SplitSource(declares ::: tailDeclares, functions ::: tailFunctions, statements ::: tailStatements)
-    	  }
+    		  SplitSource(declares ::: tailDeclares, functions ::: tailFunctions, statements ::: tailStatements)
     	}
 	}
   

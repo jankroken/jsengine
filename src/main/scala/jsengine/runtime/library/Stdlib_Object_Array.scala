@@ -13,7 +13,7 @@ object Stdlib_Object_Array extends RTFunction {
 
 
   override def evaluate(env: RTEnvironmentRecord): RTObject = {
-    functionEnvironment = Some(env);
+    functionEnvironment = Some(env)
     this
   }
 
@@ -22,7 +22,7 @@ object Stdlib_Object_Array extends RTFunction {
     val array = RTArray()
     val environment = new RTEnvironmentRecord(functionEnvironment)
     for ((expr, index) <- callObject.args.zipWithIndex) {
-      println("Array.initialize: "+index+" -> "+expr)
+      println(s"Array.initialize: $index -> $expr")
       val value = expr.evaluate(env).valueOf
       array.setProperty(Stdlib_Number(DoubleValue(index)),value)
     }
@@ -36,7 +36,7 @@ object Stdlib_Object_Array extends RTFunction {
     val environment = new RTEnvironmentRecord(functionEnvironment)
 
     for ((expr, index) <- callObject.args.zipWithIndex) {
-      println("Array.initialize: "+index+" -> "+expr)
+      println(s"Array.initialize: $index -> $expr")
       val value = expr.evaluate(env).valueOf
       array.setProperty(Stdlib_Number(DoubleValue(index)),value)
     }

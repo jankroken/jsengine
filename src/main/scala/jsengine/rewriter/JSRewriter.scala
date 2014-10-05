@@ -1,4 +1,4 @@
-package jsengine.parser
+package jsengine.rewriter
 
 import jsengine.ast._
 
@@ -14,7 +14,7 @@ object JSRewriter {
   
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
         expression match {
-            case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
+            case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression))
             case AssignmentExpression(operator, leftHand, rightHand) => {
                 def expandAssignment(operator: Operator, leftHand: JSBaseExpression, rightHand: JSBaseExpression): Assign = {
                     Assign(rewriteExpression(leftHand),
@@ -35,24 +35,21 @@ object JSRewriter {
                     case Operator("|=") => expandAssignment(Operator("|"),leftHand, rightHand)
                 }
             }
-            case ConditionalExpression(condition, trueExpression, falseExpression) => {
+            case ConditionalExpression(condition, trueExpression, falseExpression) =>
                 ConditionalExpression(rewriteExpression(condition),
                                       rewriteExpression(trueExpression),
                                       rewriteExpression(falseExpression))
-            }
-            case OperatorCall(operator: Operator, args: List[JSBaseExpression]) => { // only to handle recursion in bottom-up replacement
-                OperatorCall(operator,args.map(rewriteExpression _))
-            }
+            case OperatorCall(operator: Operator, args: List[JSBaseExpression]) => // only to handle recursion in bottom-up replacement
+                OperatorCall(operator,args.map(rewriteExpression))
             case Lookup(expr,index) => Lookup(rewriteExpression(expr),rewriteExpression(index))
-            case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression _))
-            case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression _))
+            case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression))
+            case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression))
             case Assign(left,value) => Assign(rewriteExpression(left), rewriteExpression(value))
             case BinaryExpression(right,List()) => rewriteExpression(right)
-            case BinaryExpression(right,BinaryExtension(operator,expr) :: tail) => {
+            case BinaryExpression(right,BinaryExtension(operator,expr) :: tail) =>
                 rewriteExpression(BinaryExpression(OperatorCall(operator,
                                   List(rewriteExpression(right),
                                        rewriteExpression(expr))),tail))
-            }
             case UnaryExpression(List(),expression) => rewriteExpression(expression)
             case UnaryExpression(operator :: tail,expression) => OperatorCall(operator, List(rewriteExpression(UnaryExpression(tail,expression))))
             case PostfixExpression(expression,operator) => PostfixExpression(rewriteExpression(expression), operator)
@@ -70,9 +67,9 @@ object JSRewriter {
                     rewriteExpression(CallExpression(0,Call(function, args),tail))
                 }
             }
-            case JSArrayLiteral(elements) => JSArrayLiteral(elements.map(rewriteOptionExpression _))
+            case JSArrayLiteral(elements) => JSArrayLiteral(elements.map(rewriteOptionExpression))
             case JSFunction(functionName,arguments, source)  => {
-               val functionSource = ((List[JSStatement]() /: source) ((x,y) => { x ::: (rewriteStatement(y))}))
+               val functionSource = (List[JSStatement]() /: source) ((x,y) => { x ::: rewriteStatement(y)})
                JSFunction(functionName,arguments,functionSource)
             }
             case JSBoolean(value) => JSBoolean(value)
@@ -116,8 +113,8 @@ object JSRewriter {
     
     private def rewriteStatement (statement: JSStatement) : List[JSStatement] = {
         statement match {
-            case JSBlock(statements) => List(JSBlock((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))})))
-            case VariableDeclarations(declarations) =>  ((List[JSStatement]() /: declarations) ((x,y) => { x ::: (rewriteStatement(y))}))
+            case JSBlock(statements) => List(JSBlock((List[JSStatement]() /: statements) ((x,y) => { x ::: rewriteStatement(y)})))
+            case VariableDeclarations(declarations) => (List[JSStatement]() /: declarations) ((x,y) => { x ::: rewriteStatement(y)})
             case VariableDeclaration(name, None) => Declare(name) :: List()
             case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()
             case EmptyStatement() => List(EmptyStatement())
@@ -140,12 +137,12 @@ object JSRewriter {
                 def rewriteCase(caseClause: CaseClause): CaseClause = {
                     caseClause match {
                         case LabeledCaseClause(label,statements) =>
-                            LabeledCaseClause(label,(List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
+                            LabeledCaseClause(label,(List[JSStatement]() /: statements) ({(x,y) => { x ::: rewriteStatement(y) }}))
                         case DefaultClause(statements) =>
-                            DefaultClause((List[JSStatement]() /: statements) ({((x,y) => { x ::: rewriteStatement(y) })}))
+                            DefaultClause((List[JSStatement]() /: statements) ({(x,y) => { x ::: rewriteStatement(y) }}))
                         }
                     }
-                List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _)))
+                List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase)))
             }
             case LabeledStatement(label, statement) => List(LabeledStatement(label, JSBlock(rewriteStatement(statement))))
             case ThrowStatement(expr) => List(ThrowStatement(rewriteExpression(expr)))
@@ -168,7 +165,7 @@ object JSRewriter {
   
     def rewriteSource (source: JSSource) : JSSource = {
       	source match {
-            case JSSource(statements) => JSSource((List[JSStatement]() /: statements) ((x,y) => { x ::: (rewriteStatement(y))}))
+            case JSSource(statements) => JSSource((List[JSStatement]() /: statements) ((x,y) => { x ::: rewriteStatement(y)}))
     	  }
     }
 

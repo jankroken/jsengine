@@ -5,7 +5,6 @@ import scala.io.Source
 import jsengine.rewriter.Rewriter
 import jsengine.parser.JSParser
 import jsengine.runtime.tree._
-import jsengine.runtime.library._
 
 class JSRunner {
   
@@ -32,20 +31,20 @@ class JSRunner {
 	private def runRTSource(source: RTSource):ScalaReturn = {
 	    try {
 	    	val result = source.evaluate(env).valueOf
-	    	println("result from source = "+result)
+	    	println(s"result from source = $result")
         val scalaReturnValue = result match {
           case obj:RTObject => ScalaReturn(obj)
-          case _ => throw new RuntimeException("Unhandled return: "+result)
+          case _ => throw new RuntimeException(s"Unhandled return: $result")
         }
         println("Scala Return: "+scalaReturnValue)
         scalaReturnValue
 	    } catch {
 	        case referenceError: RTReferenceError => 
-	            println("ReferenceError: "+referenceError.msg)
+	            println(s"ReferenceError: ${referenceError.msg}")
               referenceError.printStackTrace()
 	            ScalaReturnException(referenceError)
 	        case typeError: RTTypeError => 
-	            println("TypeError: "+typeError.msg)
+	            println(s"TypeError: ${typeError.msg}")
               typeError.printStackTrace()
 	            ScalaReturnException(typeError)
 	    }

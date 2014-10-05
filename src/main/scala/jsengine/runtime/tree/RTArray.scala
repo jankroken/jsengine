@@ -1,6 +1,5 @@
 package jsengine.runtime.tree
 
-import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
 class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
@@ -14,15 +13,13 @@ class RTArray extends RTObject(Some(Stdlib_Object_Array)) {
   override def evaluate(env: RTEnvironmentRecord) = this
   override def typeof = "object"
 
-  override def toString():String = {
-     "["+arrayContent+"]"
-  }
+  override def toString():String = s"[$arrayContent]"
 
   override def setProperty(key: RTObject, value: RTObject) =
     key match {
       case indexNumber: Stdlib_Number if indexNumber.isDoubleValue => {
         val index = indexNumber.forcedDoubleValue.toInt
-        println("array["+index+"] = "+value)
+        println(s"array[$index] = $value")
         arrayContent = arrayContent ++ Map(index -> value)
       }
       case _ => super.setProperty(key,value)

@@ -2,8 +2,10 @@ name := "jsengine"
 
 version := "1.0"
 
-scalaVersion := "2.10.0"
+scalaVersion := "2.11.2"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "1.9.1" % "test"
-
-libraryDependencies += "junit" % "junit" % "4.11" % "test"
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "junit" % "junit" % "4.11" % "test",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.2"
+)

@@ -34,7 +34,7 @@ object Stdlib_Operator_Divide extends RTFunction {
       case DoubleValue(d1) => d1 >= 0.0
     }
     if (negated) {
-      !(valuePositive)
+      !valuePositive
     } else {
       valuePositive
     }
@@ -55,7 +55,7 @@ object Stdlib_Operator_Divide extends RTFunction {
       case (_,PositiveInfinity) => false
       case (NegativeInfinity,_) => false
       case (_,NegativeInfinity) => false
-      case (DoubleValue(d1),DoubleValue(d2)) => (d1 == d2)
+      case (DoubleValue(d1),DoubleValue(d2)) => d1 == d2
     }
   }
 

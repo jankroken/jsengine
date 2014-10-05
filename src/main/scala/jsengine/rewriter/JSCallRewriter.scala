@@ -25,9 +25,9 @@ object JSCallRewriter {
     		}
     	}
     	val properties = o match { case JSLiteralObject(properties) => properties }
-    	val source = properties.map((property) => property match {
-        case (name,value) => Assign(Lookup(JSIdentifier("this"),name),value)
-      })
+    	val source = properties.map {
+        case (name, value) => Assign(Lookup(JSIdentifier("this"), name), value)
+      }
     	val function = JSFunction(None,List(),source)
     	New(function,List())
     }
@@ -49,7 +49,7 @@ object JSCallRewriter {
     
     private def rewriteExpression (expression: JSBaseExpression): JSBaseExpression = {
 			expression match {
-			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression _))
+			  case JSExpression(expressions) => JSExpression(expressions.map(rewriteExpression))
 			  case ConditionalExpression(condition, trueExpression, falseExpression) => {
 				  ConditionalExpression(rewriteExpression(condition),
 				  						rewriteExpression(trueExpression),
@@ -59,8 +59,8 @@ object JSCallRewriter {
 				  Call(BuiltIn(name),rewriteExpressionList(args))
 			  }
 			  case Lookup(expr,index) => Lookup(rewriteExpression(expr),rewriteExpression(index))
-			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression _))
-			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression _))
+			  case New(function,args) => New(rewriteExpression(function),args.map(rewriteExpression))
+			  case Call(function,args) => Call(rewriteExpression(function),args.map(rewriteExpression))
 			  case Assign(left,value) => Assign(rewriteExpression(left), rewriteExpression(value))
 			  case PostfixExpression(expression,Operator("--")) => Call(BuiltIn(")--"),List(expression))
 			  case PostfixExpression(expression,Operator("++")) => Call(BuiltIn(")++"),List(expression))
@@ -82,7 +82,7 @@ object JSCallRewriter {
     	statement match {
     	    case Declare(identifier) => List(Declare(identifier))
 			case JSBlock(statements) => List(JSBlock(rewriteStatementList(statements)))
-			case VariableDeclarations(declarations) =>  (rewriteStatementList(declarations))
+			case VariableDeclarations(declarations) => rewriteStatementList(declarations)
 			case VariableDeclaration(name, None) => Declare(name) :: List() 
 			case VariableDeclaration(name, Some(initialValue)) => Declare(name) :: Assign(name,rewriteExpression(initialValue)) :: List()
 			case EmptyStatement() => List(EmptyStatement())
@@ -114,21 +114,18 @@ object JSCallRewriter {
 				            DefaultClause(rewriteStatementList(statements))
 				        }
 			        }
-				    List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase _)))
+				    List(SwitchStatement(rewriteExpression(expr),cases.map(rewriteCase)))
 			    }
 			case LabeledStatement(label, statement) => List(LabeledStatement(label, JSBlock(rewriteStatement(statement))))
 			case ThrowStatement(expr) => List(ThrowStatement(rewriteExpression(expr)))
-			case TryStatement(block, TryTail(None,None,Some(finallyBlock))) => {
+			case TryStatement(block, TryTail(None,None,Some(finallyBlock))) =>
 				List(Try(JSBlock(rewriteStatement(block)),None,Some(JSBlock(rewriteStatement(finallyBlock)))))
-			}
-			case TryStatement(block, TryTail(Some(id),Some(catchBlock),None)) => {
+			case TryStatement(block, TryTail(Some(id),Some(catchBlock),None)) =>
 				List(Try(JSBlock(rewriteStatement(block)),Some(Catch(id,JSBlock(rewriteStatement(catchBlock)))),None)) 
-			}
-			case TryStatement(block, TryTail(Some(id),Some(catchBlock),Some(finallyStatement))) => {
+			case TryStatement(block, TryTail(Some(id),Some(catchBlock),Some(finallyStatement))) =>
 				List(Try(JSBlock(rewriteStatement(block)),
 				         Some(Catch(id,JSBlock(rewriteStatement(catchBlock)))),
 				         Some(JSBlock(rewriteStatement(finallyStatement))))) 
-			}
 			case DebuggerStatement() => List(statement)
 			case expr:JSBaseExpression => List(rewriteExpression(expr))
 			case unhandledStatement => throw new RuntimeException("Implementation error: missing handling of AST node: "+unhandledStatement)

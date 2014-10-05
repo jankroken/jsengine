@@ -3,7 +3,7 @@ package jsengine.runtime.library
 import jsengine.runtime.tree.RTObject
 import jsengine.runtime.tree.RTEnvironmentRecord
 
-case class Stdlib_Number(val value: NumericValue, val negated: Boolean = false) extends RTObject(Some(Stdlib_Object)) {
+case class Stdlib_Number(value: NumericValue, negated: Boolean = false) extends RTObject(Some(Stdlib_Object)) {
 
   def evaluate(env: RTEnvironmentRecord): RTObject = this
 
@@ -14,8 +14,8 @@ case class Stdlib_Number(val value: NumericValue, val negated: Boolean = false) 
   override def isObject = false
   override def isPrimitive = true
   override def toString():String = ""+value
-  override def numberValue = this
-  override def stringValue = Stdlib_String(toString)
+  override def numberValue() = this
+  override def stringValue() = Stdlib_String(toString())
   override def typeof = "number"
   def isDoubleValue = value match {
     case double: DoubleValue => true

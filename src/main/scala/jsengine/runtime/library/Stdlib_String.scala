@@ -2,7 +2,7 @@ package jsengine.runtime.library
 
 import jsengine.runtime.tree.{RTNamedObjectProperty, RTObject, RTEnvironmentRecord}
 
-case class Stdlib_String(val value: String, val isObject: Boolean = false) extends RTObject(Some(Stdlib_Object_String)) {
+case class Stdlib_String(value: String, isObject: Boolean = false) extends RTObject(Some(Stdlib_Object_String)) {
 	def evaluate(env: RTEnvironmentRecord):RTObject = { this }
 	def nativeStringValue = value
 	override def booleanValue: Stdlib_Boolean = { Stdlib_Boolean(value.length() > 0) }
@@ -14,13 +14,13 @@ case class Stdlib_String(val value: String, val isObject: Boolean = false) exten
       try {
         Stdlib_Number(value.toDouble)
       } catch {
-        case e => Stdlib_Number(NaN)
+        case _:Throwable => Stdlib_Number(NaN)
       }
     }
   }
 
 	override def isPrimitive = true
-  override def toString = "string('"+value+"')"
+  override def toString = s"string('$value')"
   override def typeof = "string"
 
   override def getProperty(key:RTObject):Option[RTNamedObjectProperty] = {

@@ -1,12 +1,6 @@
 package jsengine.parser
 
 import org.junit.Test
-import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
-import org.hamcrest.CoreMatchers.is
-import org.junit.Assert.fail
-import ParserTestSupport.verifyFunction
-import ParserTestSupport.verifyLiteralObject
 
 import jsengine.ast._
 import ParserTestSupport.verifySource
@@ -25,7 +19,7 @@ class TestJSSource {
 	}
   
   
-    @Test def testNestedObject {
+    @Test def testNestedObject() {
     	val source = """
     		{
     			name : {
@@ -65,7 +59,7 @@ class TestJSSource {
 		verifySource(source,ast)
     }
 
-    @Test def testNestedObjectsAndFunctions {
+    @Test def testNestedObjectsAndFunctions() {
     	val source = """
     		function outerObject (foo) {
     			{

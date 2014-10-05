@@ -1,7 +1,5 @@
 package jsengine.runtime.tree
 
-import jsengine.runtime.library._
-
 class RTNewCall(functionExpression: RTExpression, args: List[RTExpression]) extends RTExpression {
   	def evaluate(env: RTEnvironmentRecord):RTObject = {
   		val functionValue = functionExpression.evaluate(env).valueOf
@@ -12,7 +10,7 @@ class RTNewCall(functionExpression: RTExpression, args: List[RTExpression]) exte
 		    case _ => throw new RuntimeException("not implemented: call:"+functionValue)
   		}	
   	}
-  	override def toString = "new("+functionExpression+","+args+")"
+  	override def toString = s"new($functionExpression,$args)"
 }
 
 object RTNewCall {

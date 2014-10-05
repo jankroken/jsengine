@@ -19,7 +19,7 @@ class RTSimpleFunctionCall(functionExpression: RTExpression, args: List[RTExpres
     println("calling(3) "+retValue)
     retValue
   }
-  override def toString = "call("+functionExpression+","+args+")"
+  override def toString = s"call($functionExpression,$args)"
 
 }
 

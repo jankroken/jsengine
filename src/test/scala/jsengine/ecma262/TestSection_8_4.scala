@@ -1,6 +1,6 @@
 package jsengine.ecma262
 
-import org.junit.Test
+import org.junit.{Ignore, Test}
 import org.junit.Assert.assertThat
 import org.hamcrest.CoreMatchers.is
 import jsengine._
@@ -56,6 +56,7 @@ class TestSection_8_4 {
     assertThat(retval,is[Any](expected))
    }
 
+  @Ignore
   @Test def testSameConstructor() {
     val source = "var s1 = 'hello';var s2 = new String('hello'); s1.constructor == s2.constructor"
     val expected = ScalaReturnBoolean(true)
@@ -77,6 +78,7 @@ class TestSection_8_4 {
     assertThat(retval,is[Any](expected))
   }
 
+  @Ignore
   @Test def testConstructor() {
     val source = "'hello'.constructor"
     val expected = ScalaReturnString("String")

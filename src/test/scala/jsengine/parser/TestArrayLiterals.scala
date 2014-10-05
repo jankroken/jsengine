@@ -20,31 +20,31 @@ import jsengine.ast.JSLiteralObject
 
 class TestArrayLiterals {
 
-    @Test def testEmptyArray {
+    @Test def testEmptyArray() {
     	val source = "[]"
     	val ast = JSArrayLiteral(List())
     	verifyArrayLiteral(source,ast)
     }
 
-    @Test def testOneElementArray {
+    @Test def testOneElementArray() {
     	val source = "[1]"
     	val ast = JSArrayLiteral(List(Some(JSNumber("1"))))
     	verifyArrayLiteral(source,ast)
     }
 
-    @Test def testTwoElementArray {
+    @Test def testTwoElementArray() {
     	val source = "[1,2]"
     	val ast = JSArrayLiteral(List(Some(JSNumber("1")),Some(JSNumber("2"))))
     	verifyArrayLiteral(source,ast)
     }
 
-    @Test def testOneEmptyAndTwoElementArray {
+    @Test def testOneEmptyAndTwoElementArray() {
     	val source = "[,1,2]"
     	val ast = JSArrayLiteral(List(None,Some(JSNumber("1")),Some(JSNumber("2"))))
     	verifyArrayLiteral(source,ast)
     }
 
-    @Test def testEmptyTwoEmpty {
+    @Test def testEmptyTwoEmpty() {
     	val source = "[,1,2,,]"
     	val ast = JSArrayLiteral(List(None,Some(JSNumber("1")),Some(JSNumber("2")),None))
     	verifyArrayLiteral(source,ast)

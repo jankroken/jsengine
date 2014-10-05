@@ -1,7 +1,6 @@
 package jsengine.runtime
 
 import jsengine.ast._
-import jsengine.runtime.types._
 
 sealed class Scope(parent: Option[Scope]) {
 	var values:Map[JSIdentifier,Reference] = Map()

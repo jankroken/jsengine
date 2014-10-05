@@ -17,7 +17,7 @@ class TestObjectPropertyKey {
   @Test def testFirstNotEquals() {
     val key1 = RTObjectPropertyKey(Stdlib_String("hello"))
     val key2 = RTObjectPropertyKey(Stdlib_String("world"))
-    assertThat(key1,is[Any](not[Any]((key2))))
+    assertThat(key1,is[Any](not[Any](key2)))
   }
 
 }

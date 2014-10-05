@@ -7,7 +7,7 @@ object Stdlib_Object_String extends RTFunction {
   var functionEnvironment: Option[RTEnvironmentRecord] = None
 
   override def evaluate(env: RTEnvironmentRecord): RTObject = {
-    functionEnvironment = Some(env);
+    functionEnvironment = Some(env)
     this
   }
 

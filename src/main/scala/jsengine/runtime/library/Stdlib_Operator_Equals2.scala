@@ -16,7 +16,7 @@ object Stdlib_Operator_Equals2 extends RTFunction {
       case (o,b2:Stdlib_Boolean) => compareNumbers(o.numberValue,b2.numberValue)
       case (n1:Stdlib_Number,o) => compareNumbers(n1,o.numberValue())
       case (o,n2:Stdlib_Number) => compareNumbers(o.numberValue(),n2)
-      case (Stdlib_String(s1,_),Stdlib_String(s2,_)) => (s1 == s2)
+      case (Stdlib_String(s1,_),Stdlib_String(s2,_)) => s1 == s2
       case (Stdlib_String(_,_),_) => false
     }
     Stdlib_Boolean(result)
@@ -36,7 +36,7 @@ object Stdlib_Operator_Equals2 extends RTFunction {
       case (_,PositiveInfinity) => false
       case (NegativeInfinity,_) => false
       case (_,NegativeInfinity) => false
-      case (DoubleValue(d1),DoubleValue(d2)) => (d1 == d2)
+      case (DoubleValue(d1),DoubleValue(d2)) => d1 == d2
     }
   }
 

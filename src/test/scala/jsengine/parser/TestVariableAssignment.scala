@@ -1,10 +1,6 @@
 package jsengine.parser
 
 import org.junit.Test
-import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
-import org.hamcrest.CoreMatchers.is
-import org.junit.Assert.fail
 
 import jsengine.ast._
 import ParserTestSupport.verifySource
@@ -50,7 +46,7 @@ class TestVariableAssignment {
 	}
   
   
-    @Test def testNestedObject {
+    @Test def testNestedObject() {
     	val source = """
     		var o = {
     			name : {
@@ -96,7 +92,7 @@ class TestVariableAssignment {
 
     }
 
-    @Test def testSimpleAssignments {
+    @Test def testSimpleAssignments() {
     	val source = """
     			var x = 1, y, z = 2
     	"""

@@ -1,7 +1,5 @@
 package jsengine.parser
 
-import jsengine.library.BuiltinObjects
-
 class StringLiteral(val rawQuotedString: String) {
 	
 	def getUnqotedString(quotechar: Char): String = {

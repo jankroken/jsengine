@@ -1,6 +1,5 @@
 package jsengine.runtime.tree
 
-import jsengine.runtime.ExecutionContext
 import jsengine.runtime.library._
 
 class RTUserObject(prototype: RTObject,var baseValue: Option[RTObject] = None) extends RTObject(Some(prototype)) {

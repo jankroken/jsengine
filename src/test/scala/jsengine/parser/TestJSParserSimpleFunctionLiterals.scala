@@ -2,11 +2,6 @@ package jsengine.parser
 
 import org.junit.Test
 
-import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
-import org.hamcrest.CoreMatchers.is
-import org.junit.Assert.fail
-import ParserTestSupport.getASTOrFail
 import ParserTestSupport.verifyFunction
 import ParserTestSupport.verifyLiteralObject
 import jsengine.ast._
@@ -14,42 +9,42 @@ import jsengine.ast._
 class TestJSParserSimpleFunctionLiterals {
 
   
-    @Test def testEmptyFunction {
+    @Test def testEmptyFunction() {
     	val source = "function () {}"
     	val ast = JSFunction(None,List(),List())
     	verifyFunction(source,ast)
     }
-    @Test def testEmptyNamedFunction {
+    @Test def testEmptyNamedFunction() {
     	val source = "function hello () {}"
     	val ast = JSFunction(Some(JSIdentifier("hello")),List(),List())
     	verifyFunction(source,ast)
     }
 
-    @Test def testOneArgumentEmptyFunction {
+    @Test def testOneArgumentEmptyFunction() {
     	val source = "function (x) {}"
     	val ast = JSFunction(None,List(JSIdentifier("x")),List())
     	verifyFunction(source,ast)
     }
 
-    @Test def testTwoArgumentsEmptyFunction {
+    @Test def testTwoArgumentsEmptyFunction() {
     	val source = "function (x,y) {}"
     	val ast = JSFunction(None,List(JSIdentifier("x"),JSIdentifier("y")),List())
     	verifyFunction(source,ast)
     }
     
-    @Test def testNativeCall {
+    @Test def testNativeCall() {
     	val source = "@NATIVECALL(helloworld)"
     	val ast = JSNativeCall(JSIdentifier("helloworld"))
 		ParserTestSupport.verifyParsing[JSNativeCall](JSParser.nativeCall,source,ast)
     }
 
-    @Test def testFunctionNativeCalls {
+    @Test def testFunctionNativeCalls() {
     	val source = "function f (x) { @NATIVECALL(hello) ; @NATIVECALL(world) }"
     	val ast = JSFunction(Some(JSIdentifier("f")),List(JSIdentifier("x")),List(JSNativeCall(JSIdentifier("hello")),JSNativeCall(JSIdentifier("world"))))
     	verifyFunction(source,ast)
     }
 
-    @Test def testSimpleObjectWithFunction {
+    @Test def testSimpleObjectWithFunction() {
     	val source = """
     		{
     			name : function myName() { @NATIVECALL(hello) }
@@ -63,7 +58,7 @@ class TestJSParserSimpleFunctionLiterals {
     }
 
 
-    @Test def testNestedObject {
+    @Test def testNestedObject() {
     	val source = """
     		{
     			name : {
@@ -94,7 +89,7 @@ class TestJSParserSimpleFunctionLiterals {
     	verifyLiteralObject(source,ast)
     }
 
-    @Test def testNestedObjectsAndFunctions {
+    @Test def testNestedObjectsAndFunctions() {
     	val source = """
     		function outerObject (foo) {
     			{

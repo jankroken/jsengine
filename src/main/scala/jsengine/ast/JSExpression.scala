@@ -13,13 +13,13 @@ trait ApplicationExtension
 case class ApplyArguments(arglist: List[JSBaseExpression]) extends ApplicationExtension
 case class ApplyLookup(expr: JSBaseExpression) extends ApplicationExtension
 case class JSArrayLiteral(elements : List[Option[JSBaseExpression]]) extends JSBaseExpression
-case class JSFunction(val functionName: Option[JSIdentifier], val arguments: List[JSIdentifier], source: List[JSStatement]) extends JSBaseExpression
+case class JSFunction(functionName: Option[JSIdentifier],arguments: List[JSIdentifier], source: List[JSStatement]) extends JSBaseExpression
 case class JSBoolean(value: Boolean) extends JSObject
 case class JSIdentifier(value: String) extends JSObject with PropertyName
-case class JSNativeCall(val identifier: JSIdentifier) extends JSBaseExpression
+case class JSNativeCall(identifier: JSIdentifier) extends JSBaseExpression
 case class Operator(value: String)
 case class JSLiteralObject(var properties : List[(PropertyName,JSBaseExpression)]) extends JSObject
-case class JSNumber(val value: String) extends JSObject with PropertyName
+case class JSNumber(value: String) extends JSObject with PropertyName
 trait JSObject extends JSBaseExpression
 case class JSString(value: String) extends JSObject with PropertyName
 case class JSRegexLiteral(value: String) extends JSObject with PropertyName

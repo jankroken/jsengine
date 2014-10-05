@@ -2,9 +2,6 @@ package jsengine.parser
 
 import org.junit.Test
 
-import org.junit.Assert.assertThat
-import org.junit.matchers.JUnitMatchers.hasItems
-import org.hamcrest.CoreMatchers.is
 import org.junit.Assert.fail
 
 import ParserTestSupport.verifyLiteralObject
@@ -12,38 +9,38 @@ import jsengine.ast._
 
 class TestJSParserSimpleObjectLiterals {
 
-    @Test def testEmptyObjectNoWhitespace {
+    @Test def testEmptyObjectNoWhitespace() {
     	val source = "{}"
     	val ast = JSLiteralObject(List())
     	verifyLiteralObject(source,ast)
     }
     
-    @Test def testEmptyObjectSpaces {
+    @Test def testEmptyObjectSpaces() {
     	val source = "{ }"
     	val ast = JSLiteralObject(List())
     	verifyLiteralObject(source,ast)
     }
 
-    @Test def testEmptyObjectSpacesAndNewline {
+    @Test def testEmptyObjectSpacesAndNewline() {
     	val source = "{ \n }"
     	val ast = JSLiteralObject(List())
     	verifyLiteralObject(source,ast)
     }
     
-    @Test def testObjectWithStringValue {
+    @Test def testObjectWithStringValue() {
     	val source = """{ "key" : "value" }"""
     	val ast = JSLiteralObject(List((JSString("key"),JSString("value"))))
     	verifyLiteralObject(source,ast)
     }
 
-    @Test def testObjectWithIdentifierKey {
+    @Test def testObjectWithIdentifierKey() {
     	val source = """{ key : "value" }"""
     	val ast = JSLiteralObject(List((JSString("key"),JSString("value"))))
     	verifyLiteralObject(source,ast)
     }
 
     
-    @Test def testObjectWithOnlyKey {
+    @Test def testObjectWithOnlyKey() {
     	val result = JSParser.parse(JSParser.jsobject,"""{ "key" }""")
 
     	result match { 
@@ -52,7 +49,7 @@ class TestJSParserSimpleObjectLiterals {
     	}
     }
 
-    @Test def testNestedObject {
+    @Test def testNestedObject() {
     	val source = """
     		{
     			name : {

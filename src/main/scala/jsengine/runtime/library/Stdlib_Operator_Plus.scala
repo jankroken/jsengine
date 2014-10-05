@@ -14,7 +14,7 @@ object Stdlib_Operator_Plus extends RTFunction {
         case (num1:Stdlib_Number,num2:Stdlib_Number) => addNumbers(num1,num2)
         case (str1:Stdlib_String,o2:RTObject) => addStrings(str1,o2)
         case (o1:RTObject,str2:Stdlib_String) => addStrings(o1,str2)
-        case _ => throw new RuntimeException("Not implemented: +("+val1+","+val2+")")
+        case _ => throw new RuntimeException(s"Not implemented: +($val1,$val2)")
       }
     }
   }

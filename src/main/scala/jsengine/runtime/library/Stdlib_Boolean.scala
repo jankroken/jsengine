@@ -12,7 +12,7 @@ case class Stdlib_Boolean(value: Boolean) extends RTObject(None) {
 	override def isObject = false
 	override def isPrimitive = true
   override def typeof = "boolean"
-  override def numberValue = value match {
+  override def numberValue() = value match {
     case false => Stdlib_Number(0)
     case true => Stdlib_Number(1)
   }

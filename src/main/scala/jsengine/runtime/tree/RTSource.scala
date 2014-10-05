@@ -1,18 +1,17 @@
 package jsengine.runtime.tree
 
 import jsengine.runtime.library._
-import jsengine.runtime._
 
 class RTSource(val statements: List[RTExpression]) {
   def evaluate(env: RTEnvironmentRecord):RTObject = {
-    var retValue: RTObject = Stdlib_Undefined;
+    var retValue: RTObject = Stdlib_Undefined
     for (statement <- statements) {
       retValue = statement.evaluate(env).valueOf
     }
     retValue
   }
 
-  override def toString = return "<source: "+statements+">"
+  override def toString = s"<source: $statements>"
 }
 
 object RTSource {

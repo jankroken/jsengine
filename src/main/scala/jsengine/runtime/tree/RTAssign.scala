@@ -21,7 +21,7 @@ class RTAssign(left: RTExpression, value: RTExpression) extends RTExpression {
   		// 
   	}
   	
-  	override def toString():String = "assign("+left+','+value+")"
+  	override def toString:String = s"assign($left,$value)"
 }
 
 object RTAssign {
